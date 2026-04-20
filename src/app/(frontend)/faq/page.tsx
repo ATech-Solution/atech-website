@@ -13,7 +13,27 @@ export const metadata: Metadata = {
     'Find answers to common questions about working with ATech Solutions — project timelines, pricing, technologies, support, and more.',
 }
 
-export default function FAQPage() {
+import { getPage, getBlockTemplates } from '@/lib/payload'
+import { collectBlockIds, LayoutBlockRenderer } from '@/lib/layout-renderer'
+
+export default async function FAQPage() {
+  const page = await getPage('faq').catch(() => null)
+  const layoutTree: any[] = Array.isArray((page as any)?.layoutBuilder)
+    ? (page as any).layoutBuilder
+    : []
+
+  if (layoutTree.length > 0) {
+    const blockIds  = collectBlockIds(layoutTree)
+    const templates = await getBlockTemplates(blockIds)
+    return (
+      <div style={{ background: '#ffffff' }}>
+        {layoutTree.map((node: any) => (
+          <LayoutBlockRenderer key={node.id} node={node} templates={templates} />
+        ))}
+      </div>
+    )
+  }
+
   const { faq, contact } = content['faq']
 
   return (

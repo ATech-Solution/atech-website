@@ -795,6 +795,532 @@ function CTABannerFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =>
   )
 }
 
+// ── Page Hero fields ──────────────────────────────────────────────────────────
+function PageHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const stats: any[] = ov.heroStats ?? []
+  return (
+    <>
+      <Field label="Badge Text">
+        <input className="lb-input" value={ov.badge ?? ''} onChange={(e) => set('badge', e.target.value)} placeholder="Our Work" />
+      </Field>
+      <Field label="Badge Icon URL">
+        <input className="lb-input" value={ov.badgeIconSrc ?? ''} onChange={(e) => set('badgeIconSrc', e.target.value)} placeholder="https://…/icon.svg" />
+      </Field>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Page Title" />
+      </Field>
+      <Field label="Subheading">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="Supporting description…" />
+      </Field>
+      <Row>
+        <Field label="Primary CTA Label">
+          <input className="lb-input" value={ov.ctaPrimaryLabel ?? ''} onChange={(e) => set('ctaPrimaryLabel', e.target.value)} placeholder="View Projects" />
+        </Field>
+        <Field label="Primary CTA URL">
+          <input className="lb-input" value={ov.ctaPrimaryUrl ?? ''} onChange={(e) => set('ctaPrimaryUrl', e.target.value)} placeholder="#projects" />
+        </Field>
+      </Row>
+      <Row>
+        <Field label="Secondary CTA Label">
+          <input className="lb-input" value={ov.ctaSecondaryLabel ?? ''} onChange={(e) => set('ctaSecondaryLabel', e.target.value)} placeholder="Contact Us" />
+        </Field>
+        <Field label="Secondary CTA URL">
+          <input className="lb-input" value={ov.ctaSecondaryUrl ?? ''} onChange={(e) => set('ctaSecondaryUrl', e.target.value)} placeholder="/contact" />
+        </Field>
+      </Row>
+      <Row>
+        <Field label="Alignment">
+          <select className="lb-input lb-input--select" value={ov.pageHeroAlign ?? 'center'} onChange={(e) => set('pageHeroAlign', e.target.value)}>
+            <option value="center">Center</option>
+            <option value="left">Left</option>
+          </select>
+        </Field>
+        <Field label="Dark Background">
+          <select className="lb-input lb-input--select" value={ov.pageHeroDark ? 'true' : 'false'} onChange={(e) => set('pageHeroDark', e.target.value === 'true')}>
+            <option value="false">Light (default)</option>
+            <option value="true">Dark</option>
+          </select>
+        </Field>
+      </Row>
+      <Field label="Stats">
+        <div className="lb-items">
+          {stats.map((s: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Stat {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...stats]; a.splice(i, 1); set('heroStats', a) }}>✕</button>
+              </div>
+              <Row>
+                <input className="lb-input" placeholder='Value e.g. "150+"' value={s.statValue ?? ''} onChange={(e) => { const a = [...stats]; a[i] = { ...a[i], statValue: e.target.value }; set('heroStats', a) }} />
+                <input className="lb-input" placeholder="Label" value={s.statLabel ?? ''} onChange={(e) => { const a = [...stats]; a[i] = { ...a[i], statLabel: e.target.value }; set('heroStats', a) }} />
+              </Row>
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('heroStats', [...stats, { statValue: '', statLabel: '' }])}>+ Add Stat</button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
+// ── Project Grid fields ───────────────────────────────────────────────────────
+function ProjectGridFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const items: any[] = ov.projectItems ?? []
+  return (
+    <>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Featured Projects" />
+      </Field>
+      <Field label="Subheading">
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="A curated selection…" />
+      </Field>
+      <Field label="Projects">
+        <div className="lb-items">
+          {items.map((p: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Project {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); set('projectItems', a) }}>✕</button>
+              </div>
+              <Row>
+                <input className="lb-input" placeholder="Tag (e.g. FinTech)" value={p.projectTag ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectTag: e.target.value }; set('projectItems', a) }} />
+                <input className="lb-input" placeholder="Type (e.g. Mobile App)" value={p.projectType ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectType: e.target.value }; set('projectItems', a) }} />
+              </Row>
+              <input className="lb-input" placeholder="Title" value={p.projectTitle ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectTitle: e.target.value }; set('projectItems', a) }} />
+              <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={p.projectDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectDesc: e.target.value }; set('projectItems', a) }} />
+              <Row>
+                <input className="lb-input" placeholder="CTA Label" value={p.projectCta ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectCta: e.target.value }; set('projectItems', a) }} />
+                <input className="lb-input" placeholder="CTA URL" value={p.projectUrl ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectUrl: e.target.value }; set('projectItems', a) }} />
+              </Row>
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('projectItems', [...items, {}])}>+ Add Project</button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
+// ── Article Grid fields ───────────────────────────────────────────────────────
+function ArticleGridFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const items: any[] = ov.articleItems ?? []
+  return (
+    <>
+      <Field label="Section Label">
+        <input className="lb-input" value={ov.sectionLabel ?? ''} onChange={(e) => set('sectionLabel', e.target.value)} placeholder="Latest Articles" />
+      </Field>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Latest Articles" />
+      </Field>
+      <Field label="Subheading">
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="Expert insights on…" />
+      </Field>
+      <Field label="Articles">
+        <div className="lb-items">
+          {items.map((a: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Article {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const arr = [...items]; arr.splice(i, 1); set('articleItems', arr) }}>✕</button>
+              </div>
+              <Row>
+                <input className="lb-input" placeholder="Category" value={a.articleCategory ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleCategory: e.target.value }; set('articleItems', arr) }} />
+                <input className="lb-input" placeholder="Date" value={a.articleDate ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleDate: e.target.value }; set('articleItems', arr) }} />
+              </Row>
+              <input className="lb-input" placeholder="Title" value={a.articleTitle ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleTitle: e.target.value }; set('articleItems', arr) }} />
+              <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={a.articleDesc ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleDesc: e.target.value }; set('articleItems', arr) }} />
+              <Row>
+                <input className="lb-input" placeholder="CTA Label" value={a.articleCta ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleCta: e.target.value }; set('articleItems', arr) }} />
+                <input className="lb-input" placeholder="CTA URL" value={a.articleUrl ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleUrl: e.target.value }; set('articleItems', arr) }} />
+              </Row>
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('articleItems', [...items, {}])}>+ Add Article</button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
+// ── Article Featured fields ───────────────────────────────────────────────────
+function ArticleFeaturedFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  return (
+    <>
+      <Field label="Section Label">
+        <input className="lb-input" value={ov.sectionLabel ?? ''} onChange={(e) => set('sectionLabel', e.target.value)} placeholder="Featured Article" />
+      </Field>
+      <Row>
+        <Field label="Category">
+          <input className="lb-input" value={ov.featCategory ?? ''} onChange={(e) => set('featCategory', e.target.value)} placeholder="AI & Machine Learning" />
+        </Field>
+        <Field label="Date">
+          <input className="lb-input" value={ov.featDate ?? ''} onChange={(e) => set('featDate', e.target.value)} placeholder="March 15, 2025" />
+        </Field>
+      </Row>
+      <Row>
+        <Field label="Read Time">
+          <input className="lb-input" value={ov.featReadTime ?? ''} onChange={(e) => set('featReadTime', e.target.value)} placeholder="8 min read" />
+        </Field>
+        <Field label="Views">
+          <input className="lb-input" value={ov.featViews ?? ''} onChange={(e) => set('featViews', e.target.value)} placeholder="2.4K views" />
+        </Field>
+      </Row>
+      <Field label="Title">
+        <input className="lb-input" value={ov.featTitle ?? ''} onChange={(e) => set('featTitle', e.target.value)} placeholder="Article title…" />
+      </Field>
+      <Field label="Description">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.featDesc ?? ''} onChange={(e) => set('featDesc', e.target.value)} placeholder="Article description…" />
+      </Field>
+      <Row>
+        <Field label="CTA Label">
+          <input className="lb-input" value={ov.featCtaLabel ?? ''} onChange={(e) => set('featCtaLabel', e.target.value)} placeholder="Read Full Article" />
+        </Field>
+        <Field label="CTA URL">
+          <input className="lb-input" value={ov.featCtaUrl ?? ''} onChange={(e) => set('featCtaUrl', e.target.value)} placeholder="/article-detail" />
+        </Field>
+      </Row>
+    </>
+  )
+}
+
+// ── Jobs List fields ──────────────────────────────────────────────────────────
+function JobsListFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const items: any[] = ov.jobItems ?? []
+  return (
+    <>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Join Our Team" />
+      </Field>
+      <Field label="Subheading">
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="Build your career with us…" />
+      </Field>
+      <Field label="Job Openings">
+        <div className="lb-items">
+          {items.map((j: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Job {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); set('jobItems', a) }}>✕</button>
+              </div>
+              <Row>
+                <input className="lb-input" placeholder="Title" value={j.jobTitle ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobTitle: e.target.value }; set('jobItems', a) }} />
+                <input className="lb-input" placeholder="Type (Full-time)" value={j.jobType ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobType: e.target.value }; set('jobItems', a) }} />
+              </Row>
+              <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={j.jobDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobDesc: e.target.value }; set('jobItems', a) }} />
+              <Row>
+                <input className="lb-input" placeholder="CTA Label" value={j.jobCta ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobCta: e.target.value }; set('jobItems', a) }} />
+                <input className="lb-input" placeholder="CTA URL" value={j.jobUrl ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobUrl: e.target.value }; set('jobItems', a) }} />
+              </Row>
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('jobItems', [...items, {}])}>+ Add Job</button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
+// ── Involved Hero fields ──────────────────────────────────────────────────────
+function InvolvedHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  return (
+    <>
+      <Field label="Badge Text">
+        <input className="lb-input" value={ov.badge ?? ''} onChange={(e) => set('badge', e.target.value)} placeholder="Join Our Mission" />
+      </Field>
+      <Field label="Badge Icon URL">
+        <input className="lb-input" value={ov.badgeIconSrc ?? ''} onChange={(e) => set('badgeIconSrc', e.target.value)} placeholder="https://…/icon.svg" />
+      </Field>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Get Involved With ATech" />
+      </Field>
+      <Field label="Subheading">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="Join our community…" />
+      </Field>
+      <Row>
+        <Field label="Primary CTA Label">
+          <input className="lb-input" value={ov.ctaPrimaryLabel ?? ''} onChange={(e) => set('ctaPrimaryLabel', e.target.value)} placeholder="Explore Partnerships" />
+        </Field>
+        <Field label="Primary CTA URL">
+          <input className="lb-input" value={ov.ctaPrimaryUrl ?? ''} onChange={(e) => set('ctaPrimaryUrl', e.target.value)} placeholder="#partnership" />
+        </Field>
+      </Row>
+      <Row>
+        <Field label="Secondary CTA Label">
+          <input className="lb-input" value={ov.ctaSecondaryLabel ?? ''} onChange={(e) => set('ctaSecondaryLabel', e.target.value)} placeholder="Get a Quote" />
+        </Field>
+        <Field label="Secondary CTA URL">
+          <input className="lb-input" value={ov.ctaSecondaryUrl ?? ''} onChange={(e) => set('ctaSecondaryUrl', e.target.value)} placeholder="#quote" />
+        </Field>
+      </Row>
+    </>
+  )
+}
+
+// ── Quote Form fields ─────────────────────────────────────────────────────────
+function QuoteFormFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  return (
+    <>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Get a Custom Quote" />
+      </Field>
+      <Field label="Subheading">
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="Tell us about your project…" />
+      </Field>
+      <Field label="Submit Button Label">
+        <input className="lb-input" value={ov.submitLabel ?? ''} onChange={(e) => set('submitLabel', e.target.value)} placeholder="Request Your Quote" />
+      </Field>
+    </>
+  )
+}
+
+// ── Culture Values fields ─────────────────────────────────────────────────────
+function CultureValuesFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const values: any[] = ov.cultureValues ?? []
+  return (
+    <>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Our Culture" />
+      </Field>
+      <Field label="Description">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.description ?? ''} onChange={(e) => set('description', e.target.value)} placeholder="At ATech Solution, we foster…" />
+      </Field>
+      <Field label="Values">
+        <div className="lb-items">
+          {values.map((v: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Value {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...values]; a.splice(i, 1); set('cultureValues', a) }}>✕</button>
+              </div>
+              <input className="lb-input" placeholder="Icon URL" value={v.valueIcon ?? ''} onChange={(e) => { const a = [...values]; a[i] = { ...a[i], valueIcon: e.target.value }; set('cultureValues', a) }} />
+              <input className="lb-input" placeholder="Title" value={v.valueTitle ?? ''} onChange={(e) => { const a = [...values]; a[i] = { ...a[i], valueTitle: e.target.value }; set('cultureValues', a) }} />
+              <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={v.valueDesc ?? ''} onChange={(e) => { const a = [...values]; a[i] = { ...a[i], valueDesc: e.target.value }; set('cultureValues', a) }} />
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('cultureValues', [...values, {}])}>+ Add Value</button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
+// ── Community Channels fields ─────────────────────────────────────────────────
+function CommunityChannelsFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const channels: any[] = ov.channelItems ?? []
+  return (
+    <>
+      <Field label="Channels">
+        <div className="lb-items">
+          {channels.map((ch: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Channel {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...channels]; a.splice(i, 1); set('channelItems', a) }}>✕</button>
+              </div>
+              <input className="lb-input" placeholder="Icon URL" value={ch.channelIcon ?? ''} onChange={(e) => { const a = [...channels]; a[i] = { ...a[i], channelIcon: e.target.value }; set('channelItems', a) }} />
+              <input className="lb-input" placeholder="Title" value={ch.channelTitle ?? ''} onChange={(e) => { const a = [...channels]; a[i] = { ...a[i], channelTitle: e.target.value }; set('channelItems', a) }} />
+              <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={ch.channelDesc ?? ''} onChange={(e) => { const a = [...channels]; a[i] = { ...a[i], channelDesc: e.target.value }; set('channelItems', a) }} />
+              <Row>
+                <input className="lb-input" placeholder="CTA Label" value={ch.channelCta ?? ''} onChange={(e) => { const a = [...channels]; a[i] = { ...a[i], channelCta: e.target.value }; set('channelItems', a) }} />
+                <input className="lb-input" placeholder="CTA URL" value={ch.channelUrl ?? ''} onChange={(e) => { const a = [...channels]; a[i] = { ...a[i], channelUrl: e.target.value }; set('channelItems', a) }} />
+              </Row>
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('channelItems', [...channels, {}])}>+ Add Channel</button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
+// ── Community Ambassador fields ───────────────────────────────────────────────
+function CommunityAmbassadorFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const benefits: any[] = ov.ambassadorBenefits ?? []
+  return (
+    <>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Developer Ambassador Program" />
+      </Field>
+      <Field label="Description">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.description ?? ''} onChange={(e) => set('description', e.target.value)} placeholder="Become an official ambassador…" />
+      </Field>
+      <Field label="Benefits">
+        <div className="lb-items">
+          {benefits.map((b: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Benefit {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...benefits]; a.splice(i, 1); set('ambassadorBenefits', a) }}>✕</button>
+              </div>
+              <input className="lb-input" placeholder="Icon URL" value={b.benefitIcon ?? ''} onChange={(e) => { const a = [...benefits]; a[i] = { ...a[i], benefitIcon: e.target.value }; set('ambassadorBenefits', a) }} />
+              <Row>
+                <input className="lb-input" placeholder="Title" value={b.benefitTitle ?? ''} onChange={(e) => { const a = [...benefits]; a[i] = { ...a[i], benefitTitle: e.target.value }; set('ambassadorBenefits', a) }} />
+                <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={b.benefitDesc ?? ''} onChange={(e) => { const a = [...benefits]; a[i] = { ...a[i], benefitDesc: e.target.value }; set('ambassadorBenefits', a) }} />
+              </Row>
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('ambassadorBenefits', [...benefits, {}])}>+ Add Benefit</button>
+        </div>
+      </Field>
+      <Row>
+        <Field label="CTA Label">
+          <input className="lb-input" value={ov.ambassadorCta ?? ''} onChange={(e) => set('ambassadorCta', e.target.value)} placeholder="Apply to Become an Ambassador" />
+        </Field>
+        <Field label="CTA URL">
+          <input className="lb-input" value={ov.ambassadorUrl ?? ''} onChange={(e) => set('ambassadorUrl', e.target.value)} placeholder="#" />
+        </Field>
+      </Row>
+    </>
+  )
+}
+
+// ── Community Programs fields ─────────────────────────────────────────────────
+function CommunityProgramsFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const programs: any[] = ov.programItems ?? []
+  return (
+    <>
+      <Field label="Programs">
+        <div className="lb-items">
+          {programs.map((p: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Program {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...programs]; a.splice(i, 1); set('programItems', a) }}>✕</button>
+              </div>
+              <input className="lb-input" placeholder="Icon URL" value={p.programIcon ?? ''} onChange={(e) => { const a = [...programs]; a[i] = { ...a[i], programIcon: e.target.value }; set('programItems', a) }} />
+              <input className="lb-input" placeholder="Title" value={p.programTitle ?? ''} onChange={(e) => { const a = [...programs]; a[i] = { ...a[i], programTitle: e.target.value }; set('programItems', a) }} />
+              <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={p.programDesc ?? ''} onChange={(e) => { const a = [...programs]; a[i] = { ...a[i], programDesc: e.target.value }; set('programItems', a) }} />
+              <Row>
+                <input className="lb-input" placeholder="CTA Label" value={p.programCta ?? ''} onChange={(e) => { const a = [...programs]; a[i] = { ...a[i], programCta: e.target.value }; set('programItems', a) }} />
+                <input className="lb-input" placeholder="CTA URL" value={p.programUrl ?? ''} onChange={(e) => { const a = [...programs]; a[i] = { ...a[i], programUrl: e.target.value }; set('programItems', a) }} />
+              </Row>
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('programItems', [...programs, {}])}>+ Add Program</button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
+// ── Contact Hero fields ───────────────────────────────────────────────────────
+function ContactHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const cards: any[] = ov.contactCards ?? []
+  return (
+    <>
+      <Field label="Badge Text">
+        <input className="lb-input" value={ov.badge ?? ''} onChange={(e) => set('badge', e.target.value)} placeholder="GET IN TOUCH" />
+      </Field>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Let's Build Something Great" />
+      </Field>
+      <Field label="Subheading">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="Have a project in mind?" />
+      </Field>
+      <Field label="Contact Cards">
+        <div className="lb-items">
+          {cards.map((c: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Card {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...cards]; a.splice(i, 1); set('contactCards', a) }}>✕</button>
+              </div>
+              <input className="lb-input" placeholder="Icon URL" value={c.cardIconSrc ?? ''} onChange={(e) => { const a = [...cards]; a[i] = { ...a[i], cardIconSrc: e.target.value }; set('contactCards', a) }} />
+              <Row>
+                <input className="lb-input" placeholder="Title" value={c.cardTitle ?? ''} onChange={(e) => { const a = [...cards]; a[i] = { ...a[i], cardTitle: e.target.value }; set('contactCards', a) }} />
+                <input className="lb-input" placeholder="Value (e.g. email)" value={c.cardValue ?? ''} onChange={(e) => { const a = [...cards]; a[i] = { ...a[i], cardValue: e.target.value }; set('contactCards', a) }} />
+              </Row>
+              <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={c.cardDesc ?? ''} onChange={(e) => { const a = [...cards]; a[i] = { ...a[i], cardDesc: e.target.value }; set('contactCards', a) }} />
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('contactCards', [...cards, {}])}>+ Add Card</button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
+// ── Contact Stats fields ──────────────────────────────────────────────────────
+function ContactStatsFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const ctas: any[]  = ov.contactStatCtas ?? []
+  const stats: any[] = ov.contactStatItems ?? []
+  return (
+    <>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Ready to Start Your Project?" />
+      </Field>
+      <Field label="Subheading">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="Let's discuss how we can help…" />
+      </Field>
+      <Field label="CTA Buttons">
+        <div className="lb-items">
+          {ctas.map((btn: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Button {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...ctas]; a.splice(i, 1); set('contactStatCtas', a) }}>✕</button>
+              </div>
+              <Row>
+                <input className="lb-input" placeholder="Label" value={btn.contactCtaLabel ?? ''} onChange={(e) => { const a = [...ctas]; a[i] = { ...a[i], contactCtaLabel: e.target.value }; set('contactStatCtas', a) }} />
+                <input className="lb-input" placeholder="URL" value={btn.contactCtaUrl ?? ''} onChange={(e) => { const a = [...ctas]; a[i] = { ...a[i], contactCtaUrl: e.target.value }; set('contactStatCtas', a) }} />
+              </Row>
+              <select className="lb-input lb-input--select" value={btn.contactCtaPrimary ? 'true' : 'false'} onChange={(e) => { const a = [...ctas]; a[i] = { ...a[i], contactCtaPrimary: e.target.value === 'true' }; set('contactStatCtas', a) }}>
+                <option value="true">Primary (dark)</option>
+                <option value="false">Secondary (outline)</option>
+              </select>
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('contactStatCtas', [...ctas, { contactCtaPrimary: true }])}>+ Add Button</button>
+        </div>
+      </Field>
+      <Field label="Stats">
+        <div className="lb-items">
+          {stats.map((s: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Stat {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...stats]; a.splice(i, 1); set('contactStatItems', a) }}>✕</button>
+              </div>
+              <Row>
+                <input className="lb-input" placeholder='Value e.g. "500+"' value={s.contactStatValue ?? ''} onChange={(e) => { const a = [...stats]; a[i] = { ...a[i], contactStatValue: e.target.value }; set('contactStatItems', a) }} />
+                <input className="lb-input" placeholder="Label" value={s.contactStatLabel ?? ''} onChange={(e) => { const a = [...stats]; a[i] = { ...a[i], contactStatLabel: e.target.value }; set('contactStatItems', a) }} />
+              </Row>
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('contactStatItems', [...stats, {}])}>+ Add Stat</button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
+// ── Locations fields ──────────────────────────────────────────────────────────
+function LocationsFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const offices: any[] = ov.officeItems ?? []
+  return (
+    <>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Our Locations" />
+      </Field>
+      <Field label="Offices">
+        <div className="lb-items">
+          {offices.map((o: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Office {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...offices]; a.splice(i, 1); set('officeItems', a) }}>✕</button>
+              </div>
+              <input className="lb-input" placeholder="Office name" value={o.officeName ?? ''} onChange={(e) => { const a = [...offices]; a[i] = { ...a[i], officeName: e.target.value }; set('officeItems', a) }} />
+              <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Full address" value={o.officeAddress ?? ''} onChange={(e) => { const a = [...offices]; a[i] = { ...a[i], officeAddress: e.target.value }; set('officeItems', a) }} />
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('officeItems', [...offices, {}])}>+ Add Office</button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
 // ── Main ContentFields ────────────────────────────────────────────────────────
 export function ContentFields({ blockType, overrides = {}, onChange }: ContentFieldsProps) {
   const ov  = overrides as any
@@ -807,21 +1333,35 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
   if (isAdvanceType) {
     return (
       <div className="lb-fields">
-        {blockType === 'hero'           && <HomeHeroFields         ov={ov} set={set} />}
-        {blockType === 'features'       && <HomeAboutFields        ov={ov} set={set} />}
-        {blockType === 'services'       && <HomeServicesFields     ov={ov} set={set} />}
-        {blockType === 'testimonials'   && <HomeTestimonialsFields ov={ov} set={set} />}
-        {blockType === 'contact'        && <HomeContactFields      ov={ov} set={set} />}
-        {blockType === 'card-grid'      && <ServiceCardsFields     ov={ov} set={set} />}
-        {blockType === 'cta-banner'     && <CTABannerFields        ov={ov} set={set} />}
-        {blockType === 'hero-split'     && <ServiceHeroFields      ov={ov} set={set} />}
-        {blockType === 'process-steps'  && <ProcessStepsFields     ov={ov} set={set} />}
-        {blockType === 'expertise-tiles'&& <ExpertiseTilesFields   ov={ov} set={set} />}
-        {blockType === 'hero-centered'  && <AboutHeroFields        ov={ov} set={set} />}
-        {blockType === 'company-stats'  && <AboutCompanyFields     ov={ov} set={set} />}
-        {blockType === 'mission-vision' && <AboutMissionVisionFields ov={ov} set={set} />}
-        {blockType === 'team-section'   && <AboutLeadershipFields  ov={ov} set={set} />}
-        {blockType === 'faq-section'    && <AboutFAQFields         ov={ov} set={set} />}
+        {blockType === 'hero'                  && <HomeHeroFields            ov={ov} set={set} />}
+        {blockType === 'features'              && <HomeAboutFields           ov={ov} set={set} />}
+        {blockType === 'services'              && <HomeServicesFields        ov={ov} set={set} />}
+        {blockType === 'testimonials'          && <HomeTestimonialsFields    ov={ov} set={set} />}
+        {blockType === 'contact'               && <HomeContactFields         ov={ov} set={set} />}
+        {blockType === 'card-grid'             && <ServiceCardsFields        ov={ov} set={set} />}
+        {blockType === 'cta-banner'            && <CTABannerFields           ov={ov} set={set} />}
+        {blockType === 'hero-split'            && <ServiceHeroFields         ov={ov} set={set} />}
+        {blockType === 'process-steps'         && <ProcessStepsFields        ov={ov} set={set} />}
+        {blockType === 'expertise-tiles'       && <ExpertiseTilesFields      ov={ov} set={set} />}
+        {blockType === 'hero-centered'         && <AboutHeroFields           ov={ov} set={set} />}
+        {blockType === 'company-stats'         && <AboutCompanyFields        ov={ov} set={set} />}
+        {blockType === 'mission-vision'        && <AboutMissionVisionFields  ov={ov} set={set} />}
+        {blockType === 'team-section'          && <AboutLeadershipFields     ov={ov} set={set} />}
+        {blockType === 'faq-section'           && <AboutFAQFields            ov={ov} set={set} />}
+        {blockType === 'page-hero'             && <PageHeroFields            ov={ov} set={set} />}
+        {blockType === 'project-grid'          && <ProjectGridFields         ov={ov} set={set} />}
+        {blockType === 'article-grid'          && <ArticleGridFields         ov={ov} set={set} />}
+        {blockType === 'article-featured'      && <ArticleFeaturedFields     ov={ov} set={set} />}
+        {blockType === 'jobs-list'             && <JobsListFields            ov={ov} set={set} />}
+        {blockType === 'involved-hero'         && <InvolvedHeroFields        ov={ov} set={set} />}
+        {blockType === 'quote-form'            && <QuoteFormFields           ov={ov} set={set} />}
+        {blockType === 'culture-values'        && <CultureValuesFields       ov={ov} set={set} />}
+        {blockType === 'community-channels'    && <CommunityChannelsFields   ov={ov} set={set} />}
+        {blockType === 'community-ambassador'  && <CommunityAmbassadorFields ov={ov} set={set} />}
+        {blockType === 'community-programs'    && <CommunityProgramsFields   ov={ov} set={set} />}
+        {blockType === 'contact-hero'          && <ContactHeroFields         ov={ov} set={set} />}
+        {blockType === 'contact-stats'         && <ContactStatsFields        ov={ov} set={set} />}
+        {blockType === 'locations'             && <LocationsFields           ov={ov} set={set} />}
       </div>
     )
   }

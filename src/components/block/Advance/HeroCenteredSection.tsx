@@ -1,6 +1,15 @@
 // Hero Centered Section — Layout Builder (Advance)
 // White bg, centered badge + large heading + subheading + optional video
 
+function toEmbedUrl(url: string): string | null {
+  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/]+)/)
+  if (yt) return `https://www.youtube.com/embed/${yt[1]}`
+  const vm = url.match(/vimeo\.com\/(\d+)/)
+  if (vm) return `https://player.vimeo.com/video/${vm[1]}`
+  if (url.includes('/embed/') || url.includes('player.vimeo')) return url
+  return null
+}
+
 interface HeroCenteredSectionProps {
   data: {
     badge?: string
@@ -13,6 +22,8 @@ interface HeroCenteredSectionProps {
 
 export default function HeroCenteredSection({ data }: HeroCenteredSectionProps) {
   const { badge, badgeIcon, aboutHeroHeading, aboutHeroSubheading, aboutHeroVideoUrl } = data
+
+  const embedUrl = aboutHeroVideoUrl ? toEmbedUrl(aboutHeroVideoUrl) : null
 
   return (
     <section className="px-6 md:px-10 pt-24 pb-12" style={{ background: '#ffffff' }}>
@@ -43,9 +54,9 @@ export default function HeroCenteredSection({ data }: HeroCenteredSectionProps) 
           </p>
         )}
 
-        {aboutHeroVideoUrl ? (
+        {embedUrl ? (
           <div className="w-full mt-4 rounded-xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
-            <iframe src={aboutHeroVideoUrl} title="Company Overview Video" allowFullScreen style={{ width: '100%', height: '100%', border: 'none' }} />
+            <iframe src={embedUrl} title="Company Overview Video" allowFullScreen style={{ width: '100%', height: '100%', border: 'none' }} />
           </div>
         ) : (
           <div className="w-full mt-4 flex items-center justify-center rounded-xl" style={{ background: '#e5e5e5', height: '264px' }}>

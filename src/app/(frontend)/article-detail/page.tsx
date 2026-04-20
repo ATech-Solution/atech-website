@@ -53,7 +53,31 @@ const relatedArticles = [
   },
 ]
 
-export default function ArticleDetailPage() {
+import { getPage, getBlockTemplates } from '@/lib/payload'
+import { collectBlockIds, LayoutBlockRenderer } from '@/lib/layout-renderer'
+
+export default async function ArticleDetailPage() {
+  const page = await getPage('article-detail').catch(() => null)
+  const layoutTree: any[] = Array.isArray((page as any)?.layoutBuilder)
+    ? (page as any).layoutBuilder
+    : []
+
+  if (layoutTree.length > 0) {
+    const blockIds  = collectBlockIds(layoutTree)
+    const templates = await getBlockTemplates(blockIds)
+    return (
+      <div style={{ background: '#ffffff' }}>
+        {layoutTree.map((node: any) => (
+          <LayoutBlockRenderer key={node.id} node={node} templates={templates} />
+        ))}
+      </div>
+    )
+  }
+
+  return ArticleDetailStatic()
+}
+
+function ArticleDetailStatic() {
   return (
     <div style={{ background: '#ffffff' }}>
 

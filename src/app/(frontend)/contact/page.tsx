@@ -14,7 +14,27 @@ export const metadata: Metadata = {
   description: 'Have a project in mind? Contact ATech Solutions today. Our team of experts is ready to help you build powerful digital solutions.',
 }
 
-export default function ContactPage() {
+import { getPage, getBlockTemplates } from '@/lib/payload'
+import { collectBlockIds, LayoutBlockRenderer } from '@/lib/layout-renderer'
+
+export default async function ContactPage() {
+  const page = await getPage('contact').catch(() => null)
+  const layoutTree: any[] = Array.isArray((page as any)?.layoutBuilder)
+    ? (page as any).layoutBuilder
+    : []
+
+  if (layoutTree.length > 0) {
+    const blockIds  = collectBlockIds(layoutTree)
+    const templates = await getBlockTemplates(blockIds)
+    return (
+      <div style={{ background: '#ffffff' }}>
+        {layoutTree.map((node: any) => (
+          <LayoutBlockRenderer key={node.id} node={node} templates={templates} />
+        ))}
+      </div>
+    )
+  }
+
   const { hero, stats, locations, form } = content['contact']
 
   const contactBlockData = {

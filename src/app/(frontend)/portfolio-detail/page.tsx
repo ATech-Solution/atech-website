@@ -30,7 +30,31 @@ const contact = {
   info:  { heading: 'Contact Information', email: 'hello@atech.software', phone: '+852 1234 5678', location: 'Hong Kong' },
 }
 
-export default function PortfolioDetailPage() {
+import { getPage, getBlockTemplates } from '@/lib/payload'
+import { collectBlockIds, LayoutBlockRenderer } from '@/lib/layout-renderer'
+
+export default async function PortfolioDetailPage() {
+  const page = await getPage('portfolio-detail').catch(() => null)
+  const layoutTree: any[] = Array.isArray((page as any)?.layoutBuilder)
+    ? (page as any).layoutBuilder
+    : []
+
+  if (layoutTree.length > 0) {
+    const blockIds  = collectBlockIds(layoutTree)
+    const templates = await getBlockTemplates(blockIds)
+    return (
+      <div style={{ background: '#ffffff' }}>
+        {layoutTree.map((node: any) => (
+          <LayoutBlockRenderer key={node.id} node={node} templates={templates} />
+        ))}
+      </div>
+    )
+  }
+
+  return PortfolioDetailStatic()
+}
+
+function PortfolioDetailStatic() {
   return (
     <div style={{ background: '#ffffff' }}>
       {/* ── Breadcrumb ──────────────────────────────────────────────────────── */}

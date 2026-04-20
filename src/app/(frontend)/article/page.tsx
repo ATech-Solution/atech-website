@@ -15,7 +15,27 @@ export const metadata: Metadata = {
   description: 'Expert perspectives on software development, digital transformation, and emerging technologies shaping the future of business.',
 }
 
-export default function ArticlePage() {
+import { getPage, getBlockTemplates } from '@/lib/payload'
+import { collectBlockIds, LayoutBlockRenderer } from '@/lib/layout-renderer'
+
+export default async function ArticlePage() {
+  const page = await getPage('article').catch(() => null)
+  const layoutTree: any[] = Array.isArray((page as any)?.layoutBuilder)
+    ? (page as any).layoutBuilder
+    : []
+
+  if (layoutTree.length > 0) {
+    const blockIds  = collectBlockIds(layoutTree)
+    const templates = await getBlockTemplates(blockIds)
+    return (
+      <div style={{ background: '#ffffff' }}>
+        {layoutTree.map((node: any) => (
+          <LayoutBlockRenderer key={node.id} node={node} templates={templates} />
+        ))}
+      </div>
+    )
+  }
+
   const { hero, featured, articles, cta, contact } = content['article']
 
   return (
