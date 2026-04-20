@@ -1,0 +1,83 @@
+{
+  "getInvolved": {
+    "hero": {
+      "badge": "Join Our Mission",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/1ec3258d-21d6-47f2-b9ba-b19634d71dc4",
+      "heading": "Get Involved With ATech Solution",
+      "subheading": "Join our growing community of innovators, partners, and professionals shaping the future of technology. Discover opportunities to collaborate, contribute, and grow with us.",
+      "cta": {
+        "primary":   { "label": "Explore Partnerships", "url": "#partnership" },
+        "secondary": { "label": "Get a Quote",          "url": "#quote" }
+      },
+      "ctaArrowSrc": "https://www.figma.com/api/mcp/asset/b5263aaa-69ae-404e-a037-5b501f2ee98b"
+    },
+    "quote": {
+      "heading":    "Get a Custom Quote",
+      "subheading": "Tell us about your project and we'll provide a tailored solution that meets your specific needs and budget.",
+      "submitLabel": "Request Your Quote"
+    },
+    "partnership": {
+      "heading":     "Get Partnership Opportunities",
+      "subheading":  "Have ideas, questions, or want to collaborate? Leave your details and we'll get in touch with you soon.",
+      "note":        "Join 15,000+ developers and tech leaders. Unsubscribe anytime.",
+      "submitLabel": "Send Message",
+      "iconSrc":     "https://www.figma.com/api/mcp/asset/a54f974d-a5a2-4bd6-85c6-64c7b371973d"
+    },
+    "jobs": {
+      "heading":    "Join Our Team",
+      "subheading": "Build your career with a company that values innovation, diversity, and continuous growth. Explore opportunities across engineering, design, sales, and operations.",
+      "openings": [
+        {
+          "title":       "Senior Full Stack Engineer",
+          "type":        "Full-time",
+          "description": "Lead the development of scalable web applications using modern frameworks. Collaborate with cross-functional teams to deliver high-quality software solutions.",
+          "ctaLabel":    "View Details",
+          "ctaUrl":      "#"
+        },
+        {
+          "title":       "Product Designer",
+          "type":        "Full-time",
+          "description": "Create intuitive user experiences and beautiful interfaces for our SaaS products. Work closely with engineers and product managers to bring designs to life.",
+          "ctaLabel":    "View Details",
+          "ctaUrl":      "#"
+        },
+        {
+          "title":       "DevOps Engineer",
+          "type":        "Full-time",
+          "department":  "Engineering",
+          "location":    "Remote",
+          "posted":      "Posted 1 week ago",
+          "description": "Build and maintain our cloud infrastructure. Implement CI/CD pipelines and ensure high availability and performance of our systems.",
+          "ctaLabel":    "View Details",
+          "ctaUrl":      "#"
+        }
+      ]
+    },
+    "culture": {
+      "heading":     "Our Culture",
+      "description": "At ATech Solution, we foster an inclusive environment where every voice matters. Our culture is built on trust, transparency, and mutual respect.",
+      "values": [
+        {
+          "title":       "Diversity & Inclusion",
+          "description": "We celebrate diverse perspectives and create opportunities for everyone to thrive",
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/687e44ed-c2b0-4439-a29d-d8e6172a17d7"
+        },
+        {
+          "title":       "Work-Life Balance",
+          "description": "We understand the importance of life outside work and support healthy boundaries",
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/687e44ed-c2b0-4439-a29d-d8e6172a17d7"
+        },
+        {
+          "title":       "Continuous Learning",
+          "description": "Growth mindset is at our core - we encourage experimentation and learning from failures",
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/687e44ed-c2b0-4439-a29d-d8e6172a17d7"
+        }
+      ]
+    },
+    "cta": {
+      "heading":    "Ready to Work With Us?",
+      "subheading": "Let's discuss how ATech Solutions can help transform your business with innovative technology solutions.",
+      "button":     { "label": "Get Involved In Community", "url": "/get-involved-community" }
+    }
+  }
+}

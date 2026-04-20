@@ -1,0 +1,109 @@
+{
+  "article": {
+    "hero": {
+      "heading": "Our Articles",
+      "subheading": "Stay ahead with expert perspectives on software development, digital transformation, and emerging technologies shaping the future of business."
+    },
+    "featured": {
+      "sectionLabel": "Featured Article",
+      "category": "AI & Machine Learning",
+      "date": "March 15, 2025",
+      "readTime": "8 min read",
+      "views": "2.4K views",
+      "title": "The Future of AI in Enterprise Software Development",
+      "description": "Explore how artificial intelligence and machine learning are revolutionizing enterprise software development, from automated code generation to intelligent testing frameworks and predictive analytics.",
+      "ctaLabel": "Read Full Article",
+      "ctaUrl": "/article-detail"
+    },
+    "articles": {
+      "sectionLabel": "Latest Articles",
+      "items": [
+        {
+          "category": "Web Development",
+          "date": "March 12, 2025",
+          "title": "Building Scalable Microservices Architecture",
+          "description": "Learn best practices for designing and implementing microservices architecture that scales with your business growth and handles millions of requests.",
+          "ctaLabel": "Read More",
+          "ctaUrl": "/article-detail"
+        },
+        {
+          "category": "Mobile Apps",
+          "date": "March 10, 2025",
+          "title": "Cross-Platform Development: React Native vs Flutter",
+          "description": "A comprehensive comparison of the two leading cross-platform frameworks, helping you choose the right technology stack for your next project.",
+          "ctaLabel": "Read More",
+          "ctaUrl": "/article-detail"
+        },
+        {
+          "category": "Cloud Solutions",
+          "date": "March 8, 2025",
+          "title": "AWS vs Azure vs Google Cloud: 2025 Comparison",
+          "description": "An in-depth analysis of the three major cloud providers, comparing features, pricing, and performance to help you make an informed decision.",
+          "ctaLabel": "Read More",
+          "ctaUrl": "/article-detail"
+        },
+        {
+          "category": "Cybersecurity",
+          "date": "March 6, 2025",
+          "title": "Zero Trust Security Model Implementation Guide",
+          "description": "Discover how to implement a zero trust security architecture in your organization to protect against modern cyber threats and data breaches.",
+          "ctaLabel": "Read More",
+          "ctaUrl": "/article-detail"
+        },
+        {
+          "category": "DevOps",
+          "date": "March 4, 2025",
+          "title": "CI/CD Pipeline Best Practices for 2025",
+          "description": "Master the art of continuous integration and deployment with modern tools and strategies that accelerate software delivery without compromising quality.",
+          "ctaLabel": "Read More",
+          "ctaUrl": "/article-detail"
+        },
+        {
+          "category": "Case Studies",
+          "date": "March 2, 2025",
+          "title": "How We Reduced Server Costs by 60% for a FinTech Client",
+          "description": "A detailed case study showing how we optimized infrastructure and implemented cost-saving strategies for a major financial technology company.",
+          "ctaLabel": "Read More",
+          "ctaUrl": "/article-detail"
+        },
+        {
+          "category": "AI & Machine Learning",
+          "date": "February 28, 2025",
+          "title": "Natural Language Processing in Customer Service",
+          "description": "Explore how NLP and conversational AI are transforming customer support, reducing response times, and improving customer satisfaction.",
+          "ctaLabel": "Read More",
+          "ctaUrl": "/article-detail"
+        },
+        {
+          "category": "Web Development",
+          "date": "February 26, 2025",
+          "title": "Progressive Web Apps: The Future of Web Development",
+          "description": "Discover why progressive web apps are becoming the preferred approach for delivering fast, reliable, and engaging web experiences across all devices.",
+          "ctaLabel": "Read More",
+          "ctaUrl": "/article-detail"
+        }
+      ]
+    },
+    "cta": {
+      "heading": "Stay Ahead of the Curve",
+      "subheading": "Subscribe to our newsletter for weekly insights on technology, development trends, and industry news.",
+      "button": { "label": "Subscribe Now", "url": "#newsletter" },
+      "stats": [
+        { "value": "50+",  "label": "Articles Published" },
+        { "value": "10k+", "label": "Newsletter Subscribers" },
+        { "value": "25+",  "label": "Expert Contributors" }
+      ]
+    },
+    "contact": {
+      "heading": "Get in Touch",
+      "subheading": "Have a topic you'd like us to cover? We'd love to hear from you.",
+      "form": { "heading": "Send us a Message", "submitLabel": "Send Message" },
+      "info": {
+        "heading": "Contact Information",
+        "email": "hello@atech.software",
+        "phone": "+852 1234 5678",
+        "location": "Hong Kong"
+      }
+    }
+  }
+}

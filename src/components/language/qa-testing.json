@@ -1,0 +1,115 @@
+{
+  "qa-testing": {
+    "hero": {
+      "badge": "QA Testing Services",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/9d605f7c-1273-4fb0-beb6-4846104109e5",
+      "breadcrumb": [
+        { "label": "Home",        "href": "/"            },
+        { "label": "What We Do",  "href": "/what-we-do"  },
+        { "label": "QA Testing Services", "href": null   }
+      ],
+      "heading": "Comprehensive Quality\nAssurance & Testing\nSolutions",
+      "body": "Ensure flawless software performance with our rigorous automated and manual testing protocols. From functional testing to security audits, we deliver comprehensive QA solutions that guarantee your applications meet the highest quality standards.",
+      "cta": {
+        "primary":   { "label": "Start Your Project",  "url": "/contact"      },
+        "secondary": { "label": "View Case Studies",    "url": "/case-studies" }
+      },
+      "image": {
+        "src": "https://www.figma.com/api/mcp/asset/6a894c13-5469-49ae-8c44-f9970ec37460",
+        "alt": "QA Testing — hands on laptop keyboard"
+      }
+    },
+    "services": {
+      "heading":    "Our QA Testing Services",
+      "subheading": "Comprehensive testing methodologies to ensure your software performs flawlessly across all environments and use cases.",
+      "items": [
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/06f4806e-6b89-46bc-9bcd-e94d05546602",
+          "title":       "Automated Testing",
+          "description": "Continuous integration testing with automated test suites for regression, unit, and integration testing.",
+          "features":    ["Selenium & Cypress frameworks", "API automation testing", "CI/CD pipeline integration"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/de7852f9-c431-480f-b9ae-2f64870becd0",
+          "title":       "Manual Testing",
+          "description": "Expert manual testing for user experience, usability, and edge case scenarios that automated tests might miss.",
+          "features":    ["Exploratory testing", "User acceptance testing", "Cross-browser compatibility"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/c28bf28f-a469-40e4-b9fe-7dbf15d77839",
+          "title":       "Performance Testing",
+          "description": "Load, stress, and volume testing to ensure optimal performance under various traffic conditions.",
+          "features":    ["JMeter & LoadRunner", "Scalability analysis", "Bottleneck identification"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/8a3f5b5a-a0b3-4050-a96e-811d7af0b01b",
+          "title":       "Security Testing",
+          "description": "Comprehensive security audits and penetration testing to identify vulnerabilities and ensure data protection.",
+          "features":    ["OWASP compliance testing", "Vulnerability assessments", "Data encryption validation"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/c96f9674-6f55-4769-aa53-9d3419931cf6",
+          "title":       "Mobile App Testing",
+          "description": "Specialized testing for iOS and Android applications across multiple devices and operating systems.",
+          "features":    ["Device compatibility testing", "App store guidelines", "Performance optimization"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/f6786c43-6e20-4b5d-818a-d6ead7a8ca9b",
+          "title":       "API Testing",
+          "description": "Thorough API testing to ensure data integrity, performance, and proper integration between systems.",
+          "features":    ["REST & GraphQL testing", "Data validation", "Response time analysis"]
+        }
+      ]
+    },
+    "process": {
+      "heading":    "Our Testing Process",
+      "subheading": "A systematic approach to quality assurance that ensures comprehensive coverage and reliable results.",
+      "steps": [
+        {
+          "number":      "1",
+          "title":       "Requirements Analysis",
+          "description": "Thorough analysis of project requirements and test planning."
+        },
+        {
+          "number":      "2",
+          "title":       "Test Strategy Design",
+          "description": "Creating comprehensive test cases and automation frameworks."
+        },
+        {
+          "number":      "3",
+          "title":       "Test Execution",
+          "description": "Running automated and manual tests across all environments."
+        },
+        {
+          "number":      "4",
+          "title":       "Reporting & Analysis",
+          "description": "Detailed reporting with actionable insights and recommendations."
+        }
+      ]
+    },
+    "cta": {
+      "heading":    "Ready to Ensure Your Software Quality?",
+      "subheading": "Let our QA experts help you deliver flawless software with comprehensive testing solutions tailored to your needs.",
+      "button":     { "label": "Start Your QA Project", "url": "/contact" },
+      "stats": [
+        { "value": "99.9%", "label": "Bug Detection Rate"    },
+        { "value": "50+",   "label": "QA Projects Delivered" },
+        { "value": "24/7",  "label": "Testing Support"       }
+      ]
+    },
+    "contact": {
+      "heading":    "Get in Touch",
+      "subheading": "Ready to start your next project? Let's discuss how we can help.",
+      "form": {
+        "heading":     "Send us a Message",
+        "submitLabel": "Send Message"
+      },
+      "info": {
+        "heading":  "Contact Information",
+        "email":    "hello@atech.software",
+        "phone":    "+852 1234 5678",
+        "location": "Hong Kong"
+      }
+    }
+  }
+}

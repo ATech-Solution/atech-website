@@ -1,0 +1,96 @@
+{
+  "portfolio": {
+    "hero": {
+      "badge": "Our Work",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/506a96e1-e27f-4dac-90d3-400ad681369a",
+      "heading": "Our Portfolio",
+      "subheading": "Explore our collection of impactful projects delivered across industries, showcasing our expertise in building scalable, innovative digital solutions.",
+      "cta": {
+        "primary": { "label": "View Projects", "url": "#projects" },
+        "secondary": { "label": "Start Your Project", "url": "/contact" }
+      },
+      "stats": [
+        { "value": "150+", "label": "Projects Completed" },
+        { "value": "98%",  "label": "Client Satisfaction" },
+        { "value": "25+",  "label": "Industries Served" },
+        { "value": "200+", "label": "Team Members" }
+      ]
+    },
+    "projects": {
+      "heading": "Featured Projects",
+      "subheading": "A curated selection of our most impactful work across various industries and technologies.",
+      "arrowSrc": "https://www.figma.com/api/mcp/asset/45a54d06-5558-4992-9e87-c9de50d83829",
+      "items": [
+        {
+          "tag": "FinTech",
+          "type": "Mobile App",
+          "title": "PayFlow Banking",
+          "description": "Next-generation mobile banking platform with AI-powered insights and seamless transactions.",
+          "ctaLabel": "View Case Study",
+          "ctaUrl": "/portfolio-detail"
+        },
+        {
+          "tag": "E-commerce",
+          "type": "Web App",
+          "title": "Urban Fashion Hub",
+          "description": "Multi-vendor marketplace connecting fashion brands with global customers.",
+          "ctaLabel": "View Case Study",
+          "ctaUrl": "/portfolio-detail"
+        },
+        {
+          "tag": "HealthTech",
+          "type": "Web & Mobile",
+          "title": "MedConnect Platform",
+          "description": "Telemedicine platform enabling seamless patient-doctor consultations and health monitoring.",
+          "ctaLabel": "View Case Study",
+          "ctaUrl": "/portfolio-detail"
+        },
+        {
+          "tag": "EdTech",
+          "type": "Web App",
+          "title": "LearnPath LMS",
+          "description": "Interactive learning management system with real-time progress tracking and adaptive content.",
+          "ctaLabel": "View Case Study",
+          "ctaUrl": "/portfolio-detail"
+        },
+        {
+          "tag": "SaaS",
+          "type": "Web App",
+          "title": "WorkFlow Pro",
+          "description": "Enterprise workflow automation platform that streamlines operations and boosts team productivity.",
+          "ctaLabel": "View Case Study",
+          "ctaUrl": "/portfolio-detail"
+        },
+        {
+          "tag": "Logistics",
+          "type": "Mobile & API",
+          "title": "DeliverEase",
+          "description": "Real-time last-mile delivery tracking platform connecting merchants, couriers, and customers.",
+          "ctaLabel": "View Case Study",
+          "ctaUrl": "/portfolio-detail"
+        }
+      ]
+    },
+    "cta": {
+      "heading": "Ready to Build Your Next Success Story?",
+      "subheading": "Join 150+ companies who have transformed their business with our technology solutions.",
+      "button": { "label": "Start Your Project", "url": "/contact" },
+      "stats": [
+        { "value": "150+", "label": "Projects Delivered" },
+        { "value": "98%",  "label": "Client Satisfaction" },
+        { "value": "25+",  "label": "Industries Served" }
+      ]
+    },
+    "contact": {
+      "heading": "Get in Touch",
+      "subheading": "Ready to start your next project? Let's discuss how we can help.",
+      "form": { "heading": "Send us a Message", "submitLabel": "Send Message" },
+      "info": {
+        "heading": "Contact Information",
+        "email": "hello@atech.software",
+        "phone": "+852 1234 5678",
+        "location": "Hong Kong"
+      }
+    }
+  }
+}

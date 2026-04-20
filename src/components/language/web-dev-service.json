@@ -1,0 +1,105 @@
+{
+  "web-dev-service": {
+    "hero": {
+      "badge": "WEB DEVELOPMENT SERVICES",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/ca0cd225-89ff-4188-98bb-d297b3b030df",
+      "breadcrumb": [
+        { "label": "Home",                       "href": "/"            },
+        { "label": "Solution",                   "href": "/what-we-do"  },
+        { "label": "Web Development Services",   "href": null           }
+      ],
+      "heading": "Custom Web Development\nSolutions for Modern\nBusinesses",
+      "body": "Build powerful, scalable web applications that drive business growth. Our expert developers create responsive, user-friendly websites and web platforms tailored to your specific needs and objectives.",
+      "cta": {
+        "primary":   { "label": "Start Your Project", "url": "/contact"   },
+        "secondary": { "label": "View Portfolio",      "url": "/portfolio" }
+      },
+      "image": {
+        "src": "https://www.figma.com/api/mcp/asset/d4646c55-9958-49ea-ac32-d8a5eb9a9278",
+        "alt": "Web development — laptop with code editor"
+      }
+    },
+    "services": {
+      "heading":    "Our Web Development Services",
+      "subheading": "Comprehensive web development solutions to bring your digital vision to life with cutting-edge technology and best practices.",
+      "items": [
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/dd4e6db1-9590-4555-b0e8-839778717139",
+          "title":       "Frontend Development",
+          "description": "Create stunning, responsive user interfaces with modern frameworks and technologies for optimal user experience.",
+          "features":    ["React & Vue.js", "Responsive Design", "Progressive Web Apps"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/9f43dffc-343f-4395-b211-43c198197c8a",
+          "title":       "Backend Development",
+          "description": "Build robust, scalable server-side solutions with secure APIs and efficient database management systems.",
+          "features":    ["Node.js & Python", "RESTful APIs", "Database Design"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/e87aa854-3c6a-45b6-a7b9-0696c6ad6031",
+          "title":       "E-commerce Solutions",
+          "description": "Develop powerful online stores with secure payment processing and inventory management capabilities.",
+          "features":    ["Custom Shopping Carts", "Payment Integration", "Inventory Management"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/d4832039-6466-4078-88e6-fdcb02b15d7b",
+          "title":       "CMS Development",
+          "description": "Build custom content management systems that make it easy to update and manage your website content.",
+          "features":    ["WordPress Customization", "Headless CMS", "Custom Admin Panels"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/19290eaf-338e-4744-827f-0319434d901a",
+          "title":       "Web App Development",
+          "description": "Create complex web applications with advanced functionality and seamless user experiences across all devices.",
+          "features":    ["Single Page Applications", "Real-time Features", "Cross-platform Compatibility"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/4d04275b-c117-4660-8bc7-78514ef2f562",
+          "title":       "Maintenance & Support",
+          "description": "Ongoing website maintenance, updates, and technical support to ensure optimal performance and security.",
+          "features":    ["Regular Updates", "Security Monitoring", "Performance Optimization"]
+        }
+      ]
+    },
+    "process": {
+      "heading":    "Our Development Process",
+      "subheading": "A systematic approach to web development that ensures quality, efficiency, and client satisfaction at every stage.",
+      "steps": [
+        {
+          "number":      "1",
+          "title":       "Planning & Analysis",
+          "description": "Understand your requirements, define project scope, and create detailed technical specifications and wireframes."
+        },
+        {
+          "number":      "2",
+          "title":       "Design & Prototyping",
+          "description": "Create stunning visual designs and interactive prototypes that align with your brand and user experience goals."
+        },
+        {
+          "number":      "3",
+          "title":       "Development & Testing",
+          "description": "Build your website using modern technologies with rigorous testing to ensure functionality and performance."
+        },
+        {
+          "number":      "4",
+          "title":       "Launch & Support",
+          "description": "Deploy your project with confidence and receive ongoing support to keep your site running at its best."
+        }
+      ]
+    },
+    "contact": {
+      "heading":    "Get in Touch",
+      "subheading": "Ready to start your next project? Let's discuss how we can help.",
+      "form": {
+        "heading":     "Send us a Message",
+        "submitLabel": "Send Message"
+      },
+      "info": {
+        "heading":  "Contact Information",
+        "email":    "hello@atech.software",
+        "phone":    "+852 1234 5678",
+        "location": "Hong Kong"
+      }
+    }
+  }
+}

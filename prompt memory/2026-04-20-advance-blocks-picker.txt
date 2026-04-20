@@ -1,0 +1,20 @@
+Session: 2026-04-20
+Task: Expose all Advance/ blocks in the layout builder block picker
+
+Changes made:
+1. src/components/LayoutBuilder/types.ts
+   - Added ADVANCE_BLOCK_TYPES constant (home-hero, home-about, home-services, home-testimonials, home-contact, service-cards, cta-banner)
+   - Added AdvanceBlockType type
+   - Added cardItems to BlockOverrides['content']
+
+2. src/components/LayoutBuilder/BlockPicker.tsx
+   - Renamed "Home Page" section → "Advance"
+   - Added service-cards and cta-banner icons/labels
+   - Now uses ADVANCE_BLOCK_TYPES for the Advance section
+
+3. src/components/LayoutBuilder/fields/ContentFields.tsx
+   - Added ServiceCardsFields component (heading, subtitle, cardItems array with icon/title/description/features)
+   - Added CTABannerFields component (heading, subtitle, button, heroStats)
+   - Updated dispatch logic from HOME_SECTION_TYPES → ADVANCE_BLOCK_TYPES
+
+Result: All 7 blocks in src/components/block/Advance/ are now accessible and editable in the block picker under the "Advance" group.

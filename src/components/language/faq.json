@@ -1,0 +1,62 @@
+{
+  "faq": {
+    "hero": {
+      "badge": "FAQ",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/1f467f05-b019-403e-8550-36cbe917ac51",
+      "heading": "Frequently Asked Questions",
+      "subheading": "Find answers to common questions about working with ATech Solutions."
+    },
+    "faq": {
+      "heading": "General FAQs",
+      "subheading": "Everything you need to know before getting started.",
+      "items": [
+        {
+          "question": "What is your typical project timeline?",
+          "answer": "Project timelines vary based on scope and complexity. A typical MVP takes 8–12 weeks, while larger enterprise projects may take 6–12 months. We always provide a detailed timeline during our initial proposal."
+        },
+        {
+          "question": "How do you handle project pricing?",
+          "answer": "We provide transparent, customized pricing based on your specific project requirements. After our initial consultation, we'll deliver a detailed proposal outlining the scope, timeline, and cost breakdown. We offer flexible engagement models including fixed-price projects, time and materials, and dedicated team arrangements."
+        },
+        {
+          "question": "What technologies do you work with?",
+          "answer": "We work with a wide range of technologies including React, Next.js, Node.js, Python, Go, AWS, GCP, Azure, PostgreSQL, MongoDB, and many more. Our team stays current with the latest tools and frameworks."
+        },
+        {
+          "question": "Do you provide ongoing support after project completion?",
+          "answer": "Yes, we offer comprehensive post-launch support and maintenance packages. Our team ensures your product stays up-to-date, secure, and performing optimally after delivery."
+        },
+        {
+          "question": "Can you work with our existing development team?",
+          "answer": "Absolutely. We regularly augment in-house teams, providing specialist skills and additional capacity while integrating seamlessly with your existing workflows and tools."
+        },
+        {
+          "question": "How do you ensure project security and confidentiality?",
+          "answer": "All team members sign NDAs, we follow industry security best practices, and we can adhere to specific compliance requirements (HIPAA, SOC 2, GDPR, etc.) relevant to your project."
+        },
+        {
+          "question": "What industries do you specialize in?",
+          "answer": "We have deep experience across FinTech, HealthTech, EdTech, E-commerce, SaaS, Logistics, and more. Our cross-industry expertise allows us to bring fresh perspectives and proven patterns to your domain."
+        },
+        {
+          "question": "How do I get started?",
+          "answer": "Simply reach out via our contact form or email us at hello@atech.software. We'll schedule a free consultation call within 24 hours to discuss your needs and outline next steps."
+        }
+      ]
+    },
+    "contact": {
+      "heading": "Still Have Questions?",
+      "subheading": "Can't find the answer you're looking for? Our team is happy to help.",
+      "form": {
+        "heading": "Send Us a Message",
+        "submitLabel": "Send Message"
+      },
+      "info": {
+        "heading": "Contact Information",
+        "email": "hello@atech.software",
+        "phone": "+852 1234 5678",
+        "location": "Hong Kong"
+      }
+    }
+  }
+}

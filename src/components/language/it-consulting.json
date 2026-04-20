@@ -1,0 +1,115 @@
+{
+  "it-consulting": {
+    "hero": {
+      "badge": "IT CONSULTANCY SERVICES",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/2b27c9f0-a754-42d1-aa6b-3baaf51aa78f",
+      "breadcrumb": [
+        { "label": "Home",                    "href": "/"            },
+        { "label": "What We Do",              "href": "/what-we-do"  },
+        { "label": "IT Consultancy Services", "href": null           }
+      ],
+      "heading": "Strategic IT Consulting &\nTechnology Advisory",
+      "body": "Navigate complex technology decisions with confidence. Our expert consultants provide strategic guidance to optimize your IT infrastructure, accelerate digital transformation, and drive business growth.",
+      "cta": {
+        "primary":   { "label": "Schedule Consultation", "url": "/contact"   },
+        "secondary": { "label": "View Our Expertise",    "url": "/portfolio" }
+      },
+      "image": {
+        "src": "https://www.figma.com/api/mcp/asset/fc0db955-1489-4404-b5f0-15f661e46f2c",
+        "alt": "Strategic IT Consulting — team in boardroom meeting"
+      }
+    },
+    "services": {
+      "heading":    "Our IT Consultancy Services",
+      "subheading": "Comprehensive technology consulting to transform your business operations and accelerate growth through strategic IT solutions.",
+      "items": [
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/953078d0-5dab-4a7a-bee7-f0acb1037182",
+          "title":       "IT Strategy & Planning",
+          "description": "Develop comprehensive IT roadmaps aligned with your business objectives and long-term growth strategies.",
+          "features":    ["Technology Roadmapping", "Digital Transformation", "IT Governance"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/c558ef26-1a79-4476-a0e7-9709e13d485f",
+          "title":       "Cybersecurity Consulting",
+          "description": "Protect your organization with comprehensive security assessments and risk management strategies.",
+          "features":    ["Security Audits", "Risk Assessment", "Compliance Management"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/ef1efa12-cf8d-4b79-8fb5-cb524718bd55",
+          "title":       "Cloud Migration",
+          "description": "Seamlessly transition to cloud infrastructure with optimized performance, security, and cost-effectiveness.",
+          "features":    ["AWS & Azure Solutions", "Migration Planning", "Cost Optimization"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/8e6653fb-07e2-4606-9dd1-9613342259a9",
+          "title":       "Data Analytics & BI",
+          "description": "Transform raw data into actionable insights with advanced analytics and business intelligence solutions.",
+          "features":    ["Data Warehousing", "Predictive Analytics", "Dashboard Development"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/f936e466-2f0d-42f2-9ac5-d2e0e1c34c88",
+          "title":       "IT Team Augmentation",
+          "description": "Scale your technology capabilities with expert consultants who integrate seamlessly with your existing team.",
+          "features":    ["Senior Developers", "Solution Architects", "Project Managers"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/8b2107a8-4d24-4f03-98af-893a8deafe54",
+          "title":       "Performance Optimization",
+          "description": "Enhance system performance and efficiency through comprehensive analysis and optimization strategies.",
+          "features":    ["System Audits", "Infrastructure Tuning", "Process Automation"]
+        }
+      ]
+    },
+    "process": {
+      "heading":    "Our Consulting Process",
+      "subheading": "A proven methodology that ensures successful technology implementations and strategic outcomes.",
+      "steps": [
+        {
+          "number":      "1",
+          "title":       "Discovery & Assessment",
+          "description": "Comprehensive analysis of your current IT landscape, business requirements, and strategic objectives."
+        },
+        {
+          "number":      "2",
+          "title":       "Strategy Development",
+          "description": "Create tailored technology roadmaps and implementation strategies aligned with your business goals."
+        },
+        {
+          "number":      "3",
+          "title":       "Implementation",
+          "description": "Execute solutions with minimal disruption to your operations while ensuring quality and performance."
+        },
+        {
+          "number":      "4",
+          "title":       "Optimization",
+          "description": "Continuous monitoring, support, and optimization to ensure long-term success and ROI."
+        }
+      ]
+    },
+    "cta": {
+      "heading":    "Ready to Transform Your IT Strategy?",
+      "subheading": "Let our expert consultants help you navigate complex technology decisions and accelerate your digital transformation journey.",
+      "button":     { "label": "Schedule Free Consultation", "url": "/contact" },
+      "stats": [
+        { "value": "200+", "label": "Projects Completed"  },
+        { "value": "15+",  "label": "Years Experience"    },
+        { "value": "98%",  "label": "Client Satisfaction" }
+      ]
+    },
+    "contact": {
+      "heading":    "Get in Touch",
+      "subheading": "Ready to start your next project? Let's discuss how we can help.",
+      "form": {
+        "heading":     "Send us a Message",
+        "submitLabel": "Send Message"
+      },
+      "info": {
+        "heading":  "Contact Information",
+        "email":    "hello@atech.software",
+        "phone":    "+852 1234 5678",
+        "location": "Hong Kong"
+      }
+    }
+  }
+}

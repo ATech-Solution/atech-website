@@ -1,0 +1,135 @@
+{
+  "home": {
+    "hero": {
+      "badge": "Welcome to ATech Solutions",
+      "heading": "Build Software That Scales Your Business Forward",
+      "body": "We build robust, scalable, and intelligent software solutions for startups and enterprises. Elevate your technological capabilities with our expert engineering teams.",
+      "cta": {
+        "primary": { "label": "Explore Services", "url": "/services" },
+        "secondary": { "label": "Client Testimonials", "url": "/testimonials" }
+      },
+      "stats": [
+        { "value": "250+", "label": "Projects Delivered" },
+        { "value": "98%",  "label": "Client Retention"   },
+        { "value": "10+",  "label": "Years Experience"   }
+      ],
+      "image": {
+        "src": "https://www.figma.com/api/mcp/asset/dee3b6fb-bb91-4e01-81ca-c6495cbe5bae",
+        "alt": "Person holding phone with laptop in background"
+      },
+      "floatingCards": [
+        { "text": "Deployment Successful", "position": "top-right" },
+        { "text": "Launch Ready",          "position": "bottom-left" }
+      ]
+    },
+    "about": {
+      "heading": "About ATech Solutions",
+      "description": "We are a leading technology company specializing in custom software development, quality assurance, and IT consulting services for businesses of all sizes.",
+      "pillars": [
+        {
+          "icon": "lightbulb",
+          "title": "Innovation",
+          "description": "Cutting-edge solutions using the latest technologies and best practices."
+        },
+        {
+          "icon": "star",
+          "title": "Expertise",
+          "description": "Experienced team of developers, designers, and consultants."
+        },
+        {
+          "icon": "handshake",
+          "title": "Partnership",
+          "description": "Long-term partnerships built on trust and exceptional results."
+        }
+      ]
+    },
+    "services": {
+      "heading": "Our Services",
+      "subheading": "Comprehensive technology solutions tailored to your business needs.",
+      "items": [
+        {
+          "icon": "check-badge",
+          "title": "QA Testing Services",
+          "description": "Comprehensive testing solutions to ensure software quality and reliability.",
+          "href": "/services/qa-testing"
+        },
+        {
+          "icon": "globe",
+          "title": "Web Development",
+          "description": "Custom web applications built with modern frameworks and technologies.",
+          "href": "/services/web-development"
+        },
+        {
+          "icon": "device",
+          "title": "App Development",
+          "description": "Native and cross-platform mobile applications for iOS and Android.",
+          "href": "/services/app-development"
+        },
+        {
+          "icon": "users",
+          "title": "HR Recruitment",
+          "description": "Staff augmentation and dedicated development teams for your projects.",
+          "href": "/services/hr-recruitment"
+        },
+        {
+          "icon": "consult",
+          "title": "IT Consultancy",
+          "description": "Strategic technology guidance and digital transformation consulting.",
+          "href": "/services/it-consultancy"
+        },
+        {
+          "icon": "code",
+          "title": "Product Development",
+          "description": "Design and develop scalable digital products from idea to launch.",
+          "href": "/contact"
+        }
+      ],
+      "customSolution": {
+        "heading": "Need Custom Solution?",
+        "body": "Let's discuss your specific requirements and create a tailored solution.",
+        "cta": { "label": "Chat with us", "url": "/contact" }
+      }
+    },
+    "testimonials": {
+      "heading": "Client Testimonials",
+      "subheading": "What our clients say about working with us.",
+      "items": [
+        {
+          "name": "John Smith",
+          "role": "CEO",
+          "company": "TechCorp",
+          "quote": "ATech Solutions delivered exceptional results on our web platform. Their team is professional and highly skilled.",
+          "rating": 5
+        },
+        {
+          "name": "Sarah Johnson",
+          "role": "CTO",
+          "company": "StartupX",
+          "quote": "The mobile app they developed exceeded our expectations. Great communication and timely delivery.",
+          "rating": 5
+        },
+        {
+          "name": "Mike Chen",
+          "role": "Director",
+          "company": "Enterprise Inc",
+          "quote": "Outstanding IT consulting services. They helped us modernize our entire technology infrastructure.",
+          "rating": 5
+        }
+      ]
+    },
+    "contact": {
+      "heading": "Get in Touch",
+      "subheading": "Ready to start your next project? Let's discuss how we can help.",
+      "form": {
+        "heading": "Send us a Message",
+        "submitLabel": "Send Message"
+      },
+      "info": {
+        "heading": "Contact Information",
+        "email": "hello@atech.software",
+        "phone": "+852 1234 5678",
+        "location": "Hong Kong"
+      }
+    }
+  }
+}

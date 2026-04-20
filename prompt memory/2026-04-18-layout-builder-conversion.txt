@@ -1,0 +1,40 @@
+Session Date: 2026-04-18
+Task: Convert all static frontend pages to Layout Builder (CMS-driven editing)
+
+Prompt:
+current static page:
+  app-dev-service, article, article-detail, contact, faq, get-involved,
+  get-involved-community, hr-recruitment, insight, it-consulting, portfolio,
+  portfolio-detail, product-development, qa-testing, web-dev-service, who-we-serve
+
+Rules:
+- avoid changes on static page file src/components/Blocks, src/components/language
+- goal: convert from static page per section to page layout builder blocks (user-friendly editing)
+- reference code (already converted): src/components/block/
+- examine src/components/Blocks — if similar layout/field exists, reuse those blocks
+- if not, add new blocks: copy section from src/components/Blocks, convert to reusable block in src/components/block/
+- separate phases by page (execute each page one at a time)
+
+CLAUDE.md Rules Applied:
+- frontend-design skill invoked before frontend code
+- prompt memory saved (this file)
+- new block components stored in src/components/block/
+- layout builder pattern: getPage() → check layoutBuilder array → LayoutBlockRenderer → fallback to static
+
+Plan Summary (16 phases, one per page):
+Phase 1:  app-dev-service      → new: WebDevHeroSection, ServiceCardsSection, CTABannerSection
+Phase 2:  web-dev-service      → new: ProcessStepsSection; reuse phase 1 blocks
+Phase 3:  it-consulting        → reuse phases 1-2 blocks
+Phase 4:  qa-testing           → reuse phases 1-2 blocks
+Phase 5:  hr-recruitment       → new: HRRecruitExpertiseSection; reuse phases 1-2 blocks
+Phase 6:  contact              → new: ContactHeroSection, ContactStatsSection, ContactLocationsSection
+Phase 7:  faq                  → reuse: about-faq, home-contact; page file only
+Phase 8:  insight              → new: InsightHeroSection, InsightArticlesSection
+Phase 9:  article              → new: ArticleHeroSection, ArticleFeaturedSection, ArticleGridSection
+Phase 10: portfolio            → new: PortfolioHeroSection, PortfolioGridSection
+Phase 11: get-involved         → new: 5 GetInvolved* sections
+Phase 12: get-involved-community → new: 4 Community* sections
+Phase 13: who-we-serve         → new: 3 WhoWeServe* sections
+Phase 14: article-detail       → page file only (layout builder check at top)
+Phase 15: portfolio-detail     → page file only
+Phase 16: product-development  → page file only

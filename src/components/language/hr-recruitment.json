@@ -1,0 +1,120 @@
+{
+  "hr-recruitment": {
+    "hero": {
+      "badge": "HR Recruitment Services",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/ba0a2cc9-a2ce-4ece-8319-7f56a3d0dce9",
+      "breadcrumb": [
+        { "label": "Home", "href": "/" },
+        { "label": "What We Do", "href": null },
+        { "label": "HR Recruitment", "href": null }
+      ],
+      "heading": "HR Recruitment\n& Staff Augmentation",
+      "body": "Connect with top-tier talent and scale your team with precision. Our HR recruitment and staff augmentation services deliver the right professionals exactly when you need them.",
+      "cta": { "label": "Schedule Consultation", "url": "/contact" },
+      "image": {
+        "src": "https://www.figma.com/api/mcp/asset/4145cc24-03ef-419c-80c3-7248d497e811",
+        "alt": "HR Recruitment Services"
+      }
+    },
+    "services": {
+      "heading": "Our HR Services",
+      "subheading": "Comprehensive talent solutions designed to meet your workforce needs at every stage of growth.",
+      "items": [
+        {
+          "iconSrc": "https://www.figma.com/api/mcp/asset/42f6630f-2fdd-4b1a-aa7d-9407b87c0898",
+          "title": "Talent Recruitment",
+          "description": "End-to-end recruitment process for permanent placements across all levels and disciplines."
+        },
+        {
+          "iconSrc": "https://www.figma.com/api/mcp/asset/34644577-e85e-4155-a5e6-f8074168acad",
+          "title": "Staff Augmentation",
+          "description": "Rapidly scale your team with skilled contractors who integrate seamlessly into your workflows."
+        },
+        {
+          "iconSrc": "https://www.figma.com/api/mcp/asset/1170584f-723b-46dc-b95f-ecb1ac65f9dc",
+          "title": "Workforce Planning",
+          "description": "Strategic workforce analysis and planning to align your talent pipeline with business objectives."
+        },
+        {
+          "iconSrc": "https://www.figma.com/api/mcp/asset/78b74342-ebbf-437e-9bc3-0fb25101c58e",
+          "title": "Screening & Assessment",
+          "description": "Rigorous candidate screening, technical assessments, and cultural fit evaluations."
+        },
+        {
+          "iconSrc": "https://www.figma.com/api/mcp/asset/065d161c-b6f2-48cc-a8a6-a3c8bebd84c2",
+          "title": "Contract-to-Hire",
+          "description": "Flexible engagement model that lets you evaluate talent before making permanent hiring decisions."
+        },
+        {
+          "iconSrc": "https://www.figma.com/api/mcp/asset/c230cf1d-aff0-4e45-8de3-51f62dbbe07f",
+          "title": "Ongoing Support",
+          "description": "Continuous post-placement support to ensure long-term success for both client and candidate."
+        }
+      ]
+    },
+    "process": {
+      "heading": "Our Recruitment Process",
+      "subheading": "A structured, transparent approach that delivers quality hires efficiently and consistently.",
+      "steps": [
+        {
+          "number": "01",
+          "title": "Discovery",
+          "description": "We work closely with your team to understand role requirements, culture, and success metrics."
+        },
+        {
+          "number": "02",
+          "title": "Sourcing",
+          "description": "Targeted outreach across our network and platforms to identify the best-fit candidates."
+        },
+        {
+          "number": "03",
+          "title": "Screening",
+          "description": "Multi-stage screening including technical tests, soft-skill assessments, and reference checks."
+        },
+        {
+          "number": "04",
+          "title": "Integration",
+          "description": "Smooth onboarding support and follow-up to ensure every placement hits the ground running."
+        }
+      ]
+    },
+    "expertise": {
+      "heading": "Technical Expertise We Place",
+      "subheading": "We specialise in recruiting across high-demand technology disciplines.",
+      "tiles": [
+        { "iconSrc": "https://www.figma.com/api/mcp/asset/fadcbdf1-c5aa-4938-b382-785e2d85a6e3", "label": "Full-Stack Development" },
+        { "iconSrc": "https://www.figma.com/api/mcp/asset/42575173-d147-414c-bd1c-a445cef1830f", "label": "Mobile Development" },
+        { "iconSrc": "https://www.figma.com/api/mcp/asset/9151aea7-960e-4c2d-a1e1-f15248ece578", "label": "Cloud Engineering" },
+        { "iconSrc": "https://www.figma.com/api/mcp/asset/d7035ed7-b953-41a4-bf47-30b6b28e60d7", "label": "Data Engineering" },
+        { "iconSrc": "https://www.figma.com/api/mcp/asset/9ccdea18-0a22-40f1-bbb3-892659f0a3c3", "label": "Cybersecurity" },
+        { "iconSrc": "https://www.figma.com/api/mcp/asset/6d3a9425-72c7-448c-8db7-84f01eecc65b", "label": "AI / ML Engineering" },
+        { "iconSrc": "https://www.figma.com/api/mcp/asset/f8e45921-ec2c-44a7-9974-5d0496c80dad", "label": "DevOps & SRE" },
+        { "iconSrc": "https://www.figma.com/api/mcp/asset/2fe981e7-61cc-461b-b99a-2ded348a7f30", "label": "QA & Testing" }
+      ]
+    },
+    "cta": {
+      "heading": "Ready to Build Your Dream Team?",
+      "subheading": "Let us connect you with the talent that will drive your business forward. Our recruitment experts are ready to start today.",
+      "button": { "label": "Schedule Consultation", "url": "/contact" },
+      "stats": [
+        { "value": "200+", "label": "Placements Made" },
+        { "value": "15+", "label": "Industry Sectors" },
+        { "value": "98%", "label": "Client Satisfaction" }
+      ]
+    },
+    "contact": {
+      "heading": "Get in Touch",
+      "subheading": "Ready to find exceptional talent? Our team is here to help you build the workforce you need.",
+      "form": {
+        "heading": "Send Us a Message",
+        "submitLabel": "Send Message"
+      },
+      "info": {
+        "heading": "Contact Information",
+        "email": "hr@atech.software",
+        "phone": "+1 (555) 000-0000",
+        "location": "123 Tech Street, San Francisco, CA 94102"
+      }
+    }
+  }
+}

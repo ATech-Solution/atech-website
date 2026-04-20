@@ -1,0 +1,35 @@
+// ── Advance (generic, page-agnostic sections) ────────────────────────────────
+export {
+  HeroSection,
+  FeaturesSection,
+  ServicesSection,
+  TestimonialsSection,
+  ContactSection,
+  CTABannerSection,
+  ProcessStepsSection,
+  ExpertiseTilesSection,
+  HeroSplitSection,
+  CardGridSection,
+  HeroCenteredSection,
+  CompanyStatsSection,
+  MissionVisionSection,
+  TeamSection,
+  FAQSection,
+  PageHeroSection,
+  ProjectGridSection,
+  ArticleGridSection,
+  ArticleFeaturedSection,
+  JobsListSection,
+  InvolvedHeroSection,
+  QuoteFormSection,
+  CultureValuesSection,
+  CommunityChannelsSection,
+  CommunityAmbassadorSection,
+  CommunityProgramsSection,
+  ContactHeroSection,
+  ContactStatsSection,
+  LocationsSection,
+} from './Advance'
+
+// ── Service Page Sections ────────────────────────────────────────────────────
+export { default as WebDevHeroSection } from './WebDevHeroSection'

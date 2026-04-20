@@ -1,0 +1,89 @@
+{
+  "insight": {
+    "hero": {
+      "badge": "Insights",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/7fece7af-efc7-4b94-9399-d2a416089e01",
+      "heading": "Tech Insights & Trends",
+      "subheading": "Stay ahead with our latest insights on technology trends, development best practices, and industry innovations.",
+      "cta": {
+        "primary":   { "label": "Read Articles", "url": "#articles" },
+        "secondary": { "label": "Subscribe Newsletter", "url": "#newsletter" }
+      }
+    },
+    "articles": {
+      "heading": "Latest Articles",
+      "subheading": "Expert insights on software development, emerging technologies, and digital transformation.",
+      "items": [
+        {
+          "category": "AI/ML",
+          "date": "Jan 15, 2025",
+          "title": "The Future of AI in Software Development",
+          "description": "Explore how artificial intelligence is revolutionizing the way we build software applications and automate development processes.",
+          "ctaLabel": "Read More",
+          "ctaUrl": "/article-detail"
+        },
+        {
+          "category": "Cloud",
+          "date": "Jan 12, 2025",
+          "title": "Building Scalable Cloud Architecture",
+          "description": "Learn best practices for designing cloud-native applications that can scale efficiently and handle millions of users.",
+          "ctaLabel": "Read More",
+          "ctaUrl": "/article-detail"
+        },
+        {
+          "category": "Security",
+          "date": "Jan 10, 2025",
+          "title": "Cybersecurity Trends to Watch in 2025",
+          "description": "Stay protected with an overview of the most critical cybersecurity challenges and solutions shaping the industry.",
+          "ctaLabel": "Read More",
+          "ctaUrl": "/article-detail"
+        },
+        {
+          "category": "Mobile",
+          "date": "Jan 8, 2025",
+          "title": "React Native vs Flutter: 2025 Comparison",
+          "description": "A comprehensive guide to choosing the right cross-platform framework for your next mobile application.",
+          "ctaLabel": "Read More",
+          "ctaUrl": "/article-detail"
+        },
+        {
+          "category": "DevOps",
+          "date": "Jan 5, 2025",
+          "title": "Implementing CI/CD for Faster Deployments",
+          "description": "How modern DevOps practices and automation tools can dramatically reduce your time-to-production.",
+          "ctaLabel": "Read More",
+          "ctaUrl": "/article-detail"
+        },
+        {
+          "category": "Web Dev",
+          "date": "Jan 3, 2025",
+          "title": "Next.js 15: What's New and Why It Matters",
+          "description": "A deep dive into the latest Next.js features and how they improve performance, DX, and SEO.",
+          "ctaLabel": "Read More",
+          "ctaUrl": "/article-detail"
+        }
+      ]
+    },
+    "cta": {
+      "heading": "Stay Ahead of the Curve",
+      "subheading": "Subscribe to our newsletter for weekly insights on technology, development trends, and industry news.",
+      "button": { "label": "Subscribe Now", "url": "#newsletter" },
+      "stats": [
+        { "value": "50+",  "label": "Articles Published" },
+        { "value": "10k+", "label": "Newsletter Subscribers" },
+        { "value": "25+",  "label": "Expert Contributors" }
+      ]
+    },
+    "contact": {
+      "heading": "Get in Touch",
+      "subheading": "Have a topic you'd like us to cover? We'd love to hear from you.",
+      "form": { "heading": "Send us a Message", "submitLabel": "Send Message" },
+      "info": {
+        "heading": "Contact Information",
+        "email": "hello@atech.software",
+        "phone": "+852 1234 5678",
+        "location": "Hong Kong"
+      }
+    }
+  }
+}

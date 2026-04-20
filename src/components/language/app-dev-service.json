@@ -1,0 +1,71 @@
+{
+  "app-dev-service": {
+    "hero": {
+      "badge": "APP DEVELOPMENT SERVICES",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/671083fb-4a20-4b4d-8f8d-f99d38e82739",
+      "breadcrumb": [
+        { "label": "Home",                        "href": "/"            },
+        { "label": "What We Do",                  "href": "/what-we-do"  },
+        { "label": "App Development Services",    "href": null           }
+      ],
+      "heading": "Custom Mobile \nApp Development\nSolutions",
+      "body": "Transform your ideas into powerful, scalable, and user-centric applications. We build high-performance native and cross-platform apps tailored to your business goals.",
+      "cta": {
+        "primary":   { "label": "Start Your Project",  "url": "/contact"   },
+        "secondary": { "label": "View Case Studies",    "url": "/portfolio" }
+      },
+      "image": {
+        "src": "https://www.figma.com/api/mcp/asset/57337a01-d858-4816-ba7f-97332e6d73c0",
+        "alt": "App development — laptop and mobile devices"
+      }
+    },
+    "services": {
+      "heading":    "Our App Development Services",
+      "subheading": "End-to-end development solutions to bring your digital product to life across all platforms and devices.",
+      "items": [
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/9ea1c835-c589-44e4-947b-012b602f3938",
+          "title":       "iOS Development",
+          "description": "Native iOS applications built with Swift and Objective-C for optimal performance on iPhone and iPad devices.",
+          "features":    ["Swift & SwiftUI", "Apple UI/UX Guidelines", "App Store Deployment"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/9640cba3-becc-4317-ade5-8723b75930e8",
+          "title":       "Android Development",
+          "description": "Robust native Android apps using Kotlin and Java, ensuring compatibility across the vast ecosystem of Android devices.",
+          "features":    ["Kotlin & Java", "Material Design", "Play Store Publishing"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/8fffe695-7391-4e62-8754-db91cb87031c",
+          "title":       "Cross-Platform Apps",
+          "description": "Cost-effective solutions using React Native and Flutter to deploy on multiple platforms with a single codebase.",
+          "features":    ["React Native & Flutter", "Shared Codebase", "Faster Time-to-Market"]
+        }
+      ]
+    },
+    "cta": {
+      "heading":    "Ready to Build Your Next Great App?",
+      "subheading": "Let our development experts help you create a powerful, scalable application tailored to your business needs.",
+      "button":     { "label": "Start Your App Project", "url": "/contact" },
+      "stats": [
+        { "value": "500+", "label": "Apps Delivered"  },
+        { "value": "50M+", "label": "Active Users"    },
+        { "value": "4.9/5", "label": "Client Rating"  }
+      ]
+    },
+    "contact": {
+      "heading":    "Get in Touch",
+      "subheading": "Ready to start your next project? Let's discuss how we can help.",
+      "form": {
+        "heading":     "Send us a Message",
+        "submitLabel": "Send Message"
+      },
+      "info": {
+        "heading":  "Contact Information",
+        "email":    "hello@atech.software",
+        "phone":    "+852 1234 5678",
+        "location": "Hong Kong"
+      }
+    }
+  }
+}

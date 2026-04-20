@@ -1,0 +1,46 @@
+Session: 2026-04-20
+Task: Build layout builder blocks for app-dev-service, web-dev-service, it-consulting, hr-recruitment pages
+
+Analysis — block reuse across pages:
+- service-hero (existing) → all 4 page heroes. Added heroImagePosition:'left'|'right' for IT/HR pages
+- service-cards (existing) → all 4 services grids (with or without features)
+- process-steps (existing) → web-dev, it-consulting, hr-recruitment process sections
+- cta-banner (existing) → app-dev, it-consulting, hr-recruitment CTA sections
+- home-contact (existing) → all 4 contact sections
+- expertise-tiles (NEW) → hr-recruitment expertise section only
+
+New block created:
+1. src/components/block/Advance/ExpertiseTilesSection.tsx
+   - Yellow (#ffd369) background, 2×4 grid of white icon+label tiles
+   - blockType: 'expertise-tiles'
+   - Data: heading, subheading, expertiseTiles[]{tileIconSrc, tileLabel}
+   - Defaults from hr-recruitment.json expertise section
+
+Updated:
+2. ServiceHeroSection.tsx — added heroImagePosition:'left'|'right' prop
+   - 'right' = content left, image right (default, QA/app-dev/web-dev)
+   - 'left' = image left, content right (IT consulting, HR recruitment)
+
+3. types.ts — added 'expertise-tiles' to ADVANCE_BLOCK_TYPES, heroImagePosition + expertiseTiles[] to BlockOverrides
+
+4. BlockPicker.tsx — added expertise-tiles (🏅 / 'Expertise Tiles')
+
+5. ContentFields.tsx — added ExpertiseTilesFields, added heroImagePosition select to ServiceHeroFields
+
+6. defaultOverrides.ts — imported hr-recruitment.json, added expertise-tiles defaults
+
+7. layout-renderer.tsx — added ExpertiseTilesSection import + case
+
+8. Page files — added layout builder support (getPage + layoutTree check) to:
+   - web-dev-service/page.tsx (was sync, now async)
+   - it-consulting/page.tsx (was sync, now async)
+   - hr-recruitment/page.tsx (was sync, now async)
+   - app-dev-service/page.tsx already had support
+
+Block mapping per page:
+app-dev-service: service-hero(right) + service-cards + cta-banner + home-contact
+web-dev-service: service-hero(right) + service-cards + process-steps + home-contact
+it-consulting:   service-hero(left) + service-cards + process-steps + cta-banner + home-contact
+hr-recruitment:  service-hero(left) + service-cards + cta-banner + expertise-tiles + home-contact
+
+TypeScript: 0 errors.

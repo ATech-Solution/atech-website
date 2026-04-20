@@ -1,0 +1,33 @@
+Session: 2026-04-20
+Task: Build layout builder blocks for about-us page
+
+Finding: ALL 6 block types were already registered (ABOUT_SECTION_TYPES, layout-renderer, BlockPicker, ContentFields).
+Only needed: default overrides + layout builder check in page file.
+
+Changes:
+
+1. src/components/LayoutBuilder/utils/defaultOverrides.ts
+   - Imported about-us.json
+   - Added defaults for: about-hero, about-company, about-mission-vision, about-leadership, about-faq
+   - about-contact already handled by home-contact defaults
+   - Key field mappings:
+     * badgeIconSrc → badgeIcon: { url } (MediaRef format)
+     * stats[]{value,label} → companyStats[]{statValue,statLabel}
+     * missionIconSrc/visionIconSrc → missionIcon/visionIcon: { url } (MediaRef)
+     * values[]{iconSrc,title,description} → values[]{valueIcon:{url},valueTitle,valueDesc}
+     * team[]{avatarSrc,name,role,bio} → teamMembers[]{memberAvatar:{url},memberName,memberRole,memberBio}
+     * faq.items[]{question,answer} → faqItems[]{faqQuestion,faqAnswer}
+
+2. src/app/(frontend)/about-us/page.tsx
+   - Added layout builder support (getPage + layoutTree check, same pattern as other pages)
+   - Changed to async function
+
+Block mapping:
+  about-hero          → AboutHeroSection
+  about-company       → AboutCompanySection
+  about-mission-vision → AboutMissionVisionSection
+  about-leadership    → AboutLeadershipSection
+  about-faq           → AboutFAQSection
+  about-contact       → ContactSection (reused)
+
+TypeScript: 0 errors.

@@ -1,0 +1,659 @@
+================================================================================
+HOW TO CREATE A PROPER NEXT.JS + PAYLOAD CMS WEBSITE
+Step-by-step documentation for backend + frontend integration
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+1.  What is Payload CMS and why use it with Next.js?
+2.  Project structure explained
+3.  Step 1 — Prerequisites
+4.  Step 2 — Create and install the project
+5.  Step 3 — Configure environment variables
+6.  Step 4 — Understand payload.config.ts (the backend)
+7.  Step 5 — Create Collections (data models)
+8.  Step 6 — Create Globals (single-instance data)
+9.  Step 7 — Wire up Payload routes inside Next.js
+10. Step 8 — Create the frontend (layouts, pages, components)
+11. Step 9 — Fetch Payload data on the server
+12. Step 10 — Seed initial content
+13. Step 11 — Run in development
+14. Step 12 — Build for production
+15. Key concepts summary
+16. Common mistakes and how to avoid them
+
+
+================================================================================
+1. WHAT IS PAYLOAD CMS AND WHY USE IT WITH NEXT.JS?
+================================================================================
+
+Payload CMS v3 is a headless CMS built with TypeScript.
+In version 3 it runs INSIDE your Next.js application — there is no separate
+server. The admin panel, REST API, and database all live in the same codebase.
+
+Benefits:
+  - Single repository and single deployment
+  - Type-safe data access (auto-generated TypeScript types)
+  - Full control over your data models (collections & globals)
+  - Flexible database support (SQLite, PostgreSQL, MongoDB)
+  - Built-in media uploads, rich text, access control, authentication
+
+
+================================================================================
+2. PROJECT STRUCTURE EXPLAINED
+================================================================================
+
+atech-website/
+├── src/
+│   ├── app/
+│   │   ├── (frontend)/            ← Your public website routes
+│   │   │   ├── layout.tsx         ← Root layout (Header + Footer)
+│   │   │   ├── page.tsx           ← Home page (/)
+│   │   │   ├── about/
+│   │   │   │   └── page.tsx       ← About page (/about)
+│   │   │   ├── loading.tsx        ← Loading UI for async pages
+│   │   │   └── error.tsx          ← Error boundary
+│   │   ├── (payload)/             ← Payload admin UI routes
+│   │   │   └── admin/
+│   │   │       └── [[...segments]]/
+│   │   │           └── page.tsx   ← Catch-all for /admin/*
+│   │   └── api/
+│   │       └── [...slug]/
+│   │           └── route.ts       ← REST API handler (/api/*)
+│   ├── collections/
+│   │   ├── Pages.ts               ← "pages" data model
+│   │   ├── Navigation.ts          ← "navigation" global
+│   │   └── Media.ts               ← File uploads
+│   ├── components/
+│   │   ├── Header.tsx             ← Server component, reads nav from CMS
+│   │   └── Footer.tsx             ← Server component, reads nav from CMS
+│   ├── lib/
+│   │   └── payload.ts             ← Reusable helper to query Payload
+│   ├── scripts/
+│   │   └── seed.ts                ← Populates DB with starter content
+│   └── payload.config.ts          ← Main Payload configuration
+├── next.config.ts                 ← Next.js config (wraps Payload plugin)
+├── tsconfig.json
+├── .env                           ← Secrets (never commit this)
+└── .env.example                   ← Template for required env vars
+
+
+================================================================================
+3. STEP 1 — PREREQUISITES
+================================================================================
+
+You need:
+  - Node.js 20.9 or newer   →  https://nodejs.org
+  - npm, pnpm, or yarn (this guide uses npm)
+  - A code editor (VS Code recommended)
+
+Check your Node version:
+  $ node --version
+  v20.x.x  ← should be 20.9+
+
+
+================================================================================
+4. STEP 2 — CREATE AND INSTALL THE PROJECT
+================================================================================
+
+Option A — Use the official Payload create script (easiest):
+
+  $ npx create-payload-app@latest my-website
+  # Choose: "blank" template, Next.js, SQLite
+
+Option B — Manual setup (what this project does):
+
+  2a. Create the Next.js app:
+      $ npx create-next-app@latest my-website --typescript --app --no-tailwind
+
+  2b. Add Payload and its adapters:
+      $ npm install payload @payloadcms/next @payloadcms/db-sqlite \
+                    @payloadcms/richtext-lexical @payloadcms/ui sharp
+
+  2c. Add dev dependencies:
+      $ npm install -D tsx
+
+  2d. Install all dependencies (if you cloned this repo):
+      $ npm install
+
+
+================================================================================
+5. STEP 3 — CONFIGURE ENVIRONMENT VARIABLES
+================================================================================
+
+Copy the example file:
+  $ cp .env.example .env
+
+Edit .env with real values:
+
+  PAYLOAD_SECRET=<random 32-char string>    ← Required. Protects admin login.
+  DATABASE_URI=file:./data/payload.db           ← SQLite path (change for Postgres)
+  NEXT_PUBLIC_SERVER_URL=http://localhost:3000
+
+Generate a secret:
+  $ openssl rand -hex 32
+
+IMPORTANT: Never commit .env to git. It is listed in .gitignore.
+
+
+================================================================================
+6. STEP 4 — UNDERSTAND payload.config.ts (THE BACKEND)
+================================================================================
+
+File: src/payload.config.ts
+
+This is the heart of your Payload backend. It defines:
+  - Which collections exist (database tables / document types)
+  - Which globals exist (single-instance settings like navigation)
+  - Which database adapter to use
+  - Which rich-text editor to use
+  - Where uploaded files are stored
+  - The admin panel configuration
+
+Minimal example:
+
+  import { buildConfig } from 'payload'
+  import { sqliteAdapter } from '@payloadcms/db-sqlite'
+  import { lexicalEditor } from '@payloadcms/richtext-lexical'
+  import { Pages } from './collections/Pages'
+  import { Navigation } from './collections/Navigation'
+  import { Media } from './collections/Media'
+
+  export default buildConfig({
+    collections: [Pages, Media],
+    globals:     [Navigation],
+    editor:      lexicalEditor({}),
+    db:          sqliteAdapter({ client: { url: process.env.DATABASE_URI } }),
+    secret:      process.env.PAYLOAD_SECRET,
+  })
+
+
+================================================================================
+7. STEP 5 — CREATE COLLECTIONS (DATA MODELS)
+================================================================================
+
+A Collection is like a database table. Each document is one row.
+Example: "pages" collection holds your website pages.
+
+File: src/collections/Pages.ts
+
+  import type { CollectionConfig } from 'payload'
+  import { lexicalEditor } from '@payloadcms/richtext-lexical'
+
+  export const Pages: CollectionConfig = {
+    slug: 'pages',                  ← URL key: /api/pages
+    admin: { useAsTitle: 'title' }, ← Which field shows in admin list
+    access: { read: () => true },   ← Public read access
+    fields: [
+      { name: 'title',   type: 'text',     required: true },
+      { name: 'slug',    type: 'text',     unique: true },
+      { name: 'content', type: 'richText', editor: lexicalEditor({}) },
+      {
+        name: 'hero',    ← Nested group of related fields
+        type: 'group',
+        fields: [
+          { name: 'heading',    type: 'text'     },
+          { name: 'subheading', type: 'textarea' },
+          { name: 'image',      type: 'upload', relationTo: 'media' },
+        ],
+      },
+    ],
+  }
+
+Field types you can use:
+  text        →  Single-line string
+  textarea    →  Multi-line string
+  richText    →  WYSIWYG editor (Lexical)
+  number      →  Numeric value
+  checkbox    →  Boolean true/false
+  select      →  Dropdown with predefined options
+  date        →  Date/time picker
+  upload      →  File/image upload (relates to Media collection)
+  relationship →  Reference to another collection document
+  array       →  Repeatable group of sub-fields
+  group       →  Non-repeatable group of sub-fields
+  blocks      →  Flexible content builder (like page builder)
+
+
+================================================================================
+8. STEP 6 — CREATE GLOBALS (SINGLE-INSTANCE DATA)
+================================================================================
+
+A Global is for data that exists once — like site settings or navigation.
+You cannot create multiple navigation documents; there is only one.
+
+File: src/collections/Navigation.ts
+
+  import type { GlobalConfig } from 'payload'
+
+  export const Navigation: GlobalConfig = {
+    slug: 'navigation',
+    access: { read: () => true },
+    fields: [
+      { name: 'siteTitle',  type: 'text'  },
+      { name: 'footerText', type: 'text'  },
+      {
+        name: 'menuItems',
+        type: 'array',
+        fields: [
+          { name: 'label', type: 'text' },
+          { name: 'url',   type: 'text' },
+        ],
+      },
+    ],
+  }
+
+Register it in payload.config.ts:
+  globals: [Navigation]
+
+Access it via the REST API:
+  GET /api/globals/navigation
+
+Access it via the local API (server-only):
+  const nav = await payload.findGlobal({ slug: 'navigation' })
+
+
+================================================================================
+9. STEP 7 — WIRE UP PAYLOAD ROUTES INSIDE NEXT.JS
+================================================================================
+
+Three files connect Payload to Next.js App Router:
+
+── A. next.config.ts ──────────────────────────────────────────────────────────
+  Payload needs to wrap the Next.js config:
+
+  import { withPayload } from '@payloadcms/next/withPayload'
+  import type { NextConfig } from 'next'
+
+  const nextConfig: NextConfig = {}   ← your normal Next.js options
+
+  export default withPayload(nextConfig)
+
+── B. src/app/(payload)/admin/[[...segments]]/page.tsx ────────────────────────
+  This catch-all route renders the Payload admin panel at /admin.
+
+  import { RootPage, generatePageMetadata } from '@payloadcms/next/views'
+  import { importMap } from '../importMap'
+
+  export async function generateMetadata({ params, searchParams }) {
+    return generatePageMetadata({ config, params, searchParams })
+  }
+
+  export default async function Page({ params, searchParams }) {
+    return RootPage({ config, importMap, params, searchParams })
+  }
+
+── C. src/app/api/[...slug]/route.ts ──────────────────────────────────────────
+  This exposes the Payload REST API at /api/*.
+
+  import { REST_GET, REST_POST, REST_DELETE, REST_PATCH, REST_PUT, REST_OPTIONS }
+    from '@payloadcms/next/routes'
+  import config from '@payload-config'
+
+  export const GET     = REST_GET(config)
+  export const POST    = REST_POST(config)
+  export const DELETE  = REST_DELETE(config)
+  export const PATCH   = REST_PATCH(config)
+  export const PUT     = REST_PUT(config)
+  export const OPTIONS = REST_OPTIONS(config)
+
+After this, your REST API is available at:
+  GET  /api/pages            ← list all pages
+  GET  /api/pages/:id        ← get one page
+  POST /api/pages            ← create a page (requires auth)
+  GET  /api/globals/navigation
+
+
+================================================================================
+10. STEP 8 — CREATE THE FRONTEND (LAYOUTS, PAGES, COMPONENTS)
+================================================================================
+
+Use Next.js route groups to separate the public site from the admin panel:
+  (frontend)/   ← public routes — has your layout with Header/Footer
+  (payload)/    ← admin routes — Payload's own layout
+
+── Root layout ─────────────────────────────────────────────────────────────────
+File: src/app/(frontend)/layout.tsx
+
+  import Header from '@/components/Header'
+  import Footer from '@/components/Footer'
+
+  export default function RootLayout({ children }) {
+    return (
+      <html lang="en">
+        <body>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+        </body>
+      </html>
+    )
+  }
+
+── Header component ─────────────────────────────────────────────────────────────
+Header is a Server Component — it fetches navigation data from Payload directly:
+
+  import { getNavigation } from '@/lib/payload'
+  import Link from 'next/link'
+
+  export default async function Header() {
+    const nav = await getNavigation()   ← runs on server, no API call overhead
+
+    return (
+      <header>
+        <Link href="/">{nav.siteTitle}</Link>
+        <nav>
+          <ul>
+            {nav.menuItems.map(item => (
+              <li key={item.url}>
+                <Link href={item.url}>{item.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </header>
+    )
+  }
+
+── Page ─────────────────────────────────────────────────────────────────────────
+File: src/app/(frontend)/page.tsx
+
+  import { getPage } from '@/lib/payload'
+
+  export default async function HomePage() {
+    const page = await getPage('home')
+
+    return (
+      <section>
+        <h1>{page?.hero?.heading ?? 'Default Heading'}</h1>
+        <p>{page?.hero?.subheading}</p>
+      </section>
+    )
+  }
+
+
+================================================================================
+11. STEP 9 — FETCH PAYLOAD DATA ON THE SERVER
+================================================================================
+
+There are two ways to fetch data:
+
+── Method 1: Local API (recommended for same-process access) ────────────────────
+No HTTP overhead — Payload's JavaScript functions are called directly.
+
+  // src/lib/payload.ts
+  import { getPayload } from 'payload'
+  import config from '@payload-config'
+
+  export async function getPayloadClient() {
+    return getPayload({ config })
+  }
+
+  export async function getPage(slug: string) {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'pages',
+      where: { slug: { equals: slug } },
+      limit: 1,
+    })
+    return result.docs[0] ?? null
+  }
+
+  export async function getNavigation() {
+    const payload = await getPayloadClient()
+    return payload.findGlobal({ slug: 'navigation' })
+  }
+
+Use in a Server Component:
+  const page = await getPage('home')
+  const nav  = await getNavigation()
+
+── Method 2: REST API (works from anywhere — browser, external services) ────────
+  const res = await fetch('http://localhost:3000/api/pages?where[slug][equals]=home', {
+    next: { revalidate: 60 },   ← ISR: revalidate every 60 seconds
+  })
+  const data = await res.json()
+  const page = data.docs[0]
+
+When to use which:
+  Local API  →  Server Components in the same app (faster, type-safe)
+  REST API   →  Client Components, external services, mobile apps, other servers
+
+IMPORTANT: Never call the local API from Client Components ('use client').
+           Use Server Components for data fetching. Pass data as props if needed.
+
+
+================================================================================
+12. STEP 10 — SEED INITIAL CONTENT
+================================================================================
+
+The seed script creates default pages and navigation in the database.
+
+  $ npm run seed
+
+This runs src/scripts/seed.ts which uses the local Payload API to create:
+  - Navigation global  (menu items: Home, About)
+  - Home page          (slug: "home", hero heading + subheading)
+  - About page         (slug: "about", hero heading + subheading)
+
+You can also create content manually via the admin panel at:
+  http://localhost:3000/admin
+
+
+================================================================================
+13. STEP 11 — RUN IN DEVELOPMENT
+================================================================================
+
+  2a. Install dependencies (first time):
+      $ npm install
+
+  2b. Set up environment:
+      $ cp .env.example .env
+      # Edit .env and set PAYLOAD_SECRET
+
+  2c. Start the dev server:
+      $ npm run dev
+
+  2d. Open in browser:
+      - Website:     http://localhost:3000
+      - Admin panel: http://localhost:3000/admin
+
+  2e. Create your first admin user:
+      On first visit to /admin, Payload will prompt you to create an admin account.
+
+  2f. Seed content (optional):
+      $ npm run seed
+      # Then refresh the website — content from CMS appears
+
+  2g. Edit content in admin:
+      - Go to http://localhost:3000/admin
+      - Click "Pages" → select "Home" → edit the hero heading
+      - Save → refresh the website homepage to see the change
+
+
+================================================================================
+14. STEP 12 — BUILD FOR PRODUCTION
+================================================================================
+
+  $ npm run build   ← compiles Next.js + generates Payload types
+  $ npm start       ← starts production server
+
+For Vercel deployment:
+  - Push to GitHub
+  - Connect repo to Vercel
+  - Add env vars in Vercel dashboard (PAYLOAD_SECRET, DATABASE_URI, etc.)
+  - Deploy
+
+For self-hosted (e.g. a Linux VPS):
+  - Use PostgreSQL instead of SQLite for persistent storage
+  - Install: npm install @payloadcms/db-postgres pg
+  - In payload.config.ts, replace sqliteAdapter with postgresAdapter
+  - Set DATABASE_URI=postgresql://user:password@host:5432/dbname
+
+Switching database adapter (SQLite → PostgreSQL):
+  In payload.config.ts:
+
+  // BEFORE (SQLite):
+  import { sqliteAdapter } from '@payloadcms/db-sqlite'
+  db: sqliteAdapter({ client: { url: process.env.DATABASE_URI } })
+
+  // AFTER (PostgreSQL):
+  import { postgresAdapter } from '@payloadcms/db-postgres'
+  db: postgresAdapter({ pool: { connectionString: process.env.DATABASE_URI } })
+
+
+================================================================================
+15. KEY CONCEPTS SUMMARY
+================================================================================
+
+CONCEPT          WHAT IT IS                         WHERE IT LIVES
+─────────────────────────────────────────────────────────────────────────────
+Collection       Repeatable data model (like a DB   src/collections/*.ts
+                 table). Multiple documents.
+
+Global           Single-instance data (settings,    src/collections/*.ts
+                 nav). Only one document exists.      (exported as GlobalConfig)
+
+Local API        Query Payload from server-side      src/lib/payload.ts
+                 code without HTTP. Fast & typed.
+
+REST API         HTTP endpoint exposed by Payload.   /api/[collection]
+                 Works from anywhere.                /api/globals/[global]
+
+Admin panel      Auto-generated CMS UI.              /admin
+                 Created from your collections.
+
+Route group      Next.js folder trick: wraps routes  (frontend)/, (payload)/
+                 in a shared layout without adding
+                 a URL segment.
+
+Server Component React component that runs on        Any component without
+                 the server. Can fetch data          'use client' directive.
+                 directly from Payload.
+
+withPayload()    Next.js config wrapper that         next.config.ts
+                 adds Payload's webpack rules.
+
+
+================================================================================
+16. COMMON MISTAKES AND HOW TO AVOID THEM
+================================================================================
+
+MISTAKE 1: Using 'use client' on data-fetching components
+  Problem:  Client components cannot use the local Payload API.
+  Fix:      Keep data fetching in Server Components. Pass data as props.
+
+MISTAKE 2: Forgetting withPayload() in next.config.ts
+  Problem:  Build fails with cryptic module errors.
+  Fix:      Always wrap your config: export default withPayload(nextConfig)
+
+MISTAKE 3: Not setting PAYLOAD_SECRET
+  Problem:  Admin login fails or JWT verification errors appear.
+  Fix:      Generate a strong secret and add it to .env.
+
+MISTAKE 4: Hardcoding data instead of fetching from CMS
+  Problem:  Content editors cannot change text without a developer.
+  Fix:      Always fetch from Payload. Use hardcoded defaults as fallback only.
+
+MISTAKE 5: Adding 'use client' just to access window or localStorage
+  Problem:  Entire component tree loses server-side data fetching.
+  Fix:      Extract only the interactive part into a small Client Component leaf.
+
+MISTAKE 6: Using SQLite in production on a serverless host
+  Problem:  Serverless functions don't persist the filesystem between requests.
+  Fix:      Use PostgreSQL or MongoDB for production. SQLite is fine for local dev.
+
+MISTAKE 7: Forgetting to run npm run seed
+  Problem:  Pages load but show fallback text instead of CMS content.
+  Fix:      Run seed once after the first install, or create content via /admin.
+
+MISTAKE 8: Not regenerating types after schema changes
+  Problem:  TypeScript errors after adding/removing collection fields.
+  Fix:      Run: npx payload generate:types
+
+================================================================================
+17. MAINTENANCE / UNDER-CONSTRUCTION MODE
+================================================================================
+
+There are TWO layers of protection. Layer 1 handles when the app is running;
+Layer 2 handles when the app/server is completely down.
+
+── LAYER 1: App-level (Next.js middleware) ─────────────────────────────────────
+
+Toggle in .env:
+  UNDER_CONSTRUCTION=true     ← shows maintenance page for all visitors
+  UNDER_CONSTRUCTION=false    ← site runs normally
+
+After editing .env, restart the app:
+  $ pm2 restart company-profile
+
+What it does:
+  - All frontend routes (/, /about, /[slug], etc.) → rewritten to /maintenance
+  - Admin panel (/admin) and API (/api) remain fully accessible
+  - Implemented in src/middleware.ts
+
+
+── LAYER 2: Nginx-level (when server is completely DOWN) ───────────────────────
+
+When PM2/Next.js is down, nginx returns 502/503. Configure nginx to serve the
+static fallback page (public/maintenance.html) instead of showing a blank error.
+
+In your nginx site config (e.g. /etc/nginx/sites-available/atech-website):
+
+    server {
+        listen 80;
+        server_name yourdomain.com;
+
+        # Path to your built static files (public/ maps to the Next.js output)
+        root /home/deploy/atombondway/.next/standalone/public;
+
+        # Fallback page location — copy maintenance.html to a safe static path
+        error_page 502 503 504 /maintenance.html;
+        location = /maintenance.html {
+            root /home/deploy/atombondway/public;
+            internal;
+        }
+
+        location / {
+            proxy_pass         http://127.0.0.1:3000;
+            proxy_http_version 1.1;
+            proxy_set_header   Upgrade $http_upgrade;
+            proxy_set_header   Connection 'upgrade';
+            proxy_set_header   Host $host;
+            proxy_cache_bypass $http_upgrade;
+            proxy_read_timeout 60s;
+        }
+    }
+
+Key lines:
+  error_page 502 503 504 /maintenance.html;
+    → When Next.js is unreachable, nginx serves this page instead
+  location = /maintenance.html { root ...; internal; }
+    → Serves public/maintenance.html as a static file directly from disk
+    → "internal" prevents direct browser access to /maintenance.html
+
+After editing nginx config:
+  $ sudo nginx -t             ← test config for syntax errors
+  $ sudo systemctl reload nginx
+
+
+── QUICK REFERENCE ─────────────────────────────────────────────────────────────
+
+To turn maintenance mode ON:
+  1. Edit .env → set UNDER_CONSTRUCTION=true
+  2. pm2 restart company-profile
+
+To turn maintenance mode OFF:
+  1. Edit .env → set UNDER_CONSTRUCTION=false
+  2. pm2 restart company-profile
+
+Files involved:
+  src/middleware.ts                    ← Next.js middleware (Layer 1)
+  src/app/maintenance/page.tsx         ← Next.js maintenance page
+  src/app/maintenance/layout.tsx       ← Standalone layout (no Header/Footer)
+  public/maintenance.html              ← Static fallback (Layer 2, nginx)
+  .env                                 ← UNDER_CONSTRUCTION flag lives here
+
+================================================================================
+END OF DOCUMENTATION
+================================================================================

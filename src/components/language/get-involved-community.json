@@ -1,0 +1,82 @@
+{
+  "getInvolvedCommunity": {
+    "hero": {
+      "heading":    "Get Involved in Our Community",
+      "subheading": "Join thousands of developers, designers, and tech enthusiasts who are part of the ATech Solution community. Share knowledge, collaborate on projects, and grow together."
+    },
+    "channels": [
+      {
+        "iconSrc":     "https://www.figma.com/api/mcp/asset/b97b032a-39aa-46a0-8c3e-09a4cf149cec",
+        "title":       "Open Source",
+        "description": "Contribute to our open-source projects on GitHub. Help build tools and libraries that benefit the entire developer community.",
+        "stats": [
+          { "iconSrc": "https://www.figma.com/api/mcp/asset/2f3db455-a9df-498c-9354-59a6894a3dbb", "label": "150+ repositories" },
+          { "iconSrc": "https://www.figma.com/api/mcp/asset/81b8a0de-50c9-4181-9ecd-ea2937e51486", "label": "5,000+ contributors" }
+        ],
+        "ctaLabel": "View on GitHub",
+        "ctaUrl":   "#"
+      },
+      {
+        "iconSrc":     "https://www.figma.com/api/mcp/asset/a54f974d-a5a2-4bd6-85c6-64c7b371973d",
+        "title":       "Discord Community",
+        "description": "Join our active Discord server to connect with fellow developers, get help with technical challenges, and stay updated on the latest news.",
+        "stats": [
+          { "iconSrc": "https://www.figma.com/api/mcp/asset/6214dc27-512b-4e9a-aa2e-6aeae48edef9", "label": "10,000+ members" },
+          { "iconSrc": "https://www.figma.com/api/mcp/asset/ffa196de-2018-4e9e-b4fb-d83913d8f913", "label": "24/7 active discussions" }
+        ],
+        "ctaLabel": "Join Discord",
+        "ctaUrl":   "#"
+      },
+      {
+        "iconSrc":     "https://www.figma.com/api/mcp/asset/6f3e640f-dd34-4163-a912-4cf7a475ca57",
+        "title":       "Events & Meetups",
+        "description": "Attend workshops, webinars, and local meetups. Learn from industry experts and network with professionals in your area.",
+        "stats": [
+          { "iconSrc": "https://www.figma.com/api/mcp/asset/2f3db455-a9df-498c-9354-59a6894a3dbb", "label": "50+ cities worldwide" },
+          { "iconSrc": "https://www.figma.com/api/mcp/asset/81b8a0de-50c9-4181-9ecd-ea2937e51486", "label": "Monthly events" }
+        ],
+        "ctaLabel": "Find Events",
+        "ctaUrl":   "#"
+      }
+    ],
+    "ambassador": {
+      "heading":     "Developer Ambassador Program",
+      "description": "Become an official ATech Solution Ambassador and help grow our community. Share your expertise, create content, and represent our brand at events.",
+      "benefits": [
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/14d2dabd-7a81-4286-bfd0-3f8596e0d62c",
+          "title":       "Recognition & Rewards",
+          "description": "Exclusive swag, early access to features, and public recognition"
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/2f3db455-a9df-498c-9354-59a6894a3dbb",
+          "title":       "Speaking Opportunities",
+          "description": "Present at conferences and company events"
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/81b8a0de-50c9-4181-9ecd-ea2937e51486",
+          "title":       "Networking",
+          "description": "Connect with ambassadors and team members worldwide"
+        }
+      ],
+      "ctaLabel": "Apply to Become an Ambassador",
+      "ctaUrl":   "#"
+    },
+    "programs": [
+      {
+        "iconSrc":     "https://www.figma.com/api/mcp/asset/d2aa3f2a-705d-4c23-8924-1bc1bce1a460",
+        "title":       "Community Blog",
+        "description": "Share your knowledge and experiences with the community. Write tutorials, case studies, and thought leadership articles.",
+        "ctaLabel":    "Submit an Article",
+        "ctaUrl":      "#"
+      },
+      {
+        "iconSrc":     "https://www.figma.com/api/mcp/asset/d2aa3f2a-705d-4c23-8924-1bc1bce1a460",
+        "title":       "Mentorship Program",
+        "description": "Guide aspiring developers or get mentored by experienced professionals. Build meaningful connections that accelerate growth.",
+        "ctaLabel":    "Join as Mentor",
+        "ctaUrl":      "#"
+      }
+    ]
+  }
+}

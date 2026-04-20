@@ -1,0 +1,73 @@
+{
+  "contact": {
+    "hero": {
+      "badge":      "GET IN TOUCH",
+      "heading":    "Let's Build Something Great Together",
+      "subheading": "Have a project in mind? Our team of experts is ready to help you transform your ideas into powerful digital solutions.",
+      "cards": [
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/650d07e2-0c8b-4dc5-98a4-9a64c07afcd2",
+          "title":       "Email Us",
+          "description": "Send us an email and we'll get back to you within 24 hours.",
+          "value":       "info@atechsolution.com"
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/5fcd84c1-5b8d-42d8-b845-18d1b7b7926f",
+          "title":       "Call Us",
+          "description": "Available Monday to Friday, 9AM - 6PM EST.",
+          "value":       "+1 (234) 567-890"
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/c8d24172-9858-4582-8cbc-ef66ab565499",
+          "title":       "Find Us",
+          "description": "Follow our social media to keep in touch with our latest update",
+          "value":       ""
+        }
+      ]
+    },
+    "stats": {
+      "heading":    "Ready to Start Your Project?",
+      "subheading": "Let's discuss how we can help transform your business with innovative technology solutions. Our team is ready to bring your vision to life.",
+      "cta": [
+        { "label": "Message us on WhatsApp", "url": "#", "primary": true },
+        { "label": "View Portfolio",         "url": "/portfolio",  "primary": false }
+      ],
+      "items": [
+        { "value": "500+", "label": "Projects Completed" },
+        { "value": "200+", "label": "Happy Clients" },
+        { "value": "15+",  "label": "Years Experience" },
+        { "value": "98%",  "label": "Client Satisfaction" }
+      ]
+    },
+    "locations": {
+      "heading": "Our Locations",
+      "offices": [
+        {
+          "name":    "Hong Kong Head Office",
+          "address": "Room C, 22/F, King Palace Plaza, No.55 King Yip Street, Kwun Tong, KLN"
+        },
+        {
+          "name":    "Hong Kong Science Park (HKSTP)",
+          "address": "Unit 962, 9/F, Building 19W, No. 19 Science Park West Avenue, Hong Kong Science Park, Pak Shek Kok, N.T."
+        },
+        {
+          "name":    "China Branch Office",
+          "address": "广州市南沙区黄阁镇市南公路黄阁段230号 (自编三栋)105-13"
+        },
+        {
+          "name":    "Indonesia Branch Office",
+          "address": "Jl. Pluit Timur Raya No.17, RT.5/RW.6, Pluit, Kec. Penjaringan, Jkt Utara, Daerah Khusus Ibukota Jakarta 14450"
+        },
+        {
+          "name":    "Malaysia Branch Office",
+          "address": "A-1-12 Vertical Business Suite No. 8, Jalan Kerinchi, Bangsar South, 59200, Kuala Lumpur"
+        }
+      ]
+    },
+    "form": {
+      "heading":     "Send us a Message",
+      "subheading":  "Fill out the form below and we'll get back to you as soon as possible.",
+      "submitLabel": "Send Message"
+    }
+  }
+}

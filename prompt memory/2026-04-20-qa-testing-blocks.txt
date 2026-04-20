@@ -1,0 +1,49 @@
+Session: 2026-04-20
+Task: Build layout builder blocks for the QA Testing page (src/app/(frontend)/qa-testing/page.tsx)
+
+Changes made:
+
+1. src/components/block/Advance/ServiceHeroSection.tsx (CREATED)
+   - Generic service-page hero: breadcrumb bar, white bg, badge+icon, 2-col, bordered image
+   - Uses: badge, badgeIconSrc, breadcrumbs[], heading, body, ctaPrimary*, ctaSecondary*, heroImage
+   - blockType: 'service-hero'
+
+2. src/components/block/Advance/ProcessStepsSection.tsx (CREATED)
+   - Numbered yellow circle steps, 4-column grid, white bg
+   - Uses: heading, subheading, processSteps[]{stepNumber, stepTitle, stepDesc}
+   - blockType: 'process-steps'
+
+3. src/components/block/Advance/index.ts (UPDATED)
+   - Added exports for ServiceHeroSection and ProcessStepsSection
+
+4. src/components/block/index.ts (UPDATED)
+   - Added ServiceHeroSection and ProcessStepsSection to Advance re-exports
+
+5. src/components/LayoutBuilder/types.ts (UPDATED)
+   - Added 'service-hero' and 'process-steps' to ADVANCE_BLOCK_TYPES
+   - Added to BlockOverrides['content']: badgeIconSrc, breadcrumbs[], processSteps[]
+
+6. src/components/LayoutBuilder/BlockPicker.tsx (UPDATED)
+   - Added icons (🚀 / 🔢) and labels for service-hero and process-steps
+
+7. src/components/LayoutBuilder/fields/ContentFields.tsx (UPDATED)
+   - Added ServiceHeroFields component (badge, badgeIconSrc, breadcrumbs, heading, body, CTAs, heroImage)
+   - Added ProcessStepsFields component (heading, subheading, steps array)
+   - Wired both into the Advance dispatch block
+
+8. src/components/LayoutBuilder/utils/defaultOverrides.ts (UPDATED)
+   - Imported qa-testing.json
+   - Added defaults for: service-hero, service-cards, process-steps, cta-banner (all from qa-testing.json)
+
+9. src/lib/layout-renderer.tsx (UPDATED)
+   - Imported ServiceHeroSection and ProcessStepsSection
+   - Added cases for 'service-hero' and 'process-steps'
+
+QA page block mapping:
+- qa-hero    → 'service-hero' (new) + ServiceHeroSection
+- qa-services → 'service-cards' (existing) + ServiceCardsSection, defaults from qa-testing.json
+- qa-process  → 'process-steps' (new) + ProcessStepsSection
+- qa-cta      → 'cta-banner' (existing) + CTABannerSection, defaults from qa-testing.json
+- contact     → 'home-contact' (existing) + ContactSection
+
+All blocks pass 'npx tsc --noEmit' with zero errors.

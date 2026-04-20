@@ -1,0 +1,120 @@
+{
+  "about-us": {
+    "hero": {
+      "badge": "About Us",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/349bf8fc-1939-431d-a45b-fe5036591656",
+      "heading": "About ATech Solutions",
+      "subheading": "We are a global software development company dedicated to transforming innovative ideas into market-leading digital solutions that drive business growth and success."
+    },
+    "company": {
+      "heading": "Our Company",
+      "body1": "Founded in 2015, ATech Solutions has grown from a small startup to a globally recognized software development partner. We specialize in building scalable, innovative solutions for businesses of all sizes.",
+      "body2": "With over 500 successful projects delivered and a team of 200+ expert developers, we've established ourselves as a trusted technology partner across multiple industries and continents.",
+      "stats": [
+        { "value": "500+", "label": "Projects Delivered" },
+        { "value": "200+", "label": "Expert Developers" },
+        { "value": "50+",  "label": "Countries Served" },
+        { "value": "98%",  "label": "Client Satisfaction" }
+      ]
+    },
+    "mission": {
+      "missionIconSrc": "https://www.figma.com/api/mcp/asset/c24a87bd-55f7-4e7c-8072-d5143bc0473d",
+      "missionHeading": "Our Mission",
+      "missionBody": "To empower businesses worldwide by delivering cutting-edge software solutions that drive innovation, efficiency, and growth. We are committed to transforming complex challenges into simple, elegant solutions.",
+      "visionIconSrc": "https://www.figma.com/api/mcp/asset/5d73393a-031f-4004-a59a-adb45b3983ee",
+      "visionHeading": "Our Vision",
+      "visionBody": "To be the world's most trusted technology partner, leading the digital transformation revolution and creating a future where technology seamlessly enhances human potential and business success.",
+      "valuesHeading": "Our Values",
+      "values": [
+        {
+          "iconSrc": "https://www.figma.com/api/mcp/asset/e7aaeb00-da99-4859-ac31-f021aad65189",
+          "title": "Innovation",
+          "description": "Constantly pushing boundaries"
+        },
+        {
+          "iconSrc": "https://www.figma.com/api/mcp/asset/7d8f58bd-4ef3-47f1-be24-44703807a860",
+          "title": "Integrity",
+          "description": "Honest and transparent partnerships"
+        },
+        {
+          "iconSrc": "https://www.figma.com/api/mcp/asset/72c84ea5-e045-4ccc-be27-4bca4ae7a2d6",
+          "title": "Excellence",
+          "description": "Delivering quality in everything"
+        },
+        {
+          "iconSrc": "https://www.figma.com/api/mcp/asset/c9431ec1-a058-41bb-9b64-abcc759a1315",
+          "title": "Collaboration",
+          "description": "Working together for success"
+        }
+      ]
+    },
+    "leadership": {
+      "heading": "Our Core Leadership Team",
+      "subheading": "Meet the visionaries and experts who guide ATech Solutions towards innovation and excellence.",
+      "team": [
+        {
+          "avatarSrc": "https://www.figma.com/api/mcp/asset/9ea6ebe4-470d-4ec6-892c-83a3f5f67c03",
+          "name": "Michael Rodriguez",
+          "role": "Chief Technology Officer",
+          "bio": "Expert in scalable architectures"
+        },
+        {
+          "avatarSrc": "https://www.figma.com/api/mcp/asset/813f4324-c56d-4e5f-8e33-8469409a87be",
+          "name": "Emily Thompson",
+          "role": "Chief Operating Officer",
+          "bio": "Operations & strategy expert"
+        },
+        {
+          "avatarSrc": "https://www.figma.com/api/mcp/asset/d2ac473a-5aa1-43b2-8da6-9b64dc55cbe1",
+          "name": "David Kim",
+          "role": "Head of Design",
+          "bio": "UX/UI design specialist"
+        }
+      ]
+    },
+    "faq": {
+      "heading": "Frequently Asked Questions",
+      "subheading": "Find answers to common questions about working with ATech Solutions.",
+      "items": [
+        {
+          "question": "What is your typical project timeline?",
+          "answer": "Project timelines vary based on scope and complexity. A typical MVP takes 8–12 weeks, while larger enterprise projects may take 6–12 months. We always provide a detailed timeline during our initial proposal."
+        },
+        {
+          "question": "How do you handle project pricing?",
+          "answer": "We provide transparent, customized pricing based on your specific project requirements. After our initial consultation, we'll deliver a detailed proposal outlining the scope, timeline, and cost breakdown. We offer flexible engagement models including fixed-price projects, time and materials, and dedicated team arrangements."
+        },
+        {
+          "question": "What technologies do you work with?",
+          "answer": "We work with a wide range of technologies including React, Next.js, Node.js, Python, Go, AWS, GCP, Azure, PostgreSQL, MongoDB, and many more. Our team stays current with the latest tools and frameworks."
+        },
+        {
+          "question": "Do you provide ongoing support after project completion?",
+          "answer": "Yes, we offer comprehensive post-launch support and maintenance packages. Our team ensures your product stays up-to-date, secure, and performing optimally after delivery."
+        },
+        {
+          "question": "Can you work with our existing development team?",
+          "answer": "Absolutely. We regularly augment in-house teams, providing specialist skills and additional capacity while integrating seamlessly with your existing workflows and tools."
+        },
+        {
+          "question": "How do you ensure project security and confidentiality?",
+          "answer": "All team members sign NDAs, we follow industry security best practices, and we can adhere to specific compliance requirements (HIPAA, SOC 2, GDPR, etc.) relevant to your project."
+        }
+      ]
+    },
+    "contact": {
+      "heading": "Get in Touch",
+      "subheading": "Ready to start your next project? Let's discuss how we can help.",
+      "form": {
+        "heading": "Send us a Message",
+        "submitLabel": "Send Message"
+      },
+      "info": {
+        "heading": "Contact Information",
+        "email": "hello@atech.software",
+        "phone": "+852 1234 5678",
+        "location": "Hong Kong"
+      }
+    }
+  }
+}

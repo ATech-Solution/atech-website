@@ -1,0 +1,114 @@
+{
+  "who-we-serve": {
+    "hero": {
+      "badge": "WHO WE SERVE",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/bf0fee1f-213f-4e14-b177-5c25b9383dd0",
+      "breadcrumb": [
+        { "label": "Home",          "href": "/"               },
+        { "label": "Who We Serve",  "href": null              }
+      ],
+      "heading": "Technology Solutions\nTailored to Every\nIndustry",
+      "body": "We partner with organisations across diverse sectors — from fast-growing startups to established enterprises — delivering bespoke software, IT consulting, and quality engineering that fits your world.",
+      "cta": {
+        "primary":   { "label": "Talk to Us",         "url": "/contact"   },
+        "secondary": { "label": "Explore Our Work",   "url": "/portfolio" }
+      },
+      "image": {
+        "src": "https://www.figma.com/api/mcp/asset/41747a28-5202-4d51-a1f4-98501dfd6c9f",
+        "alt": "Diverse team collaborating on technology solutions"
+      }
+    },
+    "industries": {
+      "heading":    "Industries We Serve",
+      "subheading": "Deep domain knowledge combined with cutting-edge technology expertise to solve your sector's most pressing challenges.",
+      "items": [
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/7c8c33b1-6a4b-469c-849e-527346e8a3ad",
+          "title":       "Financial Services",
+          "description": "Secure, compliant solutions for banks, fintech companies, and investment firms — from trading platforms to regulatory reporting.",
+          "features":    ["Regulatory Compliance", "Fraud Detection", "Trading Systems"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/f861d311-533f-4106-afd7-8e6361daf152",
+          "title":       "Healthcare & Life Sciences",
+          "description": "HIPAA-ready platforms and clinical tools that improve patient outcomes while keeping data private and processes efficient.",
+          "features":    ["HIPAA Compliance", "Clinical Workflows", "Patient Portals"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/15c4536c-8f58-4cdd-b1d8-fa64a7d692a4",
+          "title":       "Retail & E-Commerce",
+          "description": "Seamless omnichannel experiences, inventory intelligence, and conversion-optimised storefronts that scale with demand.",
+          "features":    ["Omnichannel Commerce", "Inventory Management", "Personalisation"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/4ed8ca97-8953-4381-adc8-2a4e35f3e5bc",
+          "title":       "Manufacturing & Logistics",
+          "description": "Smart factory integrations, supply chain visibility, and IoT-driven automation that reduce downtime and cut costs.",
+          "features":    ["IoT Integration", "Supply Chain Visibility", "Process Automation"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/88b54cc4-427f-40a3-8340-52e6268beaeb",
+          "title":       "Startups & Scale-ups",
+          "description": "From MVP to market leader — rapid prototyping, technical co-founding support, and scalable architecture for high-growth teams.",
+          "features":    ["MVP Development", "Technical Advisory", "Scalable Architecture"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/9784c947-9662-40a2-ad13-0e26a2eb7487",
+          "title":       "Enterprise & Corporate",
+          "description": "Large-scale digital transformation, legacy modernisation, and enterprise integrations that keep complex organisations agile.",
+          "features":    ["Legacy Modernisation", "System Integration", "Change Management"]
+        }
+      ]
+    },
+    "whyUs": {
+      "heading":    "Why Clients Choose Us",
+      "subheading": "Whether you're a two-person startup or a global enterprise, we bring the same rigour, transparency, and ownership to every engagement.",
+      "pillars": [
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/48f709df-86b7-405b-b154-c916a92ae452",
+          "title":       "Domain-Aware Engineering",
+          "description": "We embed domain knowledge into every sprint so our engineers understand your business — not just your backlog."
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/4c83367d-1cf6-4591-950e-3663f10d0223",
+          "title":       "Regulatory & Compliance Expertise",
+          "description": "From GDPR to HIPAA, SOC 2 to ISO 27001, we build with compliance baked in — not bolted on."
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/35dae849-17d4-474e-867b-adb207b5bbc0",
+          "title":       "Flexible Engagement Models",
+          "description": "Fixed-price projects, time-and-materials retainers, or dedicated team augmentation — structured around your needs."
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/d252aa8c-a4c6-4216-ae8b-329e6f37035b",
+          "title":       "End-to-End Delivery",
+          "description": "Strategy, design, build, QA, and support — one partner for the full lifecycle so nothing falls through the cracks."
+        }
+      ]
+    },
+    "cta": {
+      "heading":    "Ready to Work Together?",
+      "subheading": "Tell us about your industry and challenges. Our team will put together a tailored approach that delivers real results.",
+      "button":     { "label": "Start a Conversation", "url": "/contact" },
+      "stats": [
+        { "value": "12+",  "label": "Industries Served"   },
+        { "value": "200+", "label": "Projects Delivered"  },
+        { "value": "98%",  "label": "Client Retention"    }
+      ]
+    },
+    "contact": {
+      "heading":    "Get in Touch",
+      "subheading": "Ready to start your next project? Let's discuss how we can help your industry.",
+      "form": {
+        "heading":     "Send us a Message",
+        "submitLabel": "Send Message"
+      },
+      "info": {
+        "heading":  "Contact Information",
+        "email":    "hello@atech.software",
+        "phone":    "+852 1234 5678",
+        "location": "Hong Kong"
+      }
+    }
+  }
+}
