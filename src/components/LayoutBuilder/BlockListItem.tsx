@@ -11,6 +11,7 @@ interface BlockListItemProps {
   isSelected: boolean
   isExpanded: boolean
   isRenaming: boolean
+  isNestTarget?: boolean
   onSelect: (id: string) => void
   onDelete: (id: string) => void
   onToggleExpand: (id: string) => void
@@ -25,6 +26,7 @@ export function BlockListItem({
   isSelected,
   isExpanded,
   isRenaming,
+  isNestTarget = false,
   onSelect,
   onDelete,
   onToggleExpand,
@@ -32,7 +34,7 @@ export function BlockListItem({
   onConfirmRename,
   children,
 }: BlockListItemProps) {
-  const isContainer = block.blockType === 'container' || block.blockType === 'grid'
+  const isContainer = block.children !== undefined
   const inputRef = useRef<HTMLInputElement>(null)
   const [renameValue, setRenameValue] = useState(block.name)
 
@@ -67,11 +69,12 @@ export function BlockListItem({
     <div
       ref={setNodeRef}
       style={{ ...style, paddingLeft: depth * 16 + 8 }}
-      className={`lb-list-item ${isSelected ? 'lb-list-item--selected' : ''} ${isDragging ? 'lb-list-item--dragging' : ''}`}
+      className={`lb-list-item ${isSelected ? 'lb-list-item--selected' : ''} ${isDragging ? 'lb-list-item--dragging' : ''} ${isNestTarget ? 'lb-list-item--nest-target' : ''}`}
     >
-      <div className="lb-list-item__row">
-        {/* Drag handle */}
-        <button className="lb-list-item__handle" {...attributes} {...listeners} title="Drag to reorder">
+      {/* Entire row is the drag target — listeners on row, not just handle */}
+      <div className="lb-list-item__row" {...attributes} {...listeners}>
+        {/* Handle is now purely visual */}
+        <span className="lb-list-item__handle" title="Drag to reorder">
           <svg width="8" height="14" viewBox="0 0 8 14" fill="currentColor">
             <circle cx="2" cy="2"  r="1.2" />
             <circle cx="6" cy="2"  r="1.2" />
@@ -80,13 +83,13 @@ export function BlockListItem({
             <circle cx="2" cy="12" r="1.2" />
             <circle cx="6" cy="12" r="1.2" />
           </svg>
-        </button>
+        </span>
 
         {/* Expand toggle for containers */}
         {isContainer ? (
           <button
             className="lb-list-item__expand"
-            onClick={() => onToggleExpand(block.id)}
+            onClick={(e) => { e.stopPropagation(); onToggleExpand(block.id) }}
           >
             <svg
               width="8" height="8" viewBox="0 0 8 8"
@@ -113,8 +116,8 @@ export function BlockListItem({
         ) : (
           <span
             className="lb-list-item__name"
-            onClick={() => onSelect(block.id)}
-            onDoubleClick={() => onStartRename(block.id)}
+            onClick={(e) => { e.stopPropagation(); onSelect(block.id) }}
+            onDoubleClick={(e) => { e.stopPropagation(); onStartRename(block.id) }}
             title="Double-click to rename"
           >
             {block.name}
@@ -125,19 +128,19 @@ export function BlockListItem({
         <div className="lb-list-item__controls">
           <button
             className="lb-list-item__btn lb-list-item__btn--edit"
-            onClick={() => onSelect(block.id)}
+            onClick={(e) => { e.stopPropagation(); onSelect(block.id) }}
             title="Edit"
           >✎</button>
           <button
             className="lb-list-item__btn lb-list-item__btn--delete"
-            onClick={() => onDelete(block.id)}
+            onClick={(e) => { e.stopPropagation(); onDelete(block.id) }}
             title="Delete"
           >✕</button>
         </div>
       </div>
 
       {/* Children */}
-      {isContainer && isExpanded && children && (
+      {isExpanded && children && (
         <div className="lb-list-item__children">{children}</div>
       )}
     </div>
