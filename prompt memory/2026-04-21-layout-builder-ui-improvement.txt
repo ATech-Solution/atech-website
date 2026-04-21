@@ -1,0 +1,19 @@
+Session: Layout Builder UI/UX Overhaul
+Date: 2026-04-21
+
+User Request:
+1. Fix messed up layout in layout builder - make clean like Elementor (3rd image reference)
+2. All parts (left, main, right) should use dark background matching Payload Admin Theme
+3. Light background if admin uses light theme - use CSS variables
+4. Main preview should show actual frontend page sections (like home-test page)
+5. Top bar color should match dark Payload admin theme (not blue-tinted)
+6. Left panel: style/advanced tab changes should affect preview (Advanced tab hide on desktop/tablet/mobile should hide block in preview)
+7. Main part: hover shows green thin border (Elementor-style), click for inline editing, full Elementor-like UX
+8. Floating right (Block List): collapse/expand toggle button already exists; block nesting works
+9. After save in fullscreen: stay in fullscreen (no redirect to page editor)
+10. Non-fullscreen page editor: same left/right panel layout as fullscreen version
+
+Files changed:
+- src/components/LayoutBuilder/LayoutBuilder.css (major dark theme overhaul + green hover borders)
+- src/components/LayoutBuilder/LayoutBuilderFullScreen.tsx (remove post-save redirect, pass viewMode)
+- src/components/LayoutBuilder/LayoutPreview.tsx (viewMode prop + responsive visibility)

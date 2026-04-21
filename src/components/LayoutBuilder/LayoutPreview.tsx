@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useRef, useState } from 'react'
+import React from 'react'
 import type { LayoutBlock, LayoutTree, BlockOverrides } from './types'
 import { getDefaultOverrides } from './utils/defaultOverrides'
 import { resolvePreviewComponent } from './utils/previewResolver'
@@ -8,6 +8,7 @@ import { resolvePreviewComponent } from './utils/previewResolver'
 interface LayoutPreviewProps {
   tree: LayoutTree
   selectedId: string | null
+  viewMode?: 'desktop' | 'tablet' | 'mobile'
   onSelect: (id: string) => void
   onAddRoot: () => void
   onAddAfter: (afterId: string) => void
@@ -15,10 +16,11 @@ interface LayoutPreviewProps {
   onInlineEdit: (blockId: string, field: string, value: string) => void
 }
 
-/** Build CSS overrides from style + advanced fields. */
+/** Build CSS overrides from style + advanced fields, applying responsive visibility. */
 function buildStyleCSS(
   style?: BlockOverrides['style'],
   advanced?: BlockOverrides['advanced'],
+  viewMode?: 'desktop' | 'tablet' | 'mobile',
 ): React.CSSProperties {
   const css: React.CSSProperties = {}
   if (!style && !advanced) return css
@@ -41,6 +43,11 @@ function buildStyleCSS(
   if (advanced?.width)         css.width         = advanced.width
   if (advanced?.position)      css.position      = advanced.position as React.CSSProperties['position']
   if (advanced?.zIndex != null) css.zIndex       = advanced.zIndex
+  // Responsive visibility — hide block in preview for its target viewport
+  const adv = advanced as Record<string, unknown> | undefined
+  if (viewMode === 'desktop' && adv?.hideOnDesktop) css.display = 'none'
+  if (viewMode === 'tablet'  && adv?.hideOnTablet)  css.display = 'none'
+  if (viewMode === 'mobile'  && adv?.hideOnMobile)  css.display = 'none'
   return css
 }
 
@@ -111,6 +118,7 @@ const INLINE_EDITABLE_TYPES = new Set(['heading', 'text-editor', 'button'])
 function BlockPreviewWrapper({
   block,
   selectedId,
+  viewMode,
   onSelect,
   onAddAfter,
   onDelete,
@@ -118,6 +126,7 @@ function BlockPreviewWrapper({
 }: {
   block: LayoutBlock
   selectedId: string | null
+  viewMode?: 'desktop' | 'tablet' | 'mobile'
   onSelect: (id: string) => void
   onAddAfter: (afterId: string) => void
   onDelete: (id: string) => void
@@ -129,7 +138,7 @@ function BlockPreviewWrapper({
 
   const defaults = getDefaultOverrides(block.blockType).content ?? {}
   const data: Record<string, unknown> = { ...defaults, ...(block.overrides?.content ?? {}) }
-  const wrapperStyle = buildStyleCSS(block.overrides?.style, block.overrides?.advanced)
+  const wrapperStyle = buildStyleCSS(block.overrides?.style, block.overrides?.advanced, viewMode)
 
   return (
     <div
@@ -188,6 +197,7 @@ function BlockPreviewWrapper({
                   key={child.id}
                   block={child}
                   selectedId={selectedId}
+                  viewMode={viewMode}
                   onSelect={onSelect}
                   onAddAfter={onAddAfter}
                   onDelete={onDelete}
@@ -218,6 +228,7 @@ function AddStripBetween({ onAdd }: { onAdd: () => void }) {
 export function LayoutPreview({
   tree,
   selectedId,
+  viewMode,
   onSelect,
   onAddRoot,
   onAddAfter,
@@ -242,6 +253,7 @@ export function LayoutPreview({
           <BlockPreviewWrapper
             block={block}
             selectedId={selectedId}
+            viewMode={viewMode}
             onSelect={onSelect}
             onAddAfter={onAddAfter}
             onDelete={onDelete}

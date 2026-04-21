@@ -125,9 +125,7 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
       })
       setSaveMsg('Saved ✓')
       try { sessionStorage.removeItem(`lb_tree_${pageId}`) } catch {}
-      setTimeout(() => {
-        window.location.href = `/admin/collections/pages/${pageId}`
-      }, 800)
+      setTimeout(() => setSaveMsg(''), 3000)
     } catch {
       setSaveMsg('Save failed')
     } finally {
@@ -399,6 +397,7 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
               <LayoutPreview
                 tree={tree}
                 selectedId={selectedId}
+                viewMode={viewMode}
                 onSelect={handlePreviewSelect}
                 onAddRoot={() => handleCanvasAddRequest(null)}
                 onAddAfter={handleAddAfter}
