@@ -222,15 +222,19 @@ export function LayoutBuilderField({ path }: LayoutBuilderFieldProps) {
       {/* Header bar */}
       <div className="lb-header">
         <span className="lb-header__title">Page Layout</span>
-        <a
-          className="lb-header__fullscreen"
-          href={`/admin/layout-builder/${docId ?? ''}`}
-          target="_blank"
-          rel="noreferrer"
-          title="Open full screen editor"
+        <button
+          className={`lb-header__fullscreen${!docId ? ' lb-header__fullscreen--disabled' : ''}`}
+          disabled={!docId}
+          title={docId ? 'Open full screen editor' : 'Save the page first to enable full screen'}
+          onClick={() => {
+            if (docId) {
+              try { sessionStorage.setItem(`lb_tree_${docId}`, JSON.stringify(tree)) } catch {}
+              window.location.href = `/admin/layout-builder/${docId}`
+            }
+          }}
         >
           ⛶ Full Screen
-        </a>
+        </button>
       </div>
 
       {/* Builder layout */}

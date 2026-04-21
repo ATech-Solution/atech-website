@@ -27,13 +27,19 @@
 .lb-header__fullscreen {
   font-size: 12px;
   color: var(--theme-elevation-500, #6b7280);
-  text-decoration: none;
-  padding: 3px 8px;
+  background: none;
   border: 1px solid var(--theme-elevation-150, #e5e7eb);
   border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
   transition: background 0.15s;
 }
-.lb-header__fullscreen:hover { background: var(--theme-elevation-100, #f3f4f6); }
+.lb-header__fullscreen:hover:not(:disabled) { background: var(--theme-elevation-100, #f3f4f6); }
+.lb-header__fullscreen--disabled,
+.lb-header__fullscreen:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
 /* Main layout split */
 .lb-layout {

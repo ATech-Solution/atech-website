@@ -78,10 +78,10 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
         body: JSON.stringify({ layoutBuilder: tree }),
       })
       setSaveMsg('Saved ✓')
-      setTimeout(() => setSaveMsg(''), 2500)
-      // Sync saved tree back to field-mode window and clear its sessionStorage key
-      window.opener?.postMessage({ type: 'lb_save', tree }, '*')
       try { sessionStorage.removeItem(`lb_tree_${pageId}`) } catch {}
+      setTimeout(() => {
+        window.location.href = `/admin/collections/pages/${pageId}`
+      }, 800)
     } catch {
       setSaveMsg('Save failed')
     } finally {
@@ -189,7 +189,9 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
           </button>
           <button
             className="lb-fullscreen__exit-btn"
-            onClick={() => window.close()}
+            onClick={() => {
+              window.location.href = `/admin/collections/pages/${pageId}`
+            }}
           >
             ✕ Exit
           </button>
