@@ -1,0 +1,24 @@
+Session: 2026-04-22
+Topic: System Setup - Admin & Auth Features
+
+## User Request
+
+Implement the following system features:
+
+1. Access role editor setting for all admin pages — administrator can change the role editor for which page can be accessed for each role
+2. Maintenance page — even when the web is down it will show or change the option to maintenance mode on general settings, user can change maintenance page with content on the general settings
+3. Email Transport capabilities — get the config on the general settings
+4. Email verification capabilities on creating user
+5. Contact form capabilities and implement to frontend
+6. Forget password capabilities and implement to backend
+7. Reset password page and capabilities to backend from email that generated from forget password admin login page, with using exact payload admin current theme style
+
+## Implementation Plan
+
+- Settings.ts: Add maintenance mode toggle + custom content fields, SMTP transport config fields, Access Control tab with per-collection role permissions
+- Users.ts: Set verify: true in auth, add afterOperation hook for verification email
+- middleware.ts: Fetch /api/maintenance-status from own API (cached) instead of relying solely on env var
+- email.ts: Read SMTP config from Settings DB at send time, fall back to env vars
+- API routes: /api/maintenance-status, /api/contact
+- Frontend pages: /forgot-password, /reset-password (Payload admin theme style)
+- ContactBlock.tsx: Wire form to /api/contact with fetch

@@ -1,25 +1,26 @@
 import type { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { settingsAccess } from '@/lib/access'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'publishedAt', 'updatedAt'],
-    // Live Preview — shows the frontend at /posts/[slug] while editing
     livePreview: {
       url: ({ data }) =>
         `${process.env.PAYLOAD_PUBLIC_SERVER_URL ?? process.env.NEXT_PUBLIC_DOMAIN ?? 'http://localhost:3000'}/posts/${data?.slug ?? ''}`,
     },
   },
   access: {
-    read: ({ req }) => {
-      if (req.user) return true
-      return { status: { equals: 'published' } }
+    read: async ({ req }) => {
+      if (!req.user) return { status: { equals: 'published' } }
+      if (req.user.role === 'admin') return true
+      return settingsAccess('posts', 'read')({ req })
     },
-    create: ({ req }) => req.user?.role === 'admin' || req.user?.role === 'editor',
-    update: ({ req }) => req.user?.role === 'admin' || req.user?.role === 'editor',
-    delete: ({ req }) => req.user?.role === 'admin',
+    create: settingsAccess('posts', 'create'),
+    update: settingsAccess('posts', 'update'),
+    delete: settingsAccess('posts', 'delete'),
   },
   // ── Versioning (history only — publish control via `status` field) ─────────
   versions: {

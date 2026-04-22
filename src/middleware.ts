@@ -1,23 +1,46 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
-  const isUnderConstruction = process.env.MAINTENANCE_MODE === 'true'
+// Paths that always bypass maintenance mode
+const EXCLUDED_PREFIXES = ['/admin', '/api', '/maintenance', '/_next', '/favicon']
 
-  if (isUnderConstruction) {
-    const { pathname } = request.nextUrl
+function isExcluded(pathname: string): boolean {
+  return EXCLUDED_PREFIXES.some((p) => pathname.startsWith(p))
+}
 
-    // Allow through: admin panel, API routes, the maintenance page itself, and static assets
-    const isExcluded =
-      pathname.startsWith('/admin') ||
-      pathname.startsWith('/api') ||
-      pathname.startsWith('/maintenance') ||
-      pathname.startsWith('/_next') ||
-      pathname.startsWith('/favicon')
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
 
-    if (!isExcluded) {
-      return NextResponse.rewrite(new URL('/maintenance', request.url))
+  // Allow excluded paths through unconditionally
+  if (isExcluded(pathname)) return NextResponse.next()
+
+  // 1. Fast path — env var toggle (instant, no network)
+  const envMaintenance = process.env.MAINTENANCE_MODE === 'true'
+  if (envMaintenance) {
+    return NextResponse.rewrite(new URL('/maintenance', request.url))
+  }
+
+  // 2. DB-backed toggle — fetch our lightweight API endpoint
+  //    Use absolute URL so it works in both server and edge runtimes
+  try {
+    const origin =
+      process.env.NEXT_PUBLIC_SITE_URL_PROD ??
+      process.env.NEXT_PUBLIC_SITE_URL_DEV ??
+      process.env.NEXT_PUBLIC_SITE_URL ??
+      request.nextUrl.origin
+
+    const res = await fetch(`${origin}/api/maintenance-status`, {
+      next: { revalidate: 30 },
+    })
+
+    if (res.ok) {
+      const data = await res.json()
+      if (data?.maintenanceMode) {
+        return NextResponse.rewrite(new URL('/maintenance', request.url))
+      }
     }
+  } catch {
+    // Fail open — if the API is unreachable, never block real traffic
   }
 
   return NextResponse.next()
@@ -25,12 +48,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static  (static files)
-     * - _next/image   (image optimization)
-     * - favicon.ico
-     */
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 }

@@ -1,4 +1,39 @@
-export default function MaintenancePage() {
+import { getPayload } from 'payload'
+import configPromise from '@payload-config'
+
+async function getMaintenanceContent() {
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const settings = await payload.findGlobal({ slug: 'settings' }) as any
+    return {
+      title:       settings?.maintenanceTitle       ?? 'Under Construction.',
+      message:     settings?.maintenanceMessage     ?? "We're rebuilding something great. Our systems are temporarily offline while we upgrade — we'll be back shortly.",
+      statusLabel: settings?.maintenanceStatusLabel ?? 'System upgrade in progress',
+      estimate:    settings?.maintenanceEstimate    ?? 'Soon',
+      siteName:    settings?.siteName               ?? 'ATech',
+    }
+  } catch {
+    return {
+      title:       'Under Construction.',
+      message:     "We're rebuilding something great. Our systems are temporarily offline — we'll be back shortly.",
+      statusLabel: 'System upgrade in progress',
+      estimate:    'Soon',
+      siteName:    'ATech',
+    }
+  }
+}
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
+export default async function MaintenancePage() {
+  const content = await getMaintenanceContent()
+
+  // Split title at last word so the last word gets accent color
+  const words = content.title.trim().split(/\s+/)
+  const titleMain = words.slice(0, -1).join(' ')
+  const titleAccent = words[words.length - 1]
+
   return (
     <>
       <style>{`
@@ -35,7 +70,6 @@ export default function MaintenancePage() {
           isolation: isolate;
         }
 
-        /* Layered background */
         .wrap::before {
           content: '';
           position: absolute;
@@ -47,7 +81,6 @@ export default function MaintenancePage() {
           z-index: -2;
         }
 
-        /* Grid texture */
         .wrap::after {
           content: '';
           position: absolute;
@@ -60,7 +93,6 @@ export default function MaintenancePage() {
           z-index: -1;
         }
 
-        /* Floating orb */
         .orb {
           position: absolute;
           width: 420px;
@@ -80,7 +112,6 @@ export default function MaintenancePage() {
           50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
         }
 
-        /* Status pill */
         .status-pill {
           display: inline-flex;
           align-items: center;
@@ -111,7 +142,6 @@ export default function MaintenancePage() {
           50% { opacity: 0.2; }
         }
 
-        /* Main heading */
         h1 {
           font-family: 'Syne', sans-serif;
           font-weight: 800;
@@ -122,12 +152,8 @@ export default function MaintenancePage() {
           animation: slide-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
         }
 
-        h1 span {
-          display: block;
-          color: var(--accent);
-        }
+        h1 span { display: block; color: var(--accent); }
 
-        /* Subtext */
         p.sub {
           margin-top: 1.75rem;
           font-size: clamp(0.95rem, 2vw, 1.05rem);
@@ -139,7 +165,6 @@ export default function MaintenancePage() {
           animation: slide-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
         }
 
-        /* Progress bar */
         .progress-track {
           margin-top: 3rem;
           width: min(420px, 90vw);
@@ -167,7 +192,6 @@ export default function MaintenancePage() {
           100% { width: 87%; }
         }
 
-        /* Stats row */
         .stats {
           display: flex;
           gap: 2.5rem;
@@ -175,54 +199,17 @@ export default function MaintenancePage() {
           animation: slide-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
         }
 
-        .stat {
-          text-align: center;
-        }
+        .stat { text-align: center; }
+        .stat-value { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+        .stat-label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 0.2rem; }
+        .divider { width: 1px; height: 36px; background: var(--border); align-self: center; }
 
-        .stat-value {
-          font-family: 'Syne', sans-serif;
-          font-size: 1.6rem;
-          font-weight: 700;
-          color: var(--text);
-          letter-spacing: -0.02em;
-        }
-
-        .stat-label {
-          font-size: 0.7rem;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: var(--muted);
-          margin-top: 0.2rem;
-        }
-
-        /* Divider */
-        .divider {
-          width: 1px;
-          height: 36px;
-          background: var(--border);
-          align-self: center;
-        }
-
-        /* Corner decoration */
-        .corner {
-          position: absolute;
-          width: 80px;
-          height: 80px;
-          opacity: 0.25;
-        }
+        .corner { position: absolute; width: 80px; height: 80px; opacity: 0.25; }
         .corner.tl { top: 2rem; left: 2rem; border-top: 1px solid var(--accent); border-left: 1px solid var(--accent); }
         .corner.br { bottom: 2rem; right: 2rem; border-bottom: 1px solid var(--accent); border-right: 1px solid var(--accent); }
 
-        /* Animations */
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @keyframes slide-up {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 480px) {
           .stats { gap: 1.5rem; }
@@ -238,17 +225,15 @@ export default function MaintenancePage() {
 
         <div className="status-pill">
           <span className="dot" />
-          System upgrade in progress
+          {content.statusLabel}
         </div>
 
         <h1>
-          Under<br />
-          <span>Construction.</span>
+          {titleMain && <>{titleMain}<br /></>}
+          <span>{titleAccent}</span>
         </h1>
 
-        <p className="sub">
-          We&apos;re rebuilding something great. Our systems are temporarily offline while we upgrade — we&apos;ll be back shortly.
-        </p>
+        <p className="sub">{content.message}</p>
 
         <div className="progress-track">
           <div className="progress-fill" />
@@ -261,12 +246,12 @@ export default function MaintenancePage() {
           </div>
           <div className="divider" />
           <div className="stat">
-            <div className="stat-value">ATech</div>
+            <div className="stat-value">{content.siteName}</div>
             <div className="stat-label">Systems</div>
           </div>
           <div className="divider" />
           <div className="stat">
-            <div className="stat-value">Soon</div>
+            <div className="stat-value">{content.estimate}</div>
             <div className="stat-label">Back online</div>
           </div>
         </div>

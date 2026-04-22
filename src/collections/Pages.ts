@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { getPageTemplateOptions } from '@/lib/page-templates'
+import { settingsAccess } from '@/lib/access'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -13,13 +14,15 @@ export const Pages: CollectionConfig = {
     },
   },
   access: {
-    read: ({ req }) => {
-      if (req.user) return true
-      return { status: { equals: 'published' } }
+    // Public visitors can read published pages; authenticated users are controlled by Settings
+    read: async ({ req }) => {
+      if (!req.user) return { status: { equals: 'published' } }
+      if (req.user.role === 'admin') return true
+      return settingsAccess('pages', 'read')({ req })
     },
-    create: ({ req }) => req.user?.role === 'admin' || req.user?.role === 'editor',
-    update: ({ req }) => req.user?.role === 'admin' || req.user?.role === 'editor',
-    delete: ({ req }) => req.user?.role === 'admin',
+    create: settingsAccess('pages', 'create'),
+    update: settingsAccess('pages', 'update'),
+    delete: settingsAccess('pages', 'delete'),
   },
   // ── Versioning ─────────────────────────────────────────────────────────────
   versions: {
