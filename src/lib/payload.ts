@@ -43,6 +43,15 @@ export const getTheme = unstable_cache(
   { tags: ['theme'] },
 )
 
+export const getSettings = unstable_cache(
+  async () => {
+    const payload = await getPayloadClient()
+    return payload.findGlobal({ slug: 'settings' }).catch(() => null)
+  },
+  ['settings'],
+  { tags: ['settings'] },
+)
+
 /**
  * Batch-fetch block templates by ID.
  * Returns a map of { [id]: blockDoc } for merging with layoutBuilder overrides.

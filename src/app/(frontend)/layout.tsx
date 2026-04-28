@@ -3,7 +3,7 @@ import { Syne, DM_Sans, Work_Sans } from 'next/font/google'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ThemeProvider from '@/components/ThemeProvider'
-import { getTheme } from '@/lib/payload'
+import { getTheme, getSettings } from '@/lib/payload'
 import { buildThemeCssVars } from '@/lib/theme'
 import '../../../public/assets/css/globals.css'
 
@@ -38,12 +38,19 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const theme = await getTheme()
+  const settings = await getSettings()
   const themeVars = buildThemeCssVars(theme)
   const customCSS  = (theme as any)?.customCSS ?? ''
+  const favicon  = (theme as any)?.favicon ?? ''
+
+  
+  // console.log('theme',theme)
+  // console.log('settings',settings)
 
   return (
     <html lang="en" className={`${syne.variable} ${dmSans.variable} ${workSans.variable}`}>
       <head>
+        <link rel="icon" href={favicon.url} sizes="any" />
         {themeVars && <style dangerouslySetInnerHTML={{ __html: themeVars }} />}
         {customCSS  && <style dangerouslySetInnerHTML={{ __html: customCSS  }} />}
       </head>
@@ -51,7 +58,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ThemeProvider initialVars={themeVars}>
           <Header theme={theme} />
           <main className="main-content">{children}</main>
-          <Footer theme={theme} />
+          <Footer theme={theme} settings={settings}/>
         </ThemeProvider>
       </body>
     </html>
