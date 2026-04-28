@@ -11,13 +11,15 @@ interface ServiceItem {
 }
 
 interface ServicesSectionData {
-  heading?:                string
-  subheading?:             string
-  serviceItems?:           ServiceItem[]
-  customSolutionHeading?:  string
-  customSolutionBody?:     string
-  customSolutionCtaLabel?: string
-  customSolutionCtaUrl?:   string
+  heading?:                  string
+  subheading?:               string
+  serviceItems?:             ServiceItem[]
+  customSolutionHeading?:    string
+  customSolutionBody?:       string
+  customSolutionCtaLabel?:   string
+  customSolutionCtaUrl?:     string
+  customSolutionCtaIcon?:    { url: string } | null
+  customSolutionCtaIconPos?: 'left' | 'right'
 }
 
 function Arrow() {
@@ -89,14 +91,21 @@ function ServiceCard({ item }: { item: ServiceItem }) {
 }
 
 export default function ServicesSection({ data }: { data: ServicesSectionData }) {
-  const items = data.serviceItems ?? []
+  const items      = data.serviceItems ?? []
+  const ctaIconPos = data.customSolutionCtaIconPos ?? 'right'
+  const hasCtaIcon = !!data.customSolutionCtaIcon?.url
 
   return (
     <section
       className="py-24"
-      style={{ background: 'var(--color-bg, #292929)', borderTop: '1px solid var(--color-border, #383838)' }}
+      style={{
+        background: 'var(--color-bg, #292929)',
+        borderTop: '1px solid var(--color-border, #383838)',
+        paddingTop: 'var(--section-padding-y, 96px)',
+        paddingBottom: 'var(--section-padding-y, 96px)',
+      }}
     >
-      <div className="mx-auto px-6 md:px-10" style={{ maxWidth: '1280px' }}>
+      <div className="mx-auto px-6 md:px-10" style={{ maxWidth: 'var(--content-max-width, 1280px)' }}>
         {(data.heading || data.subheading) && (
           <div className="flex flex-col gap-6 items-center w-full mb-16">
             {data.heading && (
@@ -171,7 +180,17 @@ export default function ServicesSection({ data }: { data: ServicesSectionData })
                   boxShadow: '0 4px 14px rgba(255,211,105,0.25)',
                 }}
               >
-                {data.customSolutionCtaLabel} <Arrow />
+                {hasCtaIcon && ctaIconPos === 'left' && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={data.customSolutionCtaIcon!.url} alt="" width={14} height={14} style={{ objectFit: 'contain' }} />
+                )}
+                {data.customSolutionCtaLabel}
+                {hasCtaIcon && ctaIconPos === 'right' ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={data.customSolutionCtaIcon!.url} alt="" width={14} height={14} style={{ objectFit: 'contain' }} />
+                ) : !hasCtaIcon ? (
+                  <Arrow />
+                ) : null}
               </Link>
             )}
           </div>

@@ -21,7 +21,7 @@ const ITEMS_TYPES: BlockType[] = [
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="lb-field">
-      <label className="lb-field__label">{label}</label>
+      {label && <label className="lb-field__label">{label}</label>}
       {children}
     </div>
   )
@@ -146,6 +146,168 @@ function MediaField({
   )
 }
 
+// ── Link picker (internal page or external URL) ───────────────────────────────
+type PageItem = { id: string; slug: string; title?: string }
+
+function LinkField({
+  label,
+  value,
+  onChange,
+  placeholder = '/page or https://…',
+}: {
+  label: string
+  value: string
+  onChange: (url: string) => void
+  placeholder?: string
+}) {
+  const [open, setOpen]   = useState(false)
+  const [tab, setTab]     = useState<'internal' | 'external'>('internal')
+  const [pages, setPages] = useState<PageItem[]>([])
+  const [loaded, setLoaded] = useState(false)
+
+  const openPicker = async () => {
+    setOpen(true)
+    if (!loaded) {
+      try {
+        const res  = await fetch('/api/pages?limit=100&depth=0', { credentials: 'include' })
+        const data = await res.json()
+        setPages(data?.docs ?? [])
+        setLoaded(true)
+      } catch { setLoaded(true) }
+    }
+  }
+
+  const pickPage = (slug: string) => { onChange('/' + slug); setOpen(false) }
+
+  return (
+    <div className="lb-field">
+      {label && <label className="lb-field__label">{label}</label>}
+      {!open ? (
+        <div style={{ display: 'flex', gap: 6 }}>
+          <input
+            className="lb-input"
+            style={{ flex: 1, minWidth: 0 }}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+          />
+          <button type="button" className="lb-btn lb-btn--secondary" onClick={openPicker}
+            style={{ flexShrink: 0, padding: '0 10px', fontSize: 11, fontWeight: 500 }}>
+            Pick
+          </button>
+          {value && (
+            <button type="button" className="lb-btn lb-btn--secondary" onClick={() => onChange('')}
+              style={{ flexShrink: 0, padding: '0 8px', fontSize: 11, color: '#e55' }} title="Clear">
+              ✕
+            </button>
+          )}
+        </div>
+      ) : (
+        <div style={{ border: '1px solid #e5e5e5', borderRadius: 8, overflow: 'hidden', background: '#fff' }}>
+          <div style={{ display: 'flex', borderBottom: '1px solid #e5e5e5' }}>
+            {(['internal', 'external'] as const).map((t) => (
+              <button key={t} type="button" onClick={() => setTab(t)}
+                style={{ flex: 1, padding: '8px 12px', fontSize: 12, fontWeight: 500, border: 'none', cursor: 'pointer',
+                  background: tab === t ? '#f5f5f5' : '#fff',
+                  borderBottom: tab === t ? '2px solid #292929' : '2px solid transparent',
+                  color: tab === t ? '#292929' : '#6b7280', transition: 'color 0.1s' }}>
+                {t === 'internal' ? 'Internal Page' : 'External URL'}
+              </button>
+            ))}
+            <button type="button" onClick={() => setOpen(false)}
+              style={{ padding: '8px 12px', fontSize: 14, border: 'none', cursor: 'pointer', background: '#fff', color: '#9ca3af' }}>✕</button>
+          </div>
+
+          {tab === 'internal' ? (
+            <div style={{ padding: 8, maxHeight: 200, overflowY: 'auto' }}>
+              {!loaded ? (
+                <p style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center', margin: '16px 0' }}>Loading…</p>
+              ) : pages.length === 0 ? (
+                <p style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center', margin: '16px 0' }}>No pages found</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {pages.map((page) => (
+                    <button key={page.id} type="button" onClick={() => pickPage(page.slug)}
+                      style={{ textAlign: 'left', padding: '8px 10px', borderRadius: 6, border: 'none', cursor: 'pointer',
+                        background: value === '/' + page.slug ? '#f0f0f0' : 'transparent', fontSize: 12, color: '#171717' }}>
+                      <span style={{ fontWeight: 500 }}>{page.title || page.slug}</span>
+                      <span style={{ color: '#9ca3af', marginLeft: 8 }}>/{page.slug}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{ padding: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <input className="lb-input" value={value} onChange={(e) => onChange(e.target.value)}
+                placeholder="https://example.com" autoFocus />
+              <button type="button" className="lb-btn lb-btn--primary" onClick={() => setOpen(false)} style={{ width: '100%' }}>Apply</button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Button icon row (icon media + position select) ─────────────────────────────
+function BtnIconRow({
+  iconValue,
+  iconPos,
+  onIconChange,
+  onIconPosChange,
+}: {
+  iconValue: string
+  iconPos: string
+  onIconChange: (ref: MediaRef | null) => void
+  onIconPosChange: (v: string) => void
+}) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 8, alignItems: 'end' }}>
+      <MediaField label="Button Icon (empty = none)" value={iconValue} onChange={onIconChange} />
+      <div>
+        <label className="lb-field__label" style={{ display: 'block', marginBottom: 4 }}>Position</label>
+        <select className="lb-input lb-input--select" value={iconPos} onChange={(e) => onIconPosChange(e.target.value)}
+          style={{ width: 80 }}>
+          <option value="left">Left</option>
+          <option value="right">Right</option>
+        </select>
+      </div>
+    </div>
+  )
+}
+
+// ── CTA button group (label + URL + icon + pos) ────────────────────────────────
+function CtaGroup({
+  groupLabel,
+  label, labelPlaceholder,
+  url, urlPlaceholder,
+  iconValue, iconPos,
+  onLabelChange, onUrlChange, onIconChange, onIconPosChange,
+}: {
+  groupLabel: string
+  label: string; labelPlaceholder?: string
+  url: string; urlPlaceholder?: string
+  iconValue: string; iconPos: string
+  onLabelChange: (v: string) => void
+  onUrlChange: (v: string) => void
+  onIconChange: (ref: MediaRef | null) => void
+  onIconPosChange: (v: string) => void
+}) {
+  return (
+    <div style={{ border: '1px solid #e8e8e8', borderRadius: 8, padding: 10, marginBottom: 8, background: '#fafafa' }}>
+      <div style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{groupLabel}</div>
+      <Row>
+        <Field label="Label">
+          <input className="lb-input" value={label} onChange={(e) => onLabelChange(e.target.value)} placeholder={labelPlaceholder ?? 'Button label'} />
+        </Field>
+        <LinkField label="URL" value={url} onChange={onUrlChange} placeholder={urlPlaceholder ?? '/page or https://…'} />
+      </Row>
+      <BtnIconRow iconValue={iconValue} iconPos={iconPos} onIconChange={onIconChange} onIconPosChange={onIconPosChange} />
+    </div>
+  )
+}
+
 // ── Home Hero fields ──────────────────────────────────────────────────────────
 function HomeHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   const stats: any[]         = ov.heroStats      ?? []
@@ -156,6 +318,8 @@ function HomeHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => 
       <Field label="Badge Text">
         <input className="lb-input" value={ov.badge ?? ''} onChange={(e) => set('badge', e.target.value)} placeholder="Welcome to ATech" />
       </Field>
+      <MediaField label="Badge Icon (optional)" value={ov.badgeIcon?.url ?? ''} onChange={(ref) => set('badgeIcon', ref)} />
+
       <Field label="Heading">
         <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Main headline…" />
       </Field>
@@ -163,22 +327,26 @@ function HomeHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => 
         <textarea className="lb-input lb-input--textarea" rows={3} value={ov.body ?? ''} onChange={(e) => set('body', e.target.value)} placeholder="Supporting paragraph…" />
       </Field>
 
-      <Row>
-        <Field label="Primary CTA Label">
-          <input className="lb-input" value={ov.ctaPrimaryLabel ?? ''} onChange={(e) => set('ctaPrimaryLabel', e.target.value)} placeholder="Explore Services" />
-        </Field>
-        <Field label="Primary CTA URL">
-          <input className="lb-input" value={ov.ctaPrimaryUrl ?? ''} onChange={(e) => set('ctaPrimaryUrl', e.target.value)} placeholder="/services" />
-        </Field>
-      </Row>
-      <Row>
-        <Field label="Secondary CTA Label">
-          <input className="lb-input" value={ov.ctaSecondaryLabel ?? ''} onChange={(e) => set('ctaSecondaryLabel', e.target.value)} placeholder="Learn More" />
-        </Field>
-        <Field label="Secondary CTA URL">
-          <input className="lb-input" value={ov.ctaSecondaryUrl ?? ''} onChange={(e) => set('ctaSecondaryUrl', e.target.value)} placeholder="/about" />
-        </Field>
-      </Row>
+      <CtaGroup
+        groupLabel="Primary CTA"
+        label={ov.ctaPrimaryLabel ?? ''} labelPlaceholder="Explore Services"
+        url={ov.ctaPrimaryUrl ?? ''} urlPlaceholder="/services"
+        iconValue={ov.ctaPrimaryIcon?.url ?? ''} iconPos={ov.ctaPrimaryIconPos ?? 'right'}
+        onLabelChange={(v) => set('ctaPrimaryLabel', v)}
+        onUrlChange={(v) => set('ctaPrimaryUrl', v)}
+        onIconChange={(ref) => set('ctaPrimaryIcon', ref)}
+        onIconPosChange={(v) => set('ctaPrimaryIconPos', v)}
+      />
+      <CtaGroup
+        groupLabel="Secondary CTA"
+        label={ov.ctaSecondaryLabel ?? ''} labelPlaceholder="Learn More"
+        url={ov.ctaSecondaryUrl ?? ''} urlPlaceholder="/about"
+        iconValue={ov.ctaSecondaryIcon?.url ?? ''} iconPos={ov.ctaSecondaryIconPos ?? 'right'}
+        onLabelChange={(v) => set('ctaSecondaryLabel', v)}
+        onUrlChange={(v) => set('ctaSecondaryUrl', v)}
+        onIconChange={(ref) => set('ctaSecondaryIcon', ref)}
+        onIconPosChange={(v) => set('ctaSecondaryIconPos', v)}
+      />
 
       <MediaField label="Hero Image" value={ov.heroImage?.url ?? ''} onChange={(ref) => set('heroImage', ref)} />
 
@@ -218,6 +386,7 @@ function HomeHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => 
                 <option value="top-left">Top Left</option>
                 <option value="bottom-right">Bottom Right</option>
               </select>
+              <MediaField label="Card Icon" value={c.cardIcon?.url ?? ''} onChange={(ref) => { const a = [...cards]; a[i] = { ...a[i], cardIcon: ref }; set('floatingCards', a) }} />
             </div>
           ))}
           <button className="lb-items__add" onClick={() => set('floatingCards', [...cards, { cardText: '', cardPosition: 'top-right' }])}>+ Add Card</button>
@@ -298,7 +467,7 @@ function HomeServicesFields({ ov, set }: { ov: any; set: (k: string, v: unknown)
               <MediaField label="Icon" value={s.serviceIcon?.url ?? ''} onChange={(ref) => { const a = [...items]; a[i] = { ...a[i], serviceIcon: ref }; set('serviceItems', a) }} />
               <input className="lb-input" placeholder="Title" value={s.serviceTitle ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], serviceTitle: e.target.value }; set('serviceItems', a) }} />
               <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={s.serviceDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], serviceDesc: e.target.value }; set('serviceItems', a) }} />
-              <input className="lb-input" placeholder="Link URL e.g. /services/web-dev" value={s.serviceHref ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], serviceHref: e.target.value }; set('serviceItems', a) }} />
+              <LinkField label="Link URL" value={s.serviceHref ?? ''} onChange={(v) => { const a = [...items]; a[i] = { ...a[i], serviceHref: v }; set('serviceItems', a) }} placeholder="/services/web-dev" />
             </div>
           ))}
           <button className="lb-items__add" onClick={() => set('serviceItems', [...items, {}])}>+ Add Service</button>
@@ -311,14 +480,17 @@ function HomeServicesFields({ ov, set }: { ov: any; set: (k: string, v: unknown)
       <Field label="Custom Solution Body">
         <textarea className="lb-input lb-input--textarea" rows={2} value={ov.customSolutionBody ?? ''} onChange={(e) => set('customSolutionBody', e.target.value)} placeholder="Short description…" />
       </Field>
-      <Row>
-        <Field label="CTA Label">
-          <input className="lb-input" value={ov.customSolutionCtaLabel ?? ''} onChange={(e) => set('customSolutionCtaLabel', e.target.value)} placeholder="Chat with us" />
-        </Field>
-        <Field label="CTA URL">
-          <input className="lb-input" value={ov.customSolutionCtaUrl ?? ''} onChange={(e) => set('customSolutionCtaUrl', e.target.value)} placeholder="/contact" />
-        </Field>
-      </Row>
+
+      <CtaGroup
+        groupLabel="Custom Solution CTA"
+        label={ov.customSolutionCtaLabel ?? ''} labelPlaceholder="Chat with us"
+        url={ov.customSolutionCtaUrl ?? ''} urlPlaceholder="/contact"
+        iconValue={ov.customSolutionCtaIcon?.url ?? ''} iconPos={ov.customSolutionCtaIconPos ?? 'right'}
+        onLabelChange={(v) => set('customSolutionCtaLabel', v)}
+        onUrlChange={(v) => set('customSolutionCtaUrl', v)}
+        onIconChange={(ref) => set('customSolutionCtaIcon', ref)}
+        onIconPosChange={(v) => set('customSolutionCtaIconPos', v)}
+      />
     </>
   )
 }
@@ -578,9 +750,7 @@ function ServiceHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
       <Field label="Badge Text">
         <input className="lb-input" value={ov.badge ?? ''} onChange={(e) => set('badge', e.target.value)} placeholder="QA Testing Services" />
       </Field>
-      <Field label="Badge Icon URL">
-        <input className="lb-input" value={ov.badgeIconSrc ?? ''} onChange={(e) => set('badgeIconSrc', e.target.value)} placeholder="https://…/icon.svg" />
-      </Field>
+      <MediaField label="Badge Icon" value={ov.badgeIcon?.url ?? ov.badgeIconSrc ?? ''} onChange={(ref) => set('badgeIcon', ref)} />
 
       <Field label="Breadcrumbs">
         <div className="lb-items">
@@ -592,7 +762,7 @@ function ServiceHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
               </div>
               <Row>
                 <input className="lb-input" placeholder="Label" value={b.bcLabel ?? ''} onChange={(e) => { const a = [...breadcrumbs]; a[i] = { ...a[i], bcLabel: e.target.value }; set('breadcrumbs', a) }} />
-                <input className="lb-input" placeholder="URL (blank = current)" value={b.bcHref ?? ''} onChange={(e) => { const a = [...breadcrumbs]; a[i] = { ...a[i], bcHref: e.target.value || null }; set('breadcrumbs', a) }} />
+                <LinkField label="URL (blank = current)" value={b.bcHref ?? ''} onChange={(v) => { const a = [...breadcrumbs]; a[i] = { ...a[i], bcHref: v || null }; set('breadcrumbs', a) }} placeholder="/" />
               </Row>
             </div>
           ))}
@@ -607,22 +777,26 @@ function ServiceHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
         <textarea className="lb-input lb-input--textarea" rows={3} value={ov.body ?? ''} onChange={(e) => set('body', e.target.value)} placeholder="Supporting description…" />
       </Field>
 
-      <Row>
-        <Field label="Primary CTA Label">
-          <input className="lb-input" value={ov.ctaPrimaryLabel ?? ''} onChange={(e) => set('ctaPrimaryLabel', e.target.value)} placeholder="Start Your Project" />
-        </Field>
-        <Field label="Primary CTA URL">
-          <input className="lb-input" value={ov.ctaPrimaryUrl ?? ''} onChange={(e) => set('ctaPrimaryUrl', e.target.value)} placeholder="/contact" />
-        </Field>
-      </Row>
-      <Row>
-        <Field label="Secondary CTA Label">
-          <input className="lb-input" value={ov.ctaSecondaryLabel ?? ''} onChange={(e) => set('ctaSecondaryLabel', e.target.value)} placeholder="View Case Studies" />
-        </Field>
-        <Field label="Secondary CTA URL">
-          <input className="lb-input" value={ov.ctaSecondaryUrl ?? ''} onChange={(e) => set('ctaSecondaryUrl', e.target.value)} placeholder="/case-studies" />
-        </Field>
-      </Row>
+      <CtaGroup
+        groupLabel="Primary CTA"
+        label={ov.ctaPrimaryLabel ?? ''} labelPlaceholder="Start Your Project"
+        url={ov.ctaPrimaryUrl ?? ''} urlPlaceholder="/contact"
+        iconValue={ov.ctaPrimaryIcon?.url ?? ''} iconPos={ov.ctaPrimaryIconPos ?? 'right'}
+        onLabelChange={(v) => set('ctaPrimaryLabel', v)}
+        onUrlChange={(v) => set('ctaPrimaryUrl', v)}
+        onIconChange={(ref) => set('ctaPrimaryIcon', ref)}
+        onIconPosChange={(v) => set('ctaPrimaryIconPos', v)}
+      />
+      <CtaGroup
+        groupLabel="Secondary CTA"
+        label={ov.ctaSecondaryLabel ?? ''} labelPlaceholder="View Case Studies"
+        url={ov.ctaSecondaryUrl ?? ''} urlPlaceholder="/case-studies"
+        iconValue={ov.ctaSecondaryIcon?.url ?? ''} iconPos={ov.ctaSecondaryIconPos ?? 'right'}
+        onLabelChange={(v) => set('ctaSecondaryLabel', v)}
+        onUrlChange={(v) => set('ctaSecondaryUrl', v)}
+        onIconChange={(ref) => set('ctaSecondaryIcon', ref)}
+        onIconPosChange={(v) => set('ctaSecondaryIconPos', v)}
+      />
 
       <MediaField label="Hero Image" value={ov.heroImage?.url ?? ''} onChange={(ref) => set('heroImage', ref)} />
 
@@ -665,10 +839,8 @@ function ExpertiseTilesFields({ ov, set }: { ov: any; set: (k: string, v: unknow
                 <span>Tile {i + 1}</span>
                 <button className="lb-item__remove" onClick={() => { const a = [...tiles]; a.splice(i, 1); set('expertiseTiles', a) }}>✕</button>
               </div>
-              <Row>
-                <input className="lb-input" placeholder="Icon URL" value={t.tileIconSrc ?? ''} onChange={(e) => { const a = [...tiles]; a[i] = { ...a[i], tileIconSrc: e.target.value }; set('expertiseTiles', a) }} />
-                <input className="lb-input" placeholder="Label" value={t.tileLabel ?? ''} onChange={(e) => { const a = [...tiles]; a[i] = { ...a[i], tileLabel: e.target.value }; set('expertiseTiles', a) }} />
-              </Row>
+              <MediaField label="Tile Icon / Image" value={t.tileImage?.url ?? t.tileIconSrc ?? ''} onChange={(ref) => { const a = [...tiles]; a[i] = { ...a[i], tileImage: ref, tileIconSrc: ref?.url ?? '' }; set('expertiseTiles', a) }} />
+              <input className="lb-input" placeholder="Label" value={t.tileLabel ?? ''} onChange={(e) => { const a = [...tiles]; a[i] = { ...a[i], tileLabel: e.target.value }; set('expertiseTiles', a) }} />
             </div>
           ))}
           <button className="lb-items__add" onClick={() => set('expertiseTiles', [...tiles, { tileIconSrc: '', tileLabel: '' }])}>+ Add Tile</button>
@@ -739,9 +911,7 @@ function ServiceCardsFields({ ov, set }: { ov: any; set: (k: string, v: unknown)
                 <span>Card {i + 1}</span>
                 <button className="lb-item__remove" onClick={() => { const a = [...cards]; a.splice(i, 1); set('cardItems', a) }}>✕</button>
               </div>
-              <Field label="Icon URL">
-                <input className="lb-input" placeholder="https://…/icon.svg" value={c.cardIconSrc ?? ''} onChange={(e) => { const a = [...cards]; a[i] = { ...a[i], cardIconSrc: e.target.value }; set('cardItems', a) }} />
-              </Field>
+              <MediaField label="Card Icon" value={c.cardIcon?.url ?? c.cardIconSrc ?? ''} onChange={(ref) => { const a = [...cards]; a[i] = { ...a[i], cardIcon: ref, cardIconSrc: ref?.url ?? '' }; set('cardItems', a) }} />
               <input className="lb-input" placeholder="Title" value={c.cardTitle ?? ''} onChange={(e) => { const a = [...cards]; a[i] = { ...a[i], cardTitle: e.target.value }; set('cardItems', a) }} />
               <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={c.cardDescription ?? ''} onChange={(e) => { const a = [...cards]; a[i] = { ...a[i], cardDescription: e.target.value }; set('cardItems', a) }} />
               <textarea className="lb-input lb-input--textarea" rows={3} placeholder={'Features (one per line)\nCustom Dashboards\nAPI Integration'} value={c.cardFeatures ?? ''} onChange={(e) => { const a = [...cards]; a[i] = { ...a[i], cardFeatures: e.target.value }; set('cardItems', a) }} />
@@ -765,14 +935,17 @@ function CTABannerFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =>
       <Field label="Subtitle">
         <textarea className="lb-input lb-input--textarea" rows={2} value={ov.subtitle ?? ''} onChange={(e) => set('subtitle', e.target.value)} placeholder="Supporting description…" />
       </Field>
-      <Row>
-        <Field label="Button Label">
-          <input className="lb-input" value={ov.buttonLabel ?? ''} onChange={(e) => set('buttonLabel', e.target.value)} placeholder="Get Started" />
-        </Field>
-        <Field label="Button URL">
-          <input className="lb-input" value={ov.buttonUrl ?? ''} onChange={(e) => set('buttonUrl', e.target.value)} placeholder="/contact" />
-        </Field>
-      </Row>
+
+      <CtaGroup
+        groupLabel="Button"
+        label={ov.buttonLabel ?? ''} labelPlaceholder="Get Started"
+        url={ov.buttonUrl ?? ''} urlPlaceholder="/contact"
+        iconValue={ov.buttonIcon?.url ?? ''} iconPos={ov.buttonIconPos ?? 'right'}
+        onLabelChange={(v) => set('buttonLabel', v)}
+        onUrlChange={(v) => set('buttonUrl', v)}
+        onIconChange={(ref) => set('buttonIcon', ref)}
+        onIconPosChange={(v) => set('buttonIconPos', v)}
+      />
 
       <Field label="Stats">
         <div className="lb-items">
@@ -803,31 +976,35 @@ function PageHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => 
       <Field label="Badge Text">
         <input className="lb-input" value={ov.badge ?? ''} onChange={(e) => set('badge', e.target.value)} placeholder="Our Work" />
       </Field>
-      <Field label="Badge Icon URL">
-        <input className="lb-input" value={ov.badgeIconSrc ?? ''} onChange={(e) => set('badgeIconSrc', e.target.value)} placeholder="https://…/icon.svg" />
-      </Field>
+      <MediaField label="Badge Icon" value={ov.badgeIcon?.url ?? ov.badgeIconSrc ?? ''} onChange={(ref) => set('badgeIcon', ref)} />
       <Field label="Heading">
         <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Page Title" />
       </Field>
       <Field label="Subheading">
         <textarea className="lb-input lb-input--textarea" rows={3} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="Supporting description…" />
       </Field>
-      <Row>
-        <Field label="Primary CTA Label">
-          <input className="lb-input" value={ov.ctaPrimaryLabel ?? ''} onChange={(e) => set('ctaPrimaryLabel', e.target.value)} placeholder="View Projects" />
-        </Field>
-        <Field label="Primary CTA URL">
-          <input className="lb-input" value={ov.ctaPrimaryUrl ?? ''} onChange={(e) => set('ctaPrimaryUrl', e.target.value)} placeholder="#projects" />
-        </Field>
-      </Row>
-      <Row>
-        <Field label="Secondary CTA Label">
-          <input className="lb-input" value={ov.ctaSecondaryLabel ?? ''} onChange={(e) => set('ctaSecondaryLabel', e.target.value)} placeholder="Contact Us" />
-        </Field>
-        <Field label="Secondary CTA URL">
-          <input className="lb-input" value={ov.ctaSecondaryUrl ?? ''} onChange={(e) => set('ctaSecondaryUrl', e.target.value)} placeholder="/contact" />
-        </Field>
-      </Row>
+
+      <CtaGroup
+        groupLabel="Primary CTA"
+        label={ov.ctaPrimaryLabel ?? ''} labelPlaceholder="View Projects"
+        url={ov.ctaPrimaryUrl ?? ''} urlPlaceholder="#projects"
+        iconValue={ov.ctaPrimaryIcon?.url ?? ''} iconPos={ov.ctaPrimaryIconPos ?? 'right'}
+        onLabelChange={(v) => set('ctaPrimaryLabel', v)}
+        onUrlChange={(v) => set('ctaPrimaryUrl', v)}
+        onIconChange={(ref) => set('ctaPrimaryIcon', ref)}
+        onIconPosChange={(v) => set('ctaPrimaryIconPos', v)}
+      />
+      <CtaGroup
+        groupLabel="Secondary CTA"
+        label={ov.ctaSecondaryLabel ?? ''} labelPlaceholder="Contact Us"
+        url={ov.ctaSecondaryUrl ?? ''} urlPlaceholder="/contact"
+        iconValue={ov.ctaSecondaryIcon?.url ?? ''} iconPos={ov.ctaSecondaryIconPos ?? 'right'}
+        onLabelChange={(v) => set('ctaSecondaryLabel', v)}
+        onUrlChange={(v) => set('ctaSecondaryUrl', v)}
+        onIconChange={(ref) => set('ctaSecondaryIcon', ref)}
+        onIconPosChange={(v) => set('ctaSecondaryIconPos', v)}
+      />
+
       <Row>
         <Field label="Alignment">
           <select className="lb-input lb-input--select" value={ov.pageHeroAlign ?? 'center'} onChange={(e) => set('pageHeroAlign', e.target.value)}>
@@ -890,7 +1067,7 @@ function ProjectGridFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
               <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={p.projectDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectDesc: e.target.value }; set('projectItems', a) }} />
               <Row>
                 <input className="lb-input" placeholder="CTA Label" value={p.projectCta ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectCta: e.target.value }; set('projectItems', a) }} />
-                <input className="lb-input" placeholder="CTA URL" value={p.projectUrl ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectUrl: e.target.value }; set('projectItems', a) }} />
+                <LinkField label="CTA URL" value={p.projectUrl ?? ''} onChange={(v) => { const a = [...items]; a[i] = { ...a[i], projectUrl: v }; set('projectItems', a) }} />
               </Row>
             </div>
           ))}
@@ -931,7 +1108,7 @@ function ArticleGridFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
               <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={a.articleDesc ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleDesc: e.target.value }; set('articleItems', arr) }} />
               <Row>
                 <input className="lb-input" placeholder="CTA Label" value={a.articleCta ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleCta: e.target.value }; set('articleItems', arr) }} />
-                <input className="lb-input" placeholder="CTA URL" value={a.articleUrl ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleUrl: e.target.value }; set('articleItems', arr) }} />
+                <LinkField label="CTA URL" value={a.articleUrl ?? ''} onChange={(v) => { const arr = [...items]; arr[i] = { ...arr[i], articleUrl: v }; set('articleItems', arr) }} />
               </Row>
             </div>
           ))}
@@ -975,9 +1152,7 @@ function ArticleFeaturedFields({ ov, set }: { ov: any; set: (k: string, v: unkno
         <Field label="CTA Label">
           <input className="lb-input" value={ov.featCtaLabel ?? ''} onChange={(e) => set('featCtaLabel', e.target.value)} placeholder="Read Full Article" />
         </Field>
-        <Field label="CTA URL">
-          <input className="lb-input" value={ov.featCtaUrl ?? ''} onChange={(e) => set('featCtaUrl', e.target.value)} placeholder="/article-detail" />
-        </Field>
+        <LinkField label="CTA URL" value={ov.featCtaUrl ?? ''} onChange={(v) => set('featCtaUrl', v)} placeholder="/article-detail" />
       </Row>
     </>
   )
@@ -1009,7 +1184,7 @@ function JobsListFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => 
               <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={j.jobDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobDesc: e.target.value }; set('jobItems', a) }} />
               <Row>
                 <input className="lb-input" placeholder="CTA Label" value={j.jobCta ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobCta: e.target.value }; set('jobItems', a) }} />
-                <input className="lb-input" placeholder="CTA URL" value={j.jobUrl ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobUrl: e.target.value }; set('jobItems', a) }} />
+                <LinkField label="CTA URL" value={j.jobUrl ?? ''} onChange={(v) => { const a = [...items]; a[i] = { ...a[i], jobUrl: v }; set('jobItems', a) }} />
               </Row>
             </div>
           ))}
@@ -1027,31 +1202,33 @@ function InvolvedHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown)
       <Field label="Badge Text">
         <input className="lb-input" value={ov.badge ?? ''} onChange={(e) => set('badge', e.target.value)} placeholder="Join Our Mission" />
       </Field>
-      <Field label="Badge Icon URL">
-        <input className="lb-input" value={ov.badgeIconSrc ?? ''} onChange={(e) => set('badgeIconSrc', e.target.value)} placeholder="https://…/icon.svg" />
-      </Field>
+      <MediaField label="Badge Icon" value={ov.badgeIcon?.url ?? ov.badgeIconSrc ?? ''} onChange={(ref) => set('badgeIcon', ref)} />
       <Field label="Heading">
         <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Get Involved With ATech" />
       </Field>
       <Field label="Subheading">
         <textarea className="lb-input lb-input--textarea" rows={3} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="Join our community…" />
       </Field>
-      <Row>
-        <Field label="Primary CTA Label">
-          <input className="lb-input" value={ov.ctaPrimaryLabel ?? ''} onChange={(e) => set('ctaPrimaryLabel', e.target.value)} placeholder="Explore Partnerships" />
-        </Field>
-        <Field label="Primary CTA URL">
-          <input className="lb-input" value={ov.ctaPrimaryUrl ?? ''} onChange={(e) => set('ctaPrimaryUrl', e.target.value)} placeholder="#partnership" />
-        </Field>
-      </Row>
-      <Row>
-        <Field label="Secondary CTA Label">
-          <input className="lb-input" value={ov.ctaSecondaryLabel ?? ''} onChange={(e) => set('ctaSecondaryLabel', e.target.value)} placeholder="Get a Quote" />
-        </Field>
-        <Field label="Secondary CTA URL">
-          <input className="lb-input" value={ov.ctaSecondaryUrl ?? ''} onChange={(e) => set('ctaSecondaryUrl', e.target.value)} placeholder="#quote" />
-        </Field>
-      </Row>
+      <CtaGroup
+        groupLabel="Primary CTA"
+        label={ov.ctaPrimaryLabel ?? ''} labelPlaceholder="Explore Partnerships"
+        url={ov.ctaPrimaryUrl ?? ''} urlPlaceholder="#partnership"
+        iconValue={ov.ctaPrimaryIcon?.url ?? ''} iconPos={ov.ctaPrimaryIconPos ?? 'right'}
+        onLabelChange={(v) => set('ctaPrimaryLabel', v)}
+        onUrlChange={(v) => set('ctaPrimaryUrl', v)}
+        onIconChange={(ref) => set('ctaPrimaryIcon', ref)}
+        onIconPosChange={(v) => set('ctaPrimaryIconPos', v)}
+      />
+      <CtaGroup
+        groupLabel="Secondary CTA"
+        label={ov.ctaSecondaryLabel ?? ''} labelPlaceholder="Get a Quote"
+        url={ov.ctaSecondaryUrl ?? ''} urlPlaceholder="#quote"
+        iconValue={ov.ctaSecondaryIcon?.url ?? ''} iconPos={ov.ctaSecondaryIconPos ?? 'right'}
+        onLabelChange={(v) => set('ctaSecondaryLabel', v)}
+        onUrlChange={(v) => set('ctaSecondaryUrl', v)}
+        onIconChange={(ref) => set('ctaSecondaryIcon', ref)}
+        onIconPosChange={(v) => set('ctaSecondaryIconPos', v)}
+      />
     </>
   )
 }
@@ -1092,7 +1269,7 @@ function CultureValuesFields({ ov, set }: { ov: any; set: (k: string, v: unknown
                 <span>Value {i + 1}</span>
                 <button className="lb-item__remove" onClick={() => { const a = [...values]; a.splice(i, 1); set('cultureValues', a) }}>✕</button>
               </div>
-              <input className="lb-input" placeholder="Icon URL" value={v.valueIcon ?? ''} onChange={(e) => { const a = [...values]; a[i] = { ...a[i], valueIcon: e.target.value }; set('cultureValues', a) }} />
+              <MediaField label="Icon" value={v.valueIcon?.url ?? (typeof v.valueIcon === 'string' ? v.valueIcon : '')} onChange={(ref) => { const a = [...values]; a[i] = { ...a[i], valueIcon: ref?.url ?? '' }; set('cultureValues', a) }} />
               <input className="lb-input" placeholder="Title" value={v.valueTitle ?? ''} onChange={(e) => { const a = [...values]; a[i] = { ...a[i], valueTitle: e.target.value }; set('cultureValues', a) }} />
               <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={v.valueDesc ?? ''} onChange={(e) => { const a = [...values]; a[i] = { ...a[i], valueDesc: e.target.value }; set('cultureValues', a) }} />
             </div>
@@ -1117,12 +1294,12 @@ function CommunityChannelsFields({ ov, set }: { ov: any; set: (k: string, v: unk
                 <span>Channel {i + 1}</span>
                 <button className="lb-item__remove" onClick={() => { const a = [...channels]; a.splice(i, 1); set('channelItems', a) }}>✕</button>
               </div>
-              <input className="lb-input" placeholder="Icon URL" value={ch.channelIcon ?? ''} onChange={(e) => { const a = [...channels]; a[i] = { ...a[i], channelIcon: e.target.value }; set('channelItems', a) }} />
+              <MediaField label="Channel Icon" value={ch.channelIcon?.url ?? (typeof ch.channelIcon === 'string' ? ch.channelIcon : '')} onChange={(ref) => { const a = [...channels]; a[i] = { ...a[i], channelIcon: ref?.url ?? '' }; set('channelItems', a) }} />
               <input className="lb-input" placeholder="Title" value={ch.channelTitle ?? ''} onChange={(e) => { const a = [...channels]; a[i] = { ...a[i], channelTitle: e.target.value }; set('channelItems', a) }} />
               <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={ch.channelDesc ?? ''} onChange={(e) => { const a = [...channels]; a[i] = { ...a[i], channelDesc: e.target.value }; set('channelItems', a) }} />
               <Row>
                 <input className="lb-input" placeholder="CTA Label" value={ch.channelCta ?? ''} onChange={(e) => { const a = [...channels]; a[i] = { ...a[i], channelCta: e.target.value }; set('channelItems', a) }} />
-                <input className="lb-input" placeholder="CTA URL" value={ch.channelUrl ?? ''} onChange={(e) => { const a = [...channels]; a[i] = { ...a[i], channelUrl: e.target.value }; set('channelItems', a) }} />
+                <LinkField label="CTA URL" value={ch.channelUrl ?? ''} onChange={(v) => { const a = [...channels]; a[i] = { ...a[i], channelUrl: v }; set('channelItems', a) }} />
               </Row>
             </div>
           ))}
@@ -1152,7 +1329,7 @@ function CommunityAmbassadorFields({ ov, set }: { ov: any; set: (k: string, v: u
                 <span>Benefit {i + 1}</span>
                 <button className="lb-item__remove" onClick={() => { const a = [...benefits]; a.splice(i, 1); set('ambassadorBenefits', a) }}>✕</button>
               </div>
-              <input className="lb-input" placeholder="Icon URL" value={b.benefitIcon ?? ''} onChange={(e) => { const a = [...benefits]; a[i] = { ...a[i], benefitIcon: e.target.value }; set('ambassadorBenefits', a) }} />
+              <MediaField label="Icon" value={b.benefitIcon?.url ?? (typeof b.benefitIcon === 'string' ? b.benefitIcon : '')} onChange={(ref) => { const a = [...benefits]; a[i] = { ...a[i], benefitIcon: ref?.url ?? '' }; set('ambassadorBenefits', a) }} />
               <Row>
                 <input className="lb-input" placeholder="Title" value={b.benefitTitle ?? ''} onChange={(e) => { const a = [...benefits]; a[i] = { ...a[i], benefitTitle: e.target.value }; set('ambassadorBenefits', a) }} />
                 <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={b.benefitDesc ?? ''} onChange={(e) => { const a = [...benefits]; a[i] = { ...a[i], benefitDesc: e.target.value }; set('ambassadorBenefits', a) }} />
@@ -1162,14 +1339,17 @@ function CommunityAmbassadorFields({ ov, set }: { ov: any; set: (k: string, v: u
           <button className="lb-items__add" onClick={() => set('ambassadorBenefits', [...benefits, {}])}>+ Add Benefit</button>
         </div>
       </Field>
-      <Row>
-        <Field label="CTA Label">
-          <input className="lb-input" value={ov.ambassadorCta ?? ''} onChange={(e) => set('ambassadorCta', e.target.value)} placeholder="Apply to Become an Ambassador" />
-        </Field>
-        <Field label="CTA URL">
-          <input className="lb-input" value={ov.ambassadorUrl ?? ''} onChange={(e) => set('ambassadorUrl', e.target.value)} placeholder="#" />
-        </Field>
-      </Row>
+
+      <CtaGroup
+        groupLabel="Ambassador CTA"
+        label={ov.ambassadorCta ?? ''} labelPlaceholder="Apply to Become an Ambassador"
+        url={ov.ambassadorUrl ?? ''} urlPlaceholder="#"
+        iconValue={ov.ambassadorCtaIcon?.url ?? ''} iconPos={ov.ambassadorCtaIconPos ?? 'right'}
+        onLabelChange={(v) => set('ambassadorCta', v)}
+        onUrlChange={(v) => set('ambassadorUrl', v)}
+        onIconChange={(ref) => set('ambassadorCtaIcon', ref)}
+        onIconPosChange={(v) => set('ambassadorCtaIconPos', v)}
+      />
     </>
   )
 }
@@ -1187,12 +1367,12 @@ function CommunityProgramsFields({ ov, set }: { ov: any; set: (k: string, v: unk
                 <span>Program {i + 1}</span>
                 <button className="lb-item__remove" onClick={() => { const a = [...programs]; a.splice(i, 1); set('programItems', a) }}>✕</button>
               </div>
-              <input className="lb-input" placeholder="Icon URL" value={p.programIcon ?? ''} onChange={(e) => { const a = [...programs]; a[i] = { ...a[i], programIcon: e.target.value }; set('programItems', a) }} />
+              <MediaField label="Icon" value={p.programIcon?.url ?? (typeof p.programIcon === 'string' ? p.programIcon : '')} onChange={(ref) => { const a = [...programs]; a[i] = { ...a[i], programIcon: ref?.url ?? '' }; set('programItems', a) }} />
               <input className="lb-input" placeholder="Title" value={p.programTitle ?? ''} onChange={(e) => { const a = [...programs]; a[i] = { ...a[i], programTitle: e.target.value }; set('programItems', a) }} />
               <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={p.programDesc ?? ''} onChange={(e) => { const a = [...programs]; a[i] = { ...a[i], programDesc: e.target.value }; set('programItems', a) }} />
               <Row>
                 <input className="lb-input" placeholder="CTA Label" value={p.programCta ?? ''} onChange={(e) => { const a = [...programs]; a[i] = { ...a[i], programCta: e.target.value }; set('programItems', a) }} />
-                <input className="lb-input" placeholder="CTA URL" value={p.programUrl ?? ''} onChange={(e) => { const a = [...programs]; a[i] = { ...a[i], programUrl: e.target.value }; set('programItems', a) }} />
+                <LinkField label="CTA URL" value={p.programUrl ?? ''} onChange={(v) => { const a = [...programs]; a[i] = { ...a[i], programUrl: v }; set('programItems', a) }} />
               </Row>
             </div>
           ))}
@@ -1211,6 +1391,7 @@ function ContactHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
       <Field label="Badge Text">
         <input className="lb-input" value={ov.badge ?? ''} onChange={(e) => set('badge', e.target.value)} placeholder="GET IN TOUCH" />
       </Field>
+      <MediaField label="Badge Icon" value={ov.badgeIcon?.url ?? ''} onChange={(ref) => set('badgeIcon', ref)} />
       <Field label="Heading">
         <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Let's Build Something Great" />
       </Field>
@@ -1225,7 +1406,7 @@ function ContactHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
                 <span>Card {i + 1}</span>
                 <button className="lb-item__remove" onClick={() => { const a = [...cards]; a.splice(i, 1); set('contactCards', a) }}>✕</button>
               </div>
-              <input className="lb-input" placeholder="Icon URL" value={c.cardIconSrc ?? ''} onChange={(e) => { const a = [...cards]; a[i] = { ...a[i], cardIconSrc: e.target.value }; set('contactCards', a) }} />
+              <MediaField label="Card Icon" value={c.cardIcon?.url ?? c.cardIconSrc ?? ''} onChange={(ref) => { const a = [...cards]; a[i] = { ...a[i], cardIcon: ref, cardIconSrc: ref?.url ?? '' }; set('contactCards', a) }} />
               <Row>
                 <input className="lb-input" placeholder="Title" value={c.cardTitle ?? ''} onChange={(e) => { const a = [...cards]; a[i] = { ...a[i], cardTitle: e.target.value }; set('contactCards', a) }} />
                 <input className="lb-input" placeholder="Value (e.g. email)" value={c.cardValue ?? ''} onChange={(e) => { const a = [...cards]; a[i] = { ...a[i], cardValue: e.target.value }; set('contactCards', a) }} />
@@ -1262,12 +1443,18 @@ function ContactStatsFields({ ov, set }: { ov: any; set: (k: string, v: unknown)
               </div>
               <Row>
                 <input className="lb-input" placeholder="Label" value={btn.contactCtaLabel ?? ''} onChange={(e) => { const a = [...ctas]; a[i] = { ...a[i], contactCtaLabel: e.target.value }; set('contactStatCtas', a) }} />
-                <input className="lb-input" placeholder="URL" value={btn.contactCtaUrl ?? ''} onChange={(e) => { const a = [...ctas]; a[i] = { ...a[i], contactCtaUrl: e.target.value }; set('contactStatCtas', a) }} />
+                <LinkField label="URL" value={btn.contactCtaUrl ?? ''} onChange={(v) => { const a = [...ctas]; a[i] = { ...a[i], contactCtaUrl: v }; set('contactStatCtas', a) }} />
               </Row>
               <select className="lb-input lb-input--select" value={btn.contactCtaPrimary ? 'true' : 'false'} onChange={(e) => { const a = [...ctas]; a[i] = { ...a[i], contactCtaPrimary: e.target.value === 'true' }; set('contactStatCtas', a) }}>
                 <option value="true">Primary (dark)</option>
                 <option value="false">Secondary (outline)</option>
               </select>
+              <BtnIconRow
+                iconValue={btn.contactCtaIcon?.url ?? ''}
+                iconPos={btn.contactCtaIconPos ?? 'right'}
+                onIconChange={(ref) => { const a = [...ctas]; a[i] = { ...a[i], contactCtaIcon: ref }; set('contactStatCtas', a) }}
+                onIconPosChange={(v) => { const a = [...ctas]; a[i] = { ...a[i], contactCtaIconPos: v }; set('contactStatCtas', a) }}
+              />
             </div>
           ))}
           <button className="lb-items__add" onClick={() => set('contactStatCtas', [...ctas, { contactCtaPrimary: true }])}>+ Add Button</button>
@@ -1400,8 +1587,13 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
           <Field label="Button Label">
             <input className="lb-input" value={ov.buttonLabel ?? ''} onChange={(e) => set('buttonLabel', e.target.value)} placeholder="Click here" />
           </Field>
-          <Field label="Button URL">
-            <input className="lb-input" value={ov.buttonUrl ?? ''} onChange={(e) => set('buttonUrl', e.target.value)} placeholder="/page-slug" />
+          <LinkField label="Button URL" value={ov.buttonUrl ?? ''} onChange={(v) => set('buttonUrl', v)} placeholder="/page-slug" />
+          <MediaField label="Button Icon (empty = none)" value={ov.buttonIcon?.url ?? ''} onChange={(ref) => set('buttonIcon', ref)} />
+          <Field label="Icon Position">
+            <select className="lb-input lb-input--select" value={ov.buttonIconPos ?? 'right'} onChange={(e) => set('buttonIconPos', e.target.value)}>
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+            </select>
           </Field>
         </>
       )}
@@ -1419,9 +1611,7 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
       )}
 
       {['icon', 'icon-box'].includes(blockType) && (
-        <Field label="Icon Name / SVG">
-          <input className="lb-input" value={ov.iconName ?? ''} onChange={(e) => set('iconName', e.target.value)} placeholder="star / <svg>...</svg>" />
-        </Field>
+        <MediaField label="Icon" value={ov.iconName ?? ''} onChange={(ref) => set('iconName', ref?.url ?? '')} />
       )}
 
       {blockType === 'grid' && (

@@ -36,38 +36,163 @@ import {
   LocationsSection,
 } from '@/components/block'
 
-export function resolvePreviewComponent(blockType: BlockType, data: Record<string, unknown>): React.ReactNode {
+// ── CSS custom property injection ─────────────────────────────────────────────
+// Maps blockStyle keys (from BlockStyleFields) → CSS custom properties so
+// block components can read them via var(--token, fallback).
+function buildCSSVarsFromBlockStyle(style: Record<string, unknown>): React.CSSProperties {
+  const vars: Record<string, string> = {}
+  const str = (v: unknown) => String(v)
+
+  // Background
+  if (style.heroBgColor) vars['--color-bg']       = str(style.heroBgColor)
+  if (style.sectionBg)   vars['--color-bg']       = str(style.sectionBg)
+  if (style.gradientFrom) vars['--gradient-from'] = str(style.gradientFrom)
+  if (style.gradientTo)   vars['--gradient-to']   = str(style.gradientTo)
+  if (style.heroBgImage || style.sectionBgImage)
+    vars['--bg-image'] = `url(${str(style.heroBgImage ?? style.sectionBgImage)})`
+  if (style.overlayOpacity != null) vars['--overlay-opacity'] = str(style.overlayOpacity)
+
+  // Heading / typography
+  if (style.headingColor)      vars['--color-text']           = str(style.headingColor)
+  if (style.headingFontSize)   vars['--heading-font-size']    = str(style.headingFontSize)
+  if (style.headingFontWeight) vars['--heading-font-weight']  = str(style.headingFontWeight)
+  if (style.headingLineHeight) vars['--heading-line-height']  = str(style.headingLineHeight)
+  if (style.headingTextShadow) vars['--heading-text-shadow']  = str(style.headingTextShadow)
+
+  // Body / muted text
+  if (style.bodyColor)    vars['--color-muted']    = str(style.bodyColor)
+  if (style.bodyFontSize) vars['--body-font-size'] = str(style.bodyFontSize)
+
+  // Label / accent
+  if (style.labelColor)    vars['--color-accent']     = str(style.labelColor)
+  if (style.labelFontSize) vars['--label-font-size']  = str(style.labelFontSize)
+  if (style.iconColor)     vars['--icon-color']       = str(style.iconColor)
+  if (style.iconBg)        vars['--icon-bg']          = str(style.iconBg)
+  if (style.iconBorderRadius) vars['--icon-radius']   = str(style.iconBorderRadius)
+
+  // Cards / surfaces
+  if (style.cardBg)           vars['--color-surface']  = str(style.cardBg)
+  if (style.cardBorder)       vars['--color-border']   = str(style.cardBorder)
+  if (style.cardBorderRadius) vars['--card-radius']    = str(style.cardBorderRadius)
+  if (style.cardHoverBg)      vars['--card-hover-bg']  = str(style.cardHoverBg)
+
+  // CTAs / buttons
+  if (style.ctaPrimaryBg)       vars['--cta-primary-bg']       = str(style.ctaPrimaryBg)
+  if (style.ctaPrimaryText)     vars['--cta-primary-text']     = str(style.ctaPrimaryText)
+  if (style.ctaSecondaryBg)     vars['--cta-secondary-bg']     = str(style.ctaSecondaryBg)
+  if (style.ctaSecondaryText)   vars['--cta-secondary-text']   = str(style.ctaSecondaryText)
+  if (style.ctaSecondaryBorder) vars['--cta-secondary-border'] = str(style.ctaSecondaryBorder)
+  if (style.buttonBg)           vars['--button-bg']            = str(style.buttonBg)
+  if (style.buttonText)         vars['--button-text']          = str(style.buttonText)
+  if (style.buttonBorderRadius) vars['--button-radius']        = str(style.buttonBorderRadius)
+  if (style.buttonHoverBg)      vars['--button-hover-bg']      = str(style.buttonHoverBg)
+
+  // Stats
+  if (style.statsBg)        vars['--stats-bg']          = str(style.statsBg)
+  if (style.statsBorder)    vars['--stats-border']       = str(style.statsBorder)
+  if (style.statValueColor) vars['--stat-value-color']  = str(style.statValueColor)
+  if (style.statLabelColor) vars['--stat-label-color']  = str(style.statLabelColor)
+
+  // Badge
+  if (style.badgeBg)           vars['--badge-bg']      = str(style.badgeBg)
+  if (style.badgeTextColor)    vars['--badge-text']    = str(style.badgeTextColor)
+  if (style.badgeBorderRadius) vars['--badge-radius']  = str(style.badgeBorderRadius)
+
+  // Testimonials
+  if (style.quoteColor)        vars['--quote-color']       = str(style.quoteColor)
+  if (style.quoteFontSize)     vars['--quote-font-size']   = str(style.quoteFontSize)
+  if (style.quoteLineHeight)   vars['--quote-line-height'] = str(style.quoteLineHeight)
+  if (style.quoteIconColor)    vars['--quote-icon-color']  = str(style.quoteIconColor)
+  if (style.authorColor)       vars['--author-color']      = str(style.authorColor)
+  if (style.authorRoleColor)   vars['--author-role-color'] = str(style.authorRoleColor)
+  if (style.avatarBorderRadius) vars['--avatar-radius']   = str(style.avatarBorderRadius)
+
+  // Contact / primary text
+  if (style.primaryTextColor) vars['--primary-text-color'] = str(style.primaryTextColor)
+
+  // Layout
+  if (style.sectionMinHeight) vars['--section-min-height'] = str(style.sectionMinHeight)
+  if (style.contentMaxWidth)  vars['--content-max-width']  = str(style.contentMaxWidth)
+  if (style.sectionPaddingY)  vars['--section-padding-y']  = str(style.sectionPaddingY)
+  if (style.paddingX)         vars['--padding-x']          = str(style.paddingX)
+  if (style.gridGap)          vars['--grid-gap']           = str(style.gridGap)
+  if (style.columns != null)  vars['--grid-columns']       = str(style.columns)
+
+  return vars as React.CSSProperties
+}
+
+function withStyle(node: React.ReactNode, blockStyle?: Record<string, unknown>): React.ReactNode {
+  if (!blockStyle || Object.keys(blockStyle).length === 0) return node
+  const vars = buildCSSVarsFromBlockStyle(blockStyle)
+  if (Object.keys(vars).length === 0) return node
+  return <div style={vars}>{node}</div>
+}
+
+export function resolvePreviewComponent(
+  blockType: BlockType,
+  data: Record<string, unknown>,
+  blockStyle?: Record<string, unknown>,
+): React.ReactNode {
   switch (blockType) {
     // ── Advance sections ─────────────────────────────────────────────────────
-    case 'hero':                  return <HeroSection data={data as any} />
-    case 'hero-split':            return <HeroSplitSection data={data as any} />
-    case 'hero-centered':         return <HeroCenteredSection data={data as any} />
-    case 'features':              return <FeaturesSection data={data as any} />
-    case 'services':              return <ServicesSection data={data as any} />
-    case 'testimonials':          return <TestimonialsSection data={data as any} />
-    case 'contact':               return <ContactSection data={data as any} />
-    case 'card-grid':             return <CardGridSection data={data as any} />
-    case 'cta-banner':            return <CTABannerSection data={data as any} />
-    case 'process-steps':         return <ProcessStepsSection data={data as any} />
-    case 'expertise-tiles':       return <ExpertiseTilesSection data={data as any} />
-    case 'company-stats':         return <CompanyStatsSection data={data as any} />
-    case 'mission-vision':        return <MissionVisionSection data={data as any} />
-    case 'team-section':          return <TeamSection data={data as any} />
-    case 'faq-section':           return <FAQSection data={data as any} />
-    case 'page-hero':             return <PageHeroSection data={data as any} />
-    case 'project-grid':          return <ProjectGridSection data={data as any} />
-    case 'article-grid':          return <ArticleGridSection data={data as any} />
-    case 'article-featured':      return <ArticleFeaturedSection data={data as any} />
-    case 'jobs-list':             return <JobsListSection data={data as any} />
-    case 'involved-hero':         return <InvolvedHeroSection data={data as any} />
-    case 'quote-form':            return <QuoteFormSection data={data as any} />
-    case 'culture-values':        return <CultureValuesSection data={data as any} />
-    case 'community-channels':    return <CommunityChannelsSection data={data as any} />
-    case 'community-ambassador':  return <CommunityAmbassadorSection data={data as any} />
-    case 'community-programs':    return <CommunityProgramsSection data={data as any} />
-    case 'contact-hero':          return <ContactHeroSection data={data as any} />
-    case 'contact-stats':         return <ContactStatsSection data={data as any} />
-    case 'locations':             return <LocationsSection data={data as any} />
+    case 'hero':
+      return withStyle(<HeroSection data={data as any} />, blockStyle)
+    case 'hero-split':
+      return withStyle(<HeroSplitSection data={data as any} />, blockStyle)
+    case 'hero-centered':
+      return withStyle(<HeroCenteredSection data={data as any} />, blockStyle)
+    case 'features':
+      return withStyle(<FeaturesSection data={data as any} />, blockStyle)
+    case 'services':
+      return withStyle(<ServicesSection data={data as any} />, blockStyle)
+    case 'testimonials':
+      return withStyle(<TestimonialsSection data={data as any} />, blockStyle)
+    case 'contact':
+      return withStyle(<ContactSection data={data as any} />, blockStyle)
+    case 'card-grid':
+      return withStyle(<CardGridSection data={data as any} />, blockStyle)
+    case 'cta-banner':
+      return withStyle(<CTABannerSection data={data as any} />, blockStyle)
+    case 'process-steps':
+      return withStyle(<ProcessStepsSection data={data as any} />, blockStyle)
+    case 'expertise-tiles':
+      return withStyle(<ExpertiseTilesSection data={data as any} />, blockStyle)
+    case 'company-stats':
+      return withStyle(<CompanyStatsSection data={data as any} />, blockStyle)
+    case 'mission-vision':
+      return withStyle(<MissionVisionSection data={data as any} />, blockStyle)
+    case 'team-section':
+      return withStyle(<TeamSection data={data as any} />, blockStyle)
+    case 'faq-section':
+      return withStyle(<FAQSection data={data as any} />, blockStyle)
+    case 'page-hero':
+      return withStyle(<PageHeroSection data={data as any} />, blockStyle)
+    case 'project-grid':
+      return withStyle(<ProjectGridSection data={data as any} />, blockStyle)
+    case 'article-grid':
+      return withStyle(<ArticleGridSection data={data as any} />, blockStyle)
+    case 'article-featured':
+      return withStyle(<ArticleFeaturedSection data={data as any} />, blockStyle)
+    case 'jobs-list':
+      return withStyle(<JobsListSection data={data as any} />, blockStyle)
+    case 'involved-hero':
+      return withStyle(<InvolvedHeroSection data={data as any} />, blockStyle)
+    case 'quote-form':
+      return withStyle(<QuoteFormSection data={data as any} />, blockStyle)
+    case 'culture-values':
+      return withStyle(<CultureValuesSection data={data as any} />, blockStyle)
+    case 'community-channels':
+      return withStyle(<CommunityChannelsSection data={data as any} />, blockStyle)
+    case 'community-ambassador':
+      return withStyle(<CommunityAmbassadorSection data={data as any} />, blockStyle)
+    case 'community-programs':
+      return withStyle(<CommunityProgramsSection data={data as any} />, blockStyle)
+    case 'contact-hero':
+      return withStyle(<ContactHeroSection data={data as any} />, blockStyle)
+    case 'contact-stats':
+      return withStyle(<ContactStatsSection data={data as any} />, blockStyle)
+    case 'locations':
+      return withStyle(<LocationsSection data={data as any} />, blockStyle)
 
     // ── Basic blocks — inline previews ────────────────────────────────────────
     case 'heading':

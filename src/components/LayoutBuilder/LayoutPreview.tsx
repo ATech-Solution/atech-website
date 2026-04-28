@@ -138,11 +138,18 @@ function BlockPreviewWrapper({
 
   const defaults = getDefaultOverrides(block.blockType).content ?? {}
   const data: Record<string, unknown> = { ...defaults, ...(block.overrides?.content ?? {}) }
+  const blockStyle = block.overrides?.blockStyle ?? {}
   const wrapperStyle = buildStyleCSS(block.overrides?.style, block.overrides?.advanced, viewMode)
 
+
+  // w-full overflow-x-auto bg-gray-200 p-4 
+  // mx-auto min-w-[1440px] max-w-[1440px] bg-white shadow-xl min-h-screen
+  // @container
+  // w-full overflow-hidden
   return (
     <div
-      className={`lbfs-preview-block${isSelected ? ' lbfs-preview-block--selected' : ''}`}
+      className={`"
+      lbfs-preview-block${isSelected ? ' lbfs-preview-block--selected' : ''}`}
       style={Object.keys(wrapperStyle).length > 0 ? wrapperStyle : undefined}
     >
       {/* Hover/select overlay — only shown on non-inline-edit blocks, or when not selected */}
@@ -188,6 +195,7 @@ function BlockPreviewWrapper({
         </div>
       )}
 
+
       {/* Render content */}
       {isLayoutBlock ? (
         <div className="lbfs-preview-layout-block">
@@ -210,7 +218,7 @@ function BlockPreviewWrapper({
       ) : isInlineType && isSelected ? (
         <InlineTextBlock block={block} onInlineEdit={onInlineEdit} />
       ) : (
-        resolvePreviewComponent(block.blockType, data)
+        resolvePreviewComponent(block.blockType, data, blockStyle)
       )}
     </div>
   )
@@ -236,7 +244,8 @@ export function LayoutPreview({
   onInlineEdit,
 }: LayoutPreviewProps) {
   return (
-    <div className="lbfs-preview">
+    //  @container
+    <div className="lbfs-preview tailwind-scope">
       {tree.length === 0 && (
         <div className="lbfs-preview__empty">
           <div className="lbfs-preview__empty-icon">⬡</div>

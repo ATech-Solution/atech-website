@@ -1,0 +1,65 @@
+Session: 2026-04-28
+Task: Improve layout builder plugin — make ALL block element properties (content, style, advanced) affect the frontend preview directly when changed.
+
+## Root Causes Found & Fixed
+
+### 1. BlockStyleFields was dead code (never shown in UI)
+- `BlockPropertiesPanel.tsx` always showed generic `StyleFields` for the style tab
+- Block-specific style controls (`BlockStyleFields.tsx`) with `heroBgColor`, `headingColor`, `cardBg`, etc. were defined but never surfaced to the user
+- Fix: Added `isAdvanceBlock` detection → advance blocks now show `getBlockStyleFields()` in the style tab; basic/general blocks keep generic `StyleFields`
+
+### 2. BlockOverrides type missing blockStyle field
+- `block.overrides.style` was typed for generic CSS only (textAlign, fontFamily, etc.)
+- Block-specific style properties had no storage slot in the type
+- Fix: Added `blockStyle?: Record<string, unknown>` to `BlockOverrides` interface in `types.ts`
+- New handler `handleBlockStyleChange` in `BlockPropertiesPanel` writes to `block.overrides.blockStyle`
+
+### 3. Block-specific styles never reached block components
+- `resolvePreviewComponent()` only accepted `(blockType, data)` — no style passthrough
+- Fix: Updated signature to `(blockType, data, blockStyle?)` in `previewResolver.tsx`
+- Added `buildCSSVarsFromBlockStyle()` that maps BlockStyleFields keys → CSS custom properties
+- Added `withStyle()` wrapper that injects CSS vars on a div wrapping each advance block
+- All 30 advance blocks now wrapped: `withStyle(<HeroSection ... />, blockStyle)`
+
+### 4. Block components had hardcoded colors instead of CSS variables
+- Many components used hex literals (`#292929`, `#fafafa`, `#525252`, etc.) instead of `var()` tokens
+- CSS custom properties injected by the wrapper div couldn't cascade into hardcoded inline styles
+- Fix: Updated these components to use CSS variable tokens with fallbacks:
+  - `HeroSection.tsx`: bg, heading, body, CTAs, stats, badge, floating cards
+  - `FeaturesSection.tsx`: section bg, heading/desc colors, max-width, padding
+  - `ServicesSection.tsx`: section padding, max-width
+  - `TestimonialsSection.tsx`: section bg, heading, body, quote, author, card
+  - `CTABannerSection.tsx`: bg, heading, body, CTA button, stats, padding
+  - `ContactSection.tsx`: section padding, max-width, submit button
+
+## CSS Variable Token Mapping (key tokens)
+- `--color-bg`           ← heroBgColor / sectionBg
+- `--color-text`         ← headingColor
+- `--color-muted`        ← bodyColor
+- `--color-accent`       ← labelColor / iconColor
+- `--color-surface`      ← cardBg
+- `--color-border`       ← cardBorder
+- `--cta-primary-bg/text` ← CTA button colors
+- `--stat-value-color`   ← statValueColor
+- `--stat-label-color`   ← statLabelColor
+- `--badge-bg/text`      ← badge colors
+- `--section-padding-y`  ← sectionPaddingY
+- `--content-max-width`  ← contentMaxWidth
+- `--heading-font-size/weight/line-height` ← typography
+
+## Files Changed
+- src/components/LayoutBuilder/types.ts
+- src/components/LayoutBuilder/BlockPropertiesPanel.tsx
+- src/components/LayoutBuilder/LayoutPreview.tsx
+- src/components/LayoutBuilder/utils/previewResolver.tsx
+- src/components/block/Advance/HeroSection.tsx
+- src/components/block/Advance/FeaturesSection.tsx
+- src/components/block/Advance/ServicesSection.tsx
+- src/components/block/Advance/TestimonialsSection.tsx
+- src/components/block/Advance/CTABannerSection.tsx
+- src/components/block/Advance/ContactSection.tsx
+
+## Architecture Note
+- `block.overrides.style` → generic CSS wrapper (backgroundColor, fontFamily, padding, etc.) → applied by `buildStyleCSS()` in LayoutPreview as wrapper div inline styles
+- `block.overrides.blockStyle` → block-internal visual overrides (section colors, card styles, etc.) → injected as CSS custom properties via `withStyle()` wrapper in previewResolver
+- `block.overrides.advanced` → layout/visibility controls (padding, margin, z-index, hide on mobile/tablet/desktop)

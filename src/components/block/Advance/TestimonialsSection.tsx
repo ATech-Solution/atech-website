@@ -1,6 +1,8 @@
 // Testimonials Section — Layout Builder variant (Advance)
 // Used by: home-testimonials block type
 
+import type React from 'react'
+
 interface TestimonialItem {
   clientName?:    string
   clientRole?:    string
@@ -38,7 +40,11 @@ function TestimonialCard({ item }: { item: TestimonialItem }) {
   return (
     <div
       className="flex flex-col rounded-2xl p-8"
-      style={{ background: '#ffffff', border: '1px solid #e5e5e5' }}
+      style={{
+        background: 'var(--color-surface, #ffffff)',
+        border: 'var(--color-border, 1px solid #e5e5e5)',
+        borderRadius: 'var(--card-radius, 16px)',
+      }}
     >
       <div className="flex items-center gap-4 mb-6">
         {item.avatar?.url ? (
@@ -60,13 +66,13 @@ function TestimonialCard({ item }: { item: TestimonialItem }) {
           {item.clientName && (
             <p
               className="text-sm font-semibold leading-tight mb-0.5"
-              style={{ color: '#171717', fontFamily: 'var(--font-work-sans, sans-serif)' }}
+              style={{ color: 'var(--author-color, #171717)', fontFamily: 'var(--font-work-sans, sans-serif)' }}
             >
               {item.clientName}
             </p>
           )}
           {byline && (
-            <p className="text-xs" style={{ color: '#525252', fontFamily: 'var(--font-work-sans, sans-serif)' }}>
+            <p className="text-xs" style={{ color: 'var(--author-role-color, #525252)', fontFamily: 'var(--font-work-sans, sans-serif)' }}>
               {byline}
             </p>
           )}
@@ -76,7 +82,12 @@ function TestimonialCard({ item }: { item: TestimonialItem }) {
       {item.quote && (
         <p
           className="text-sm leading-relaxed flex-1 mb-6"
-          style={{ color: '#525252', fontFamily: 'var(--font-work-sans, sans-serif)' }}
+          style={{
+            color: 'var(--quote-color, #525252)',
+            fontFamily: 'var(--font-work-sans, sans-serif)',
+            fontSize: 'var(--quote-font-size, 0.875rem)',
+            lineHeight: 'var(--quote-line-height, 1.625)',
+          }}
         >
           &ldquo;{item.quote}&rdquo;
         </p>
@@ -95,8 +106,15 @@ export default function TestimonialsSection({ data }: { data: TestimonialsSectio
   const items = data.testimonialItems ?? []
 
   return (
-    <section className="py-24" style={{ background: '#ffd369' }}>
-      <div className="mx-auto px-6 md:px-10" style={{ maxWidth: '1280px' }}>
+    <section
+      className="py-24"
+      style={{
+        background: 'var(--color-bg, #ffd369)',
+        paddingTop: 'var(--section-padding-y, 96px)',
+        paddingBottom: 'var(--section-padding-y, 96px)',
+      }}
+    >
+      <div className="mx-auto px-6 md:px-10" style={{ maxWidth: 'var(--content-max-width, 1280px)' }}>
         {(data.heading || data.subheading) && (
           <div className="flex flex-col gap-6 items-center w-full mb-16">
             {data.heading && (
@@ -104,9 +122,9 @@ export default function TestimonialsSection({ data }: { data: TestimonialsSectio
                 className="text-center w-full leading-tight tracking-tight"
                 style={{
                   fontFamily: 'var(--font-work-sans, sans-serif)',
-                  fontSize: 'clamp(1.75rem, 3vw, 2.25rem)',
-                  fontWeight: 700,
-                  color: '#171717',
+                  fontSize: 'var(--heading-font-size, clamp(1.75rem, 3vw, 2.25rem))',
+                  fontWeight: 'var(--heading-font-weight, 700)' as React.CSSProperties['fontWeight'],
+                  color: 'var(--color-text, #171717)',
                   letterSpacing: '-0.01em',
                 }}
               >
@@ -118,8 +136,8 @@ export default function TestimonialsSection({ data }: { data: TestimonialsSectio
                 className="text-center w-full leading-relaxed"
                 style={{
                   fontFamily: 'var(--font-work-sans, sans-serif)',
-                  fontSize: '1.125rem',
-                  color: '#525252',
+                  fontSize: 'var(--body-font-size, 1.125rem)',
+                  color: 'var(--color-muted, #525252)',
                   maxWidth: '44rem',
                   marginLeft: 'auto',
                   marginRight: 'auto',

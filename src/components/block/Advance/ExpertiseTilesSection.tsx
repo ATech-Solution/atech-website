@@ -6,6 +6,7 @@ import SectionHeader from '@/components/ui/SectionHeader'
 
 interface ExpertiseTile {
   tileIconSrc?: string
+  tileImage?:   { url: string } | null
   tileLabel?:   string
 }
 
@@ -15,15 +16,16 @@ export interface ExpertiseTilesSectionData {
   expertiseTiles?: ExpertiseTile[]
 }
 
-function Tile({ tileIconSrc, tileLabel }: ExpertiseTile) {
+function Tile({ tileIconSrc, tileImage, tileLabel }: ExpertiseTile) {
+  const iconUrl = tileImage?.url ?? tileIconSrc
   return (
     <div
       className="flex flex-col items-center justify-center gap-4 p-6 rounded-2xl"
       style={{ background: '#ffffff', border: '1px solid #e5e5e5' }}
     >
-      {tileIconSrc && (
+      {iconUrl && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={tileIconSrc} alt="" className="object-contain" style={{ width: '32px', height: '32px' }} />
+        <img src={iconUrl} alt="" className="object-contain" style={{ width: '32px', height: '32px' }} />
       )}
       {tileLabel && (
         <span

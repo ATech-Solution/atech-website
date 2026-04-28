@@ -97,9 +97,14 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
   return (
     <section
       className="py-24"
-      style={{ background: 'var(--color-bg, #292929)', borderTop: '1px solid var(--color-border, #383838)' }}
+      style={{
+        background: 'var(--color-bg, #292929)',
+        borderTop: '1px solid var(--color-border, #383838)',
+        paddingTop: 'var(--section-padding-y, 96px)',
+        paddingBottom: 'var(--section-padding-y, 96px)',
+      }}
     >
-      <div className="mx-auto px-6 md:px-10" style={{ maxWidth: '1280px' }}>
+      <div className="mx-auto px-6 md:px-10" style={{ maxWidth: 'var(--content-max-width, 1280px)' }}>
         {(data.heading || data.contactSubheading) && (
           <div className="flex flex-col gap-6 items-center w-full mb-16">
             {data.heading && (
@@ -181,7 +186,12 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
                 <button
                   type="submit"
                   className="px-8 py-3 rounded-lg text-base font-normal transition-opacity duration-200 hover:opacity-90"
-                  style={{ background: '#ffffff', color: '#000000', fontFamily: 'var(--font-work-sans, sans-serif)' }}
+                  style={{
+                    background: 'var(--button-bg, #ffffff)',
+                    color: 'var(--button-text, #000000)',
+                    fontFamily: 'var(--font-work-sans, sans-serif)',
+                    borderRadius: 'var(--button-radius, 8px)',
+                  }}
                 >
                   {submitLabel}
                 </button>

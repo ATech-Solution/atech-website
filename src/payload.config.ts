@@ -7,10 +7,12 @@ import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { stripePlugin } from '@payloadcms/plugin-stripe'
+import nodemailer from 'nodemailer'
 import sharp from 'sharp'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { payloadEmailAdapter } from './lib/email'
+// import { payloadEmailAdapter } from './lib/email'
+// import { withPruning } from '../src/utils/injectPruneButton'
 
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
@@ -37,6 +39,40 @@ const payloadServerUrl = envUrl('PAYLOAD_PUBLIC_SERVER_URL') || siteUrl
 const localDevUrls = ['http://localhost:3000', 'http://127.0.0.1:3000']
 const allowedOrigins = Array.from(new Set([payloadServerUrl, siteUrl, ...localDevUrls]))
 
+// Resilient email adapter — send failures are logged but never thrown,
+// so auth operations (forgot-password, user create+verify) never return "Something went wrong"
+// due to an email transport error.
+const buildEmailAdapter = async () => {
+  const fromAddress = process.env.EMAIL_FROM || 'noreply@dev.atech.software'
+  const fromName = process.env.EMAIL_FROM_NAME || 'Atech Software'
+
+  const transport = process.env.AWS_SES_SMTP_USER
+    ? nodemailer.createTransport({
+        host: process.env.AWS_SES_SMTP_HOST || 'email-smtp.ap-southeast-1.amazonaws.com',
+        port: parseInt(process.env.AWS_SES_SMTP_PORT || '465'),
+        secure: true,
+        auth: {
+          user: process.env.AWS_SES_SMTP_USER,
+          pass: process.env.AWS_SES_SMTP_PASSWORD,
+        },
+      })
+    : nodemailer.createTransport({ jsonTransport: true })
+
+  return () => ({
+    name: 'nodemailer',
+    defaultFromAddress: fromAddress,
+    defaultFromName: fromName,
+    sendEmail: async (message: nodemailer.SendMailOptions) => {
+      try {
+        await transport.sendMail({ from: `${fromName} <${fromAddress}>`, ...message })
+      } catch (err) {
+        console.error('[Email] Failed to send to', message.to, err instanceof Error ? err.message : String(err))
+        // Intentionally swallowed — prevents transport errors from breaking forgot-password / user-verify
+      }
+    },
+  })
+}
+
 // ── Server URL — resolved from NODE_ENV ────────────────────────────────────
 // Priority: env-specific override → shared fallback → localhost default
 // const serverURL =
@@ -52,18 +88,19 @@ export default buildConfig({
   // serverURL,
   // ── Email (AWS SES) ────────────────────────────────────────────────────────
   // sendEmail() is a no-op when AWS_SES_SMTP_USER is not set (bypass/dev mode).
-  email: payloadEmailAdapter,
+  // email: payloadEmailAdapter,
+  email: buildEmailAdapter(),
   // server: "standalone",
   // ── Admin panel ────────────────────────────────────────────────────────────
   admin: {
     user: 'users',            // which collection handles auth
     suppressHydrationWarning: true,
     // autoLogin: process.env.NODE_ENV !== 'production'
-    //   ? { email: 'dev@atech.software', prefillOnly: false }
+    //   ? { email: 'tan@atech.software', prefillOnly: false }
     //   : false,
-    autoLogin: { email: 'dev@atech.software', prefillOnly: false },
+    autoLogin: { email: 'tan@atech.software', prefillOnly: false },
     meta: {
-      titleSuffix: '— ATech Admin',
+      titleSuffix: ' — ATech Admin',
     },
     // ── Live Preview (works for any frontend URL) ──────────────────────────
     livePreview: {
@@ -72,6 +109,9 @@ export default buildConfig({
         { label: 'Tablet',  name: 'tablet',  width: 768,  height: 1024 },
         { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
       ],
+    },
+    importMap: {
+      baseDir: '@', // or path.resolve(__dirname)
     },
   },
 
@@ -84,6 +124,13 @@ export default buildConfig({
 
   // ── Globals ────────────────────────────────────────────────────────────────
   globals: [Navigation, Settings, Theme],
+
+  // collections: withPruning([
+  //   Users, Pages, Posts, Categories, Media, Plugins, Blocks
+  // ]),
+  // globals: withPruning([
+  //   Navigation, Settings, Theme
+  // ]),
 
   // ── Rich text editor ───────────────────────────────────────────────────────
   editor: lexicalEditor({}),
@@ -133,7 +180,6 @@ export default buildConfig({
   plugins: [
     // Layout Builder — seeds itself into the Plugins collection on first run
     layoutBuilderPlugin(),
-
 
     // 1. SEO ─────────────────────────────────────────────────────────────────
     // Adds a "Meta" tab to Pages and Posts with title, description, OG image
@@ -218,4 +264,31 @@ export default buildConfig({
     }),
 
   ],
+
+  // endpoints: [
+  //   {
+  //     path: '/prune-versions',
+  //     method: 'post',
+  //     handler: async (req) => {
+  //       const { searchParams } = new URL(req.url)
+  //       const slug = searchParams.get('slug')
+  //       const type = searchParams.get('type')
+  //       const id = searchParams.get('id')
+
+  //       try {
+  //         await req.payload.db.deleteVersions({
+  //           [type as string]: slug,
+  //           // For collections, only delete versions of THIS specific record
+  //           // For globals, delete all versions
+  //           where: type === 'collection' ? { parent: { equals: id } } : { id: { exists: true } },
+  //         } as any)
+
+  //         return Response.json({ success: true })
+  //       } catch (err: any) {
+  //         return Response.json({ error: err.message }, { status: 500 })
+  //       }
+  //     },
+  //   },
+  // ],
+
 })

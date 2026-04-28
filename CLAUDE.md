@@ -4,6 +4,14 @@
 - For every prompt need to save to folder `prompt memory` by adding file .txt for every claude prompt session
 
 
+# Layout Builder Rules
+
+Mostly code component for layout builder describe below :
+- component `src/components/LayoutBuilder`
+- blocks Advance `src/components/block/Advance` 
+- plugins `src/plugins/layoutBuilderPlugin.ts`
+- reference code from figma `src/components/Blocks` (dont edit if developing layout builder)
+
 # Frontend Website Rules 
 - This rule should be followed every session, before writing any frondend code.
 

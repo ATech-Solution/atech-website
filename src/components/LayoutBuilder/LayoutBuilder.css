@@ -1,5 +1,4 @@
 /* ── Layout Builder — scoped styles ─────────────────────────────────────── */
-
 .lb-wrapper {
   border: 1px solid var(--theme-elevation-150, #e5e7eb);
   border-radius: 6px;

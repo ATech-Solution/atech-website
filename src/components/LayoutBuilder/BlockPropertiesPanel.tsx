@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react'
 import type { LayoutBlock, BlockOverrides } from './types'
+import { ADVANCE_BLOCK_TYPES } from './types'
 import { ContentFields } from './fields/ContentFields'
 import { StyleFields } from './fields/StyleFields'
 import { AdvancedFields } from './fields/AdvancedFields'
+import { getBlockStyleFields } from './fields/BlockStyleFields'
 
 interface BlockPropertiesPanelProps {
   block: LayoutBlock
@@ -23,11 +25,16 @@ export function BlockPropertiesPanel({
 }: BlockPropertiesPanelProps) {
   const [activeTab, setActiveTab] = useState<Tab>('content')
 
+  const isAdvanceBlock = (ADVANCE_BLOCK_TYPES as readonly string[]).includes(block.blockType)
+
   const handleContentChange = (content: BlockOverrides['content']) =>
     onOverrideChange(block.id, { ...block.overrides, content })
 
   const handleStyleChange = (style: BlockOverrides['style']) =>
     onOverrideChange(block.id, { ...block.overrides, style })
+
+  const handleBlockStyleChange = (blockStyle: Record<string, unknown>) =>
+    onOverrideChange(block.id, { ...block.overrides, blockStyle })
 
   const handleAdvancedChange = (advanced: BlockOverrides['advanced']) =>
     onOverrideChange(block.id, { ...block.overrides, advanced })
@@ -68,10 +75,16 @@ export function BlockPropertiesPanel({
           />
         )}
         {activeTab === 'style' && (
-          <StyleFields
-            overrides={block.overrides?.style}
-            onChange={handleStyleChange}
-          />
+          isAdvanceBlock
+            ? getBlockStyleFields(
+                block.blockType,
+                block.overrides?.blockStyle ?? {},
+                handleBlockStyleChange,
+              )
+            : <StyleFields
+                overrides={block.overrides?.style}
+                onChange={handleStyleChange}
+              />
         )}
         {activeTab === 'advanced' && (
           <AdvancedFields

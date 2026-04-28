@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+// import { pruneVersionsHook } from '../utils/injectPruneButton'
 
 export const Navigation: GlobalConfig = {
   slug: 'navigation',
@@ -9,7 +10,7 @@ export const Navigation: GlobalConfig = {
   },
   versions: {
     drafts: true,
-    max: 5,
+    max: 3,
   },
   fields: [
     {

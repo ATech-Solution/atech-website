@@ -1,24 +1,35 @@
 // Hero Section — Layout Builder variant (Advance)
-// Used by: home-hero block type
+// Used by: hero block type
 
+import type React from 'react'
 import Link from 'next/link'
 
 interface HeroStat         { statValue: string; statLabel: string }
 interface FloatingCard     { cardText: string; cardPosition: string; cardIcon?: { url: string } }
 interface HeroSectionData {
   badge?:              string
+  badgeIcon?:          { url: string } | null
   heading?:            string
   body?:               string
   ctaPrimaryLabel?:    string
   ctaPrimaryUrl?:      string
+  ctaPrimaryIcon?:     { url: string } | null
+  ctaPrimaryIconPos?:  'left' | 'right'
   ctaSecondaryLabel?:  string
   ctaSecondaryUrl?:    string
+  ctaSecondaryIcon?:   { url: string } | null
+  ctaSecondaryIconPos?: 'left' | 'right'
   heroImage?:          { url: string; alt?: string }
   heroStats?:          HeroStat[]
   floatingCards?:      FloatingCard[]
 }
 
-function Arrow() {
+function BtnIcon({ src, size = 14 }: { src: string; size?: number }) {
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={src} alt="" width={size} height={size} style={{ objectFit: 'contain', display: 'inline-block', verticalAlign: 'middle' }} />
+}
+
+function ArrowDefault() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
       <path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -30,17 +41,17 @@ function StatItem({ statValue, statLabel, hasBorder }: HeroStat & { hasBorder: b
   return (
     <div
       className="flex-1"
-      style={hasBorder ? { paddingLeft: '1.5rem', borderLeft: '1px solid #e5e5e5' } : {}}
+      style={hasBorder ? { paddingLeft: '1.5rem', borderLeft: '1px solid rgba(255,255,255,0.15)' } : {}}
     >
       <p
         className="leading-none mb-1"
-        style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.875rem', fontWeight: 700, color: '#ffd369' }}
+        style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.875rem', fontWeight: 700, color: 'var(--stat-value-color, #ffd369)' }}
       >
         {statValue}
       </p>
       <p
         className="text-xs tracking-wider uppercase"
-        style={{ color: '#ffd369', fontFamily: 'var(--font-work-sans, sans-serif)', opacity: 0.85 }}
+        style={{ color: 'var(--stat-label-color, #ffd369)', fontFamily: 'var(--font-work-sans, sans-serif)', opacity: 0.85 }}
       >
         {statLabel}
       </p>
@@ -53,7 +64,7 @@ function FloatingBadgeCard({ cardText, cardIcon, className }: { cardText: string
     <div
       className={`absolute flex items-center gap-3 rounded-xl px-4 py-3 z-10 ${className ?? ''}`}
       style={{
-        background: '#ffffff',
+        background: 'var(--badge-bg, #ffffff)',
         border: '1px solid #e5e5e5',
         boxShadow: '0px 10px 15px -3px rgba(0,0,0,0.1), 0px 4px 6px -4px rgba(0,0,0,0.1)',
         minWidth: '180px',
@@ -61,7 +72,7 @@ function FloatingBadgeCard({ cardText, cardIcon, className }: { cardText: string
     >
       <div
         className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-        style={{ background: '#ffcd37' }}
+        style={{ background: 'var(--color-accent, #ffcd37)' }}
       >
         {cardIcon?.url ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -72,7 +83,7 @@ function FloatingBadgeCard({ cardText, cardIcon, className }: { cardText: string
       </div>
       <p
         className="text-sm font-medium leading-tight"
-        style={{ color: '#171717', fontFamily: 'var(--font-work-sans, sans-serif)' }}
+        style={{ color: 'var(--badge-text, #171717)', fontFamily: 'var(--font-work-sans, sans-serif)' }}
       >
         {cardText}
       </p>
@@ -88,8 +99,17 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
   const topLeftCard  = cards.find((c) => c.cardPosition === 'top-left')
   const botRightCard = cards.find((c) => c.cardPosition === 'bottom-right')
 
+  const primaryIconPos   = data.ctaPrimaryIconPos   ?? 'right'
+  const secondaryIconPos = data.ctaSecondaryIconPos ?? 'right'
+
   return (
-    <section className="relative overflow-hidden" style={{ background: 'var(--color-bg, #292929)' }}>
+    <section
+      className="relative overflow-hidden"
+      style={{
+        background: 'var(--color-bg, #292929)',
+        minHeight: 'var(--section-min-height, auto)',
+      }}
+    >
       <div
         className="absolute inset-0 pointer-events-none"
         style={{ backgroundImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0) 100%)' }}
@@ -97,19 +117,28 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
 
       <div
         className="relative mx-auto px-6 md:px-10 py-20 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
-        style={{ maxWidth: '1280px' }}
+        style={{ maxWidth: 'var(--content-max-width, 1280px)' }}
       >
         {/* ── Left ── */}
         <div className="flex flex-col">
           {data.badge && (
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 self-start"
-              style={{ background: '#ffffff', border: '1px solid #e5e5e5' }}
+              style={{
+                background: 'var(--badge-bg, rgba(255,255,255,0.08))',
+                border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: 'var(--badge-radius, 100px)',
+              }}
             >
-              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: '#171717' }} />
+              {data.badgeIcon?.url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={data.badgeIcon.url} alt="" className="w-4 h-4 object-contain flex-shrink-0" />
+              ) : (
+                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: 'var(--color-accent, #ffd369)' }} />
+              )}
               <span
                 className="text-xs font-normal tracking-widest uppercase"
-                style={{ color: '#171717', fontFamily: 'var(--font-work-sans, sans-serif)' }}
+                style={{ color: 'var(--badge-text, #fafafa)', fontFamily: 'var(--font-work-sans, sans-serif)' }}
               >
                 {data.badge}
               </span>
@@ -121,11 +150,12 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
               className="leading-tight mb-6"
               style={{
                 fontFamily: 'var(--font-work-sans, sans-serif)',
-                fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
-                fontWeight: 700,
+                fontSize: 'var(--heading-font-size, clamp(2rem, 4.5vw, 3.5rem))',
+                fontWeight: 'var(--heading-font-weight, 700)' as React.CSSProperties['fontWeight'],
                 color: 'var(--color-text, #fafafa)',
                 letterSpacing: '-0.02em',
-                lineHeight: 1.1,
+                lineHeight: 'var(--heading-line-height, 1.1)',
+                textShadow: 'var(--heading-text-shadow, none)',
               }}
             >
               {data.heading}
@@ -135,7 +165,12 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
           {data.body && (
             <p
               className="leading-relaxed mb-10 max-w-lg"
-              style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.125rem', color: '#525252', lineHeight: '1.625' }}
+              style={{
+                fontFamily: 'var(--font-work-sans, sans-serif)',
+                fontSize: 'var(--body-font-size, 1.125rem)',
+                color: 'var(--color-muted, #a3a3a3)',
+                lineHeight: '1.625',
+              }}
             >
               {data.body}
             </p>
@@ -147,26 +182,54 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
                 <Link
                   href={data.ctaPrimaryUrl}
                   className="inline-flex items-center gap-2.5 px-8 py-4 rounded-md text-base font-normal transition-opacity duration-200 hover:opacity-90"
-                  style={{ background: '#ffffff', color: '#000000', fontFamily: 'var(--font-work-sans, sans-serif)' }}
+                  style={{
+                    background: 'var(--cta-primary-bg, #ffd369)',
+                    color: 'var(--cta-primary-text, #171717)',
+                    fontFamily: 'var(--font-work-sans, sans-serif)',
+                  }}
                 >
+                  {data.ctaPrimaryIcon?.url && primaryIconPos === 'left' && (
+                    <BtnIcon src={data.ctaPrimaryIcon.url} />
+                  )}
                   {data.ctaPrimaryLabel}
-                  <Arrow />
+                  {data.ctaPrimaryIcon?.url && primaryIconPos === 'right' ? (
+                    <BtnIcon src={data.ctaPrimaryIcon.url} />
+                  ) : !data.ctaPrimaryIcon?.url ? (
+                    <ArrowDefault />
+                  ) : null}
                 </Link>
               )}
               {data.ctaSecondaryLabel && data.ctaSecondaryUrl && (
                 <Link
                   href={data.ctaSecondaryUrl}
                   className="inline-flex items-center gap-2.5 px-8 py-4 rounded-md text-base font-normal transition-opacity duration-200 hover:opacity-80"
-                  style={{ background: '#41403f', color: '#ffffff', border: '1px solid #e5e5e5', fontFamily: 'var(--font-work-sans, sans-serif)' }}
+                  style={{
+                    background: 'var(--cta-secondary-bg, transparent)',
+                    color: 'var(--cta-secondary-text, #fafafa)',
+                    border: 'var(--cta-secondary-border, 1px solid rgba(250,250,250,0.25))',
+                    fontFamily: 'var(--font-work-sans, sans-serif)',
+                  }}
                 >
+                  {data.ctaSecondaryIcon?.url && secondaryIconPos === 'left' && (
+                    <BtnIcon src={data.ctaSecondaryIcon.url} />
+                  )}
                   {data.ctaSecondaryLabel}
+                  {data.ctaSecondaryIcon?.url && secondaryIconPos === 'right' && (
+                    <BtnIcon src={data.ctaSecondaryIcon.url} />
+                  )}
                 </Link>
               )}
             </div>
           )}
 
           {stats.length > 0 && (
-            <div className="flex items-start pt-8 gap-0" style={{ borderTop: '1px solid #e5e5e5' }}>
+            <div
+              className="flex items-start pt-8 gap-0"
+              style={{
+                borderTop: 'var(--stats-border, 1px solid rgba(255,255,255,0.12))',
+                background: 'var(--stats-bg, transparent)',
+              }}
+            >
               {stats.map((stat, i) => (
                 <StatItem key={i} {...stat} hasBorder={i > 0} />
               ))}

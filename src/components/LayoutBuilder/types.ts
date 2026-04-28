@@ -99,6 +99,8 @@ export interface MediaRef { url: string; alt?: string }
 
 // ── Per-page overrides (only the fields the user changed) ─────────────────────
 export interface BlockOverrides {
+  /** Block-internal style overrides (colors, typography, layout specific to this block type) */
+  blockStyle?: Record<string, unknown>
   content?: {
     // ── Generic block fields ─────────────────────────────────────────────
     title?: string
@@ -153,6 +155,18 @@ export interface BlockOverrides {
     contactPhone?: string
     contactLocation?: string
 
+    // ── Button icons ──────────────────────────────────────────────────────
+    ctaPrimaryIcon?: MediaRef | null
+    ctaPrimaryIconPos?: 'left' | 'right'
+    ctaSecondaryIcon?: MediaRef | null
+    ctaSecondaryIconPos?: 'left' | 'right'
+    buttonIcon?: MediaRef | null
+    buttonIconPos?: 'left' | 'right'
+    customSolutionCtaIcon?: MediaRef | null
+    customSolutionCtaIconPos?: 'left' | 'right'
+    ambassadorCtaIcon?: MediaRef | null
+    ambassadorCtaIconPos?: 'left' | 'right'
+
     // ── Service Hero (generic service page hero with breadcrumb) ─────────
     badgeIconSrc?: string
     breadcrumbs?: Array<{ bcLabel?: string; bcHref?: string | null }>
@@ -171,7 +185,7 @@ export interface BlockOverrides {
     processSteps?: Array<{ stepNumber?: string; stepTitle?: string; stepDesc?: string }>
 
     // ── Expertise Tiles ───────────────────────────────────────────────────
-    expertiseTiles?: Array<{ tileIconSrc?: string; tileLabel?: string }>
+    expertiseTiles?: Array<{ tileIconSrc?: string; tileLabel?: string; tileImage?: MediaRef | null }>
 
     // ── About Hero ────────────────────────────────────────────────────────
     aboutHeroHeading?: string
@@ -251,7 +265,7 @@ export interface BlockOverrides {
     contactCards?: Array<{ cardIconSrc?: string; cardTitle?: string; cardDesc?: string; cardValue?: string }>
 
     // ── Contact Stats ─────────────────────────────────────────────────────
-    contactStatCtas?:  Array<{ contactCtaLabel?: string; contactCtaUrl?: string; contactCtaPrimary?: boolean }>
+    contactStatCtas?:  Array<{ contactCtaLabel?: string; contactCtaUrl?: string; contactCtaPrimary?: boolean; contactCtaIcon?: MediaRef | null; contactCtaIconPos?: 'left' | 'right' }>
     contactStatItems?: Array<{ contactStatValue?: string; contactStatLabel?: string }>
 
     // ── Locations ─────────────────────────────────────────────────────────

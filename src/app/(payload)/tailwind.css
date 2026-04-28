@@ -1,0 +1,17 @@
+/* @config "../../../tailwind.admin.config.ts" */
+/* :root {
+  --md-trigger: 768px;
+  --lg-trigger: 1024px;
+} */
+@tailwind components;
+@tailwind utilities;
+
+/* Scope all Tailwind classes inside a .tailwind-scope wrapper */
+/* .tailwind-scope {
+  @tailwind components;
+  @tailwind utilities;
+}  */
+
+.table {
+    display: block!important;
+}

@@ -96,16 +96,16 @@ export default function FeaturesSection({ data }: { data: FeaturesSectionData })
   const cols     = data.featuresColumns ?? 3
 
   const sectionStyle = isLight
-    ? { background: '#ffffff' }
+    ? { background: 'var(--color-bg, #ffffff)' }
     : { background: 'var(--color-bg, #292929)', borderTop: '1px solid var(--color-border, #383838)' }
 
-  const headingColor = isLight ? '#171717' : 'var(--color-text, #fafafa)'
-  const descColor    = isLight ? '#525252' : 'var(--color-muted, #525252)'
+  const headingColor = isLight ? 'var(--color-text, #171717)' : 'var(--color-text, #fafafa)'
+  const descColor    = isLight ? 'var(--color-muted, #525252)' : 'var(--color-muted, #525252)'
   const gridCols     = `grid-cols-1 ${cols === 2 ? 'md:grid-cols-2' : cols >= 4 ? 'md:grid-cols-4' : 'md:grid-cols-3'}`
 
   return (
-    <section className="py-24" style={sectionStyle}>
-      <div className="mx-auto px-6 md:px-10" style={{ maxWidth: '1280px' }}>
+    <section className="py-24" style={{ ...sectionStyle, paddingTop: 'var(--section-padding-y, 96px)', paddingBottom: 'var(--section-padding-y, 96px)' }}>
+      <div className="mx-auto px-6 md:px-10" style={{ maxWidth: 'var(--content-max-width, 1280px)' }}>
         {(data.heading || data.description) && (
           <div className="flex flex-col gap-6 items-center w-full mb-16">
             {data.heading && (

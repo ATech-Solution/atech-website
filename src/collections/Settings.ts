@@ -23,7 +23,42 @@ export const Settings: GlobalConfig = {
     read: () => true,
     update: ({ req }) => req.user?.role === 'admin',
   },
-  versions: { max: 3 },
+  versions: { 
+    max: 3,
+    drafts: true,
+ },
+//  hooks: {
+//     afterChange: [
+//       async ({ req }) => {
+//         const MAX_VERSIONS = 10 // Your desired limit
+//         const globalSlug = 'settings'
+
+//         try {
+//           // 1. Fetch existing versions for this global using the Local API
+//           const versions = await req.payload.findVersions({
+//             global: globalSlug,
+//             limit: 100,
+//             sort: '-createdAt', // Newest first
+//             depth: 0,
+//           })
+
+//           // 2. If versions exceed your limit, prune the oldest ones
+//           if (versions.totalDocs > MAX_VERSIONS) {
+//             const versionsToDelete = versions.docs.slice(MAX_VERSIONS)
+
+//             for (const v of versionsToDelete) {
+//               await req.payload.db.deleteVersions({
+//                 collection: globalSlug,
+//                 where: { id: { equals: v.id } },
+//               })
+//             }
+//           }
+//         } catch (err) {
+//           req.payload.logger.error(`Manual prune failed for ${globalSlug}: ${err.message}`)
+//         }
+//       },
+//     ],
+//   },
   fields: [
     {
       type: 'tabs',

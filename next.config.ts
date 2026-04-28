@@ -31,6 +31,7 @@ const nextConfig: NextConfig = {
   output: 'standalone', // Critical for self-hosting
   transpilePackages: ['file-type'],
   images: {
+    unoptimized: process.env.NODE_ENV === 'production',
     remotePatterns: [
       {
         protocol: 'https',
@@ -50,6 +51,19 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizeCss: false,
+    turbo: {
+      // Configure custom rules or loaders
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+      // Set path aliases
+      resolveAlias: {
+        'underscore': 'lodash',
+      },
+    }
   },
   webpack: (config) => {
     console.error('next.config.ts webpack hook running - minimizers:', config.optimization.minimizer?.map((m: any) => m?.constructor?.name));

@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import containerQueries from '@tailwindcss/container-queries'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ATech Design System — Tailwind Config
@@ -8,11 +9,29 @@ import type { Config } from 'tailwindcss'
 // ─────────────────────────────────────────────────────────────────────────────
 
 const config: Config = {
-  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
+  corePlugins: {
+    preflight: false, // Prevents Tailwind from breaking the Admin UI
+  },
+  content: [
+    './src/**/*.{js,ts,jsx,tsx,mdx}',    
+    // ...other paths
+    './src/**/**/LayoutPreview.tsx', // Target your plugin file specifically
+    './src/components/LayoutBuilder/LayoutPreview.tsx'
+  ],
+
+  // content: [],
 
   theme: {
     extend: {
-
+      // screens: {
+        // Standard MD is 768px, LG is 1024px. 
+        // We create smaller triggers specifically for the plugin UI:
+        // If --md-trigger exists, use it. Otherwise, use 768px.
+        // 'md': { min: 'var(--md-trigger, 768px)' },
+        // If --lg-trigger exists, use it. Otherwise, use 1024px.
+        // 'lg': { min: 'var(--lg-trigger, 1024px)' },
+      // },
+      
       // ── Colors ─────────────────────────────────────────────────────────────
       colors: {
 
@@ -256,7 +275,10 @@ const config: Config = {
     },
   },
 
-  plugins: [],
+  plugins: [
+    // require('@tailwindcss/container-queries'),
+    containerQueries
+  ],
 }
 
 export default config

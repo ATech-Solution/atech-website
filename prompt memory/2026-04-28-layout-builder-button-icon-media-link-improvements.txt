@@ -1,0 +1,36 @@
+Session: 2026-04-28
+Task: Layout Builder blocks comprehensive improvements
+
+Changes requested:
+1. Add icon field to every button (icon: MediaRef, iconPosition: left|right, empty = disabled)
+2. Add icon field for Badge on each block (upgrade badgeIconSrc plain inputs → MediaField using badgeIcon)
+3. Upgrade all icon/image fields to connect to Payload media library (MediaField instead of plain URL inputs):
+   - cardIconSrc (ServiceCards), tileIconSrc (ExpertiseTiles), valueIcon (CultureValues),
+     channelIcon (CommunityChannels), benefitIcon (CommunityAmbassador), programIcon (CommunityPrograms),
+     cardIconSrc (ContactHero)
+   - Also add tileImage to ExpertiseTiles for media picker
+4. All URL link fields: replace plain text inputs with LinkField (internal page picker or external URL)
+
+New primitives added to ContentFields.tsx:
+- LinkField: shows "Pick" button, opens modal with tabs [Internal Page | External URL]
+  - Internal: fetches /api/pages?limit=100&depth=0, shows title + slug to pick from
+  - External: free text input
+- BtnIconRow: inline helper for ButtonIcon (MediaField) + position select (left/right)
+
+Block components updated:
+- HeroSection.tsx: ctaPrimaryIcon/Pos, ctaSecondaryIcon/Pos, badgeIcon image support
+- CTABannerSection.tsx: buttonIcon/Pos
+- ServicesSection.tsx: customSolutionCtaIcon/Pos
+
+Types.ts new fields added in BlockOverrides.content:
+- ctaPrimaryIcon?: MediaRef | null
+- ctaPrimaryIconPos?: 'left' | 'right'
+- ctaSecondaryIcon?: MediaRef | null
+- ctaSecondaryIconPos?: 'left' | 'right'
+- buttonIcon?: MediaRef | null
+- buttonIconPos?: 'left' | 'right'
+- customSolutionCtaIcon?: MediaRef | null
+- customSolutionCtaIconPos?: 'left' | 'right'
+
+Expertise tiles upgraded:
+- tileIconSrc → UI now uses MediaField stored as tileIconSrc (url string for backward compat)

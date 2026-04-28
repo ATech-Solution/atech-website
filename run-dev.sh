@@ -6,8 +6,8 @@
 # ssh -i ~/.ssh/id_rsa root@xxxxxxxxx
 
 echo "📥 db migrate:latest" 
-# npm run migrate:create 
-npm run migrate:latest
+# npm run migrate:create
+# npm run payload migrate   
 
 echo "📥 Clean build artifacts before run dev, make sure already on local and pass .next"
 # rm -rf .next .payload node_modules package-lock.json pnpm-lock.yaml

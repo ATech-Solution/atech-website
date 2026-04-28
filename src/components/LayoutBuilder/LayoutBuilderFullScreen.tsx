@@ -25,6 +25,7 @@ import './LayoutBuilder.css'
 
 const VIEWPORT_WIDTHS = {
   desktop: '100%',
+  // desktop: '1440px',
   tablet:  '768px',
   mobile:  '390px',
 } as const
@@ -62,6 +63,11 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
   const resizeStartX    = useRef(0)
   const resizeStartW    = useRef(0)
 
+  // ── Responsive iframe refs ────────────────────────────────────────────────
+  const iframeRef       = useRef<HTMLIFrameElement>(null)
+  const [iframeReady, setIframeReady]   = useState(false)
+  const [iframeHeight, setIframeHeight] = useState(600)
+
   const startLeftResize = useCallback((e: React.MouseEvent) => {
     isResizingLeft.current = true
     resizeStartX.current   = e.clientX
@@ -88,6 +94,52 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
   useEffect(() => {
     if (selectedId) setLeftTab('properties')
   }, [selectedId])
+
+  // ── Stable ref for iframe event handlers (avoids stale closures) ──────────
+  const iframeHandlers = useRef({
+    onSelect:   (id: string) => { setSelectedId(id); setLeftTab('properties') },
+    onAddAfter: (_id: string) => {},
+    onDelete:   (_id: string) => {},
+  })
+
+  // ── Listen for messages from the responsive iframe ─────────────────────────
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      const msg = e.data
+      if (!msg?.type) return
+      switch (msg.type) {
+        case 'LB_READY':    setIframeReady(true); break
+        case 'LB_HEIGHT':   setIframeHeight(msg.height as number); break
+        case 'LB_SELECT':   iframeHandlers.current.onSelect(msg.id as string); break
+        case 'LB_ADD_AFTER':iframeHandlers.current.onAddAfter(msg.id as string); break
+        case 'LB_DELETE':   iframeHandlers.current.onDelete(msg.id as string); break
+      }
+    }
+    window.addEventListener('message', handler)
+    return () => window.removeEventListener('message', handler)
+  }, [])
+
+  // ── Sync tree + selection to iframe when in tablet/mobile mode ─────────────
+  useEffect(() => {
+    if (viewMode === 'desktop') return
+    const send = () => {
+      iframeRef.current?.contentWindow?.postMessage(
+        { type: 'LB_UPDATE_TREE', tree, selectedId },
+        '*',
+      )
+    }
+    if (iframeReady) {
+      send()
+    }
+  }, [tree, selectedId, viewMode, iframeReady])
+
+  // ── When switching to a responsive mode, reset iframe ready state ──────────
+  useEffect(() => {
+    if (viewMode !== 'desktop') {
+      setIframeReady(false)
+      setIframeHeight(600)
+    }
+  }, [viewMode])
 
   // ── Load page data ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -190,6 +242,10 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
     setTree((prev) => removeNode(prev, id))
     if (selectedId === id) { setSelectedId(null); setLeftTab('picker') }
   }, [selectedId])
+
+  // ── Keep iframe handler ref up to date ───────────────────────────────────
+  iframeHandlers.current.onAddAfter = handleAddAfter
+  iframeHandlers.current.onDelete   = handleDelete
 
   // ── Expand / collapse ─────────────────────────────────────────────────────
   const handleToggleExpand = useCallback((id: string) => {
@@ -352,6 +408,7 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
       <div className="lbfs-body">
         {/* Left panel */}
         {!leftHidden && (
+        // {leftHidden && (
           <>
             <div className="lbfs-left" style={{ width: leftWidth }}>
               <div className="lbfs-left__tabs">
@@ -388,22 +445,37 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
         )}
 
         {/* Main preview area */}
-        <div className="lbfs-main">
+        <div className="lbfs-main tailwind-scope">
           <div className="lbfs-preview-scroller">
             <div
               className="lbfs-preview-frame"
               style={{ maxWidth: VIEWPORT_WIDTHS[viewMode] }}
             >
-              <LayoutPreview
-                tree={tree}
-                selectedId={selectedId}
-                viewMode={viewMode}
-                onSelect={handlePreviewSelect}
-                onAddRoot={() => handleCanvasAddRequest(null)}
-                onAddAfter={handleAddAfter}
-                onDelete={handleDelete}
-                onInlineEdit={handleInlineEdit}
-              />
+              {viewMode === 'desktop' ? (
+                <LayoutPreview
+                  tree={tree}
+                  selectedId={selectedId}
+                  viewMode={viewMode}
+                  onSelect={handlePreviewSelect}
+                  onAddRoot={() => handleCanvasAddRequest(null)}
+                  onAddAfter={handleAddAfter}
+                  onDelete={handleDelete}
+                  onInlineEdit={handleInlineEdit}
+                />
+              ) : (
+                <iframe
+                  key={viewMode}
+                  ref={iframeRef}
+                  src="/lb-preview"
+                  title={`${viewMode} preview`}
+                  style={{
+                    width: '100%',
+                    height: iframeHeight,
+                    border: 'none',
+                    display: 'block',
+                  }}
+                />
+              )}
             </div>
           </div>
 
