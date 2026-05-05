@@ -10,6 +10,8 @@ interface LayoutPreviewProps {
   selectedId: string | null
   viewMode?: 'desktop' | 'tablet' | 'mobile'
   onSelect: (id: string) => void
+  /** Called when user clicks a specific element inside an already-selected block. */
+  onFieldFocus?: (blockId: string, field: string) => void
   onAddRoot: () => void
   onAddAfter: (afterId: string) => void
   onDelete: (id: string) => void
@@ -43,12 +45,25 @@ function buildStyleCSS(
   if (advanced?.width)         css.width         = advanced.width
   if (advanced?.position)      css.position      = advanced.position as React.CSSProperties['position']
   if (advanced?.zIndex != null) css.zIndex       = advanced.zIndex
-  // Responsive visibility — hide block in preview for its target viewport
   const adv = advanced as Record<string, unknown> | undefined
   if (viewMode === 'desktop' && adv?.hideOnDesktop) css.display = 'none'
   if (viewMode === 'tablet'  && adv?.hideOnTablet)  css.display = 'none'
   if (viewMode === 'mobile'  && adv?.hideOnMobile)  css.display = 'none'
   return css
+}
+
+/**
+ * Walk up the DOM from a clicked element and map its tag to a field-group hint.
+ * Returns null if no meaningful match found.
+ */
+function detectFieldFromElement(el: Element | null): string | null {
+  if (!el || el === document.body) return null
+  const tag = el.tagName.toUpperCase()
+  if (['H1','H2','H3','H4','H5','H6'].includes(tag)) return 'heading'
+  if (tag === 'IMG')                                   return 'image'
+  if (tag === 'BUTTON' || tag === 'A')                 return 'cta'
+  if (tag === 'P')                                     return 'body'
+  return detectFieldFromElement(el.parentElement)
 }
 
 /** Inline text block — editable heading or text when block is selected */
@@ -59,7 +74,7 @@ function InlineTextBlock({
   block: LayoutBlock
   onInlineEdit: (blockId: string, field: string, value: string) => void
 }) {
-  const content = block.overrides?.content ?? {}
+  const content  = block.overrides?.content ?? {}
   const defaults = getDefaultOverrides(block.blockType).content ?? {}
 
   if (block.blockType === 'heading') {
@@ -120,6 +135,7 @@ function BlockPreviewWrapper({
   selectedId,
   viewMode,
   onSelect,
+  onFieldFocus,
   onAddAfter,
   onDelete,
   onInlineEdit,
@@ -128,6 +144,7 @@ function BlockPreviewWrapper({
   selectedId: string | null
   viewMode?: 'desktop' | 'tablet' | 'mobile'
   onSelect: (id: string) => void
+  onFieldFocus?: (blockId: string, field: string) => void
   onAddAfter: (afterId: string) => void
   onDelete: (id: string) => void
   onInlineEdit: (blockId: string, field: string, value: string) => void
@@ -138,29 +155,44 @@ function BlockPreviewWrapper({
 
   const defaults = getDefaultOverrides(block.blockType).content ?? {}
   const data: Record<string, unknown> = { ...defaults, ...(block.overrides?.content ?? {}) }
-  const blockStyle = block.overrides?.blockStyle ?? {}
+  const blockStyle   = block.overrides?.blockStyle ?? {}
   const wrapperStyle = buildStyleCSS(block.overrides?.style, block.overrides?.advanced, viewMode)
 
-
-  // w-full overflow-x-auto bg-gray-200 p-4 
-  // mx-auto min-w-[1440px] max-w-[1440px] bg-white shadow-xl min-h-screen
-  // @container
-  // w-full overflow-hidden
   return (
     <div
-      className={`"
-      lbfs-preview-block${isSelected ? ' lbfs-preview-block--selected' : ''}`}
+      className={`lbfs-preview-block${isSelected ? ' lbfs-preview-block--selected' : ''}`}
       style={Object.keys(wrapperStyle).length > 0 ? wrapperStyle : undefined}
     >
-      {/* Hover/select overlay — only shown on non-inline-edit blocks, or when not selected */}
+      {/* Hover/select overlay */}
       {!(isInlineType && isSelected) && (
         <div
           className="lbfs-preview-block__overlay"
-          onClick={(e) => { e.stopPropagation(); onSelect(block.id) }}
+          onClick={(e) => {
+            e.stopPropagation()
+            if (!isSelected) {
+              // First click — just select the block
+              onSelect(block.id)
+              return
+            }
+            // Already selected — detect which element was clicked for field focus
+            if (onFieldFocus) {
+              const overlay = e.currentTarget as HTMLElement
+              overlay.style.pointerEvents = 'none'
+              const target = document.elementFromPoint(e.clientX, e.clientY)
+              overlay.style.pointerEvents = ''
+              const field = detectFieldFromElement(target)
+              if (field) {
+                onFieldFocus(block.id, field)
+                return
+              }
+            }
+            // Fallback — keep selection
+            onSelect(block.id)
+          }}
         />
       )}
 
-      {/* Hover toolbar — visible via CSS :hover on parent */}
+      {/* Hover toolbar */}
       <div className="lbfs-preview-block__hover-bar">
         <span className="lbfs-preview-block__hover-label">
           {block.blockType}
@@ -192,9 +224,11 @@ function BlockPreviewWrapper({
         <div className="lbfs-preview-block__sel-badge">
           <span>{block.name}</span>
           <span className="lbfs-preview-block__sel-type">{block.blockType}</span>
+          {onFieldFocus && (
+            <span className="lbfs-preview-block__sel-hint">click element to focus field</span>
+          )}
         </div>
       )}
-
 
       {/* Render content */}
       {isLayoutBlock ? (
@@ -207,6 +241,7 @@ function BlockPreviewWrapper({
                   selectedId={selectedId}
                   viewMode={viewMode}
                   onSelect={onSelect}
+                  onFieldFocus={onFieldFocus}
                   onAddAfter={onAddAfter}
                   onDelete={onDelete}
                   onInlineEdit={onInlineEdit}
@@ -238,13 +273,13 @@ export function LayoutPreview({
   selectedId,
   viewMode,
   onSelect,
+  onFieldFocus,
   onAddRoot,
   onAddAfter,
   onDelete,
   onInlineEdit,
 }: LayoutPreviewProps) {
   return (
-    //  @container
     <div className="lbfs-preview tailwind-scope">
       {tree.length === 0 && (
         <div className="lbfs-preview__empty">
@@ -264,6 +299,7 @@ export function LayoutPreview({
             selectedId={selectedId}
             viewMode={viewMode}
             onSelect={onSelect}
+            onFieldFocus={onFieldFocus}
             onAddAfter={onAddAfter}
             onDelete={onDelete}
             onInlineEdit={onInlineEdit}

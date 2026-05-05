@@ -1,0 +1,10 @@
+Session: 2026-05-05
+Prompt: add mega menu new style for this screenshot for `who we serve` submenu, leave the current style to `style with short description`, and add option on header mega menu to have option select for mega menu style
+
+Changes made:
+1. src/collections/Navigation.ts — added `megaMenuStyle` select field (options: 'with-description' | 'category-grid') conditional on megaMenu=true
+2. src/components/MegaMenuNav.tsx:
+   - Added `megaMenuStyle` to NavItem interface
+   - Added CategoryGridMegaPanel component (shows column titles + icon-only items + CTA strip)
+   - Added CategoryLinkItem component (icon + label, no description, matches screenshot layout)
+   - Replaced isGridPanel() helper with resolveMegaPanel() that routes by megaMenuStyle field

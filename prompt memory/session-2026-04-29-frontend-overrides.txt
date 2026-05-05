@@ -1,0 +1,26 @@
+Session: 2026-04-29
+Prompt: frontend improvement - every change on layout builder blocks properties tab style and advanced, example if change padding on the advanced will effect show on the frontend page directly after save
+
+Work done:
+- Added buildCSSVarsFromBlockStyle() to src/lib/layout-renderer.tsx (mirrors previewResolver.tsx)
+- Added wrapAdvanced() helper inside LayoutBlockRenderer that wraps advance sections in a div with combined CSS vars (from blockStyle) + inline styles (from overrides.style / overrides.advanced)
+- Updated all advance section cases (hero, features, services, etc.) to use wrapAdvanced()
+- Primitive blocks (container, grid, heading, etc.) already had wrapStyle applied correctly via direct DOM element style props
+
+Key insight: mergeLayoutBlock() already spreads overrides.style and overrides.advanced into data, so primitive blocks already had inline styles working. The gap was: (1) advance sections had no wrapper with styles applied, (2) overrides.blockStyle (CSS custom properties for section theming) was never applied on the frontend.
+
+---
+Prompt 2: responsive visibility blocks properties every block will effect show on the frontend page directly after save
+
+Work done:
+- Added .hide-mobile, .hide-tablet, .hide-desktop CSS classes to public/assets/css/globals.css
+  - .hide-mobile: display:none at max-width 767px
+  - .hide-tablet: display:none at 768px–1023px  
+  - .hide-desktop: display:none at min-width 1024px
+
+The renderer already had the full flow:
+- mergeLayoutBlock() spreads overrides.advanced → data (so data.hideOnMobile/Tablet/Desktop set)
+- hideClasses string built from those flags
+- Primitive blocks already applied hideClasses to root element className
+- Advance sections apply hideClasses via wrapAdvanced() wrapper (added in previous task)
+Only the CSS definitions were missing.

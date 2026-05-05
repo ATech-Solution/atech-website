@@ -1,6 +1,40 @@
 import type { LayoutBlock, LayoutTree } from '../types'
 import { generateId } from './uuid'
 
+/** Deep-clone a block and all its children, assigning fresh IDs throughout. */
+export function cloneBlockWithNewIds(block: LayoutBlock): LayoutBlock {
+  return {
+    ...block,
+    id: generateId(),
+    blockId: undefined,
+    detached: true,
+    overrides: JSON.parse(JSON.stringify(block.overrides ?? {})),
+    children: block.children.map(cloneBlockWithNewIds),
+  }
+}
+
+/**
+ * Insert a fully-built LayoutBlock (with its own ID) at a position.
+ * Unlike addNode, this does NOT generate a new ID — use for clipboard paste.
+ */
+export function insertNode(
+  tree: LayoutTree,
+  node: LayoutBlock,
+  parentId: string | null,
+  afterId: string | null,
+): LayoutTree {
+  const clone = cloneTree(tree)
+  const siblings = getChildren(clone, parentId)
+  const positioned: LayoutBlock = { ...node, order: 0 }
+  if (!afterId) {
+    siblings.push(positioned)
+  } else {
+    const idx = siblings.findIndex((n) => n.id === afterId)
+    siblings.splice(idx < 0 ? siblings.length : idx + 1, 0, positioned)
+  }
+  return setChildrenAt(clone, parentId, reindex(siblings))
+}
+
 // ── Read helpers ─────────────────────────────────────────────────────────────
 
 /** Find a node anywhere in the tree by ID. Returns [node, parent[], index]. */

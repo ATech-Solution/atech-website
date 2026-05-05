@@ -1,3 +1,4 @@
+import { SlugField as SlugField_5bc3d1261b9f84311e93975be7a9a4d6 } from '@/components/admin/SlugField'
 import { LayoutBuilderField as LayoutBuilderField_7928932eebb6cfea110a030ae18c5180 } from '@/components/LayoutBuilder/LayoutBuilderField'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -32,6 +33,7 @@ import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from 
 import { ColorPickerField as ColorPickerField_d572ded1c017fe858839e8cdc754e090 } from '@/components/admin/ColorPickerField'
 
 export const importMap = {
+  "@/components/admin/SlugField#SlugField": SlugField_5bc3d1261b9f84311e93975be7a9a4d6,
   "@/components/LayoutBuilder/LayoutBuilderField#LayoutBuilderField": LayoutBuilderField_7928932eebb6cfea110a030ae18c5180,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,

@@ -15,17 +15,18 @@ import { LayoutPreview } from './LayoutPreview'
 import { FloatingPanel } from './FloatingPanel'
 import {
   addNode,
+  insertNode,
   removeNode,
   renameNode,
   updateNodeOverrides,
   toggleExpanded,
   findNode,
+  cloneBlockWithNewIds,
 } from './utils/treeOps'
 import './LayoutBuilder.css'
 
 const VIEWPORT_WIDTHS = {
   desktop: '100%',
-  // desktop: '1440px',
   tablet:  '768px',
   mobile:  '390px',
 } as const
@@ -44,6 +45,42 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
   const [saveMsg, setSaveMsg]     = useState('')
   const [pageTitle, setPageTitle] = useState('')
 
+  // ── Undo / redo history (refs — don't drive renders) ──────────────────────
+  const treeRef   = useRef<LayoutTree>([])
+  const pastRef   = useRef<LayoutTree[]>([])
+  const futureRef = useRef<LayoutTree[]>([])
+
+  // Keep treeRef in sync with tree state
+  useEffect(() => { treeRef.current = tree }, [tree])
+
+  // Wrap all user-initiated tree mutations through this to record history
+  const commitTree = useCallback((fn: (prev: LayoutTree) => LayoutTree) => {
+    const current = treeRef.current
+    const next    = fn(current)
+    pastRef.current   = [...pastRef.current.slice(-49), current]
+    futureRef.current = []
+    setTree(next)
+  }, [])
+
+  const handleUndo = useCallback(() => {
+    if (pastRef.current.length === 0) return
+    const prev = pastRef.current[pastRef.current.length - 1]
+    futureRef.current = [treeRef.current, ...futureRef.current.slice(0, 49)]
+    pastRef.current   = pastRef.current.slice(0, -1)
+    setTree(prev)
+  }, [])
+
+  const handleRedo = useCallback(() => {
+    if (futureRef.current.length === 0) return
+    const next = futureRef.current[0]
+    pastRef.current   = [...pastRef.current.slice(-49), treeRef.current]
+    futureRef.current = futureRef.current.slice(1)
+    setTree(next)
+  }, [])
+
+  // ── Clipboard (copy / paste) ───────────────────────────────────────────────
+  const [clipboard, setClipboard] = useState<LayoutBlock | null>(null)
+
   // ── Selection + sidebar ───────────────────────────────────────────────────
   const [selectedId, setSelectedId]   = useState<string | null>(null)
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
@@ -51,6 +88,9 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
   const [pendingParentId, setPendingParentId] = useState<string | null>(null)
   const [pendingAfterId, setPendingAfterId]   = useState<string | null>(null)
   const [leftTab, setLeftTab]         = useState<'picker' | 'properties'>('picker')
+
+  // ── Focused field (click element in preview → highlight field in panel) ────
+  const [focusedField, setFocusedField] = useState<string | null>(null)
 
   // ── Layout UI state ───────────────────────────────────────────────────────
   const [leftWidth, setLeftWidth]     = useState(280)
@@ -128,9 +168,7 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
         '*',
       )
     }
-    if (iframeReady) {
-      send()
-    }
+    if (iframeReady) send()
   }, [tree, selectedId, viewMode, iframeReady])
 
   // ── When switching to a responsive mode, reset iframe ready state ──────────
@@ -149,20 +187,70 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
         if (cached) {
           const parsed = JSON.parse(cached)
           if (Array.isArray(parsed)) {
-            setTree(parsed)
+            const initial = parsed
+            treeRef.current = initial
+            setTree(initial)
             setPageTitle(pageId)
             return
           }
         }
         const res  = await fetch(`/api/pages/${pageId}?depth=0`, { credentials: 'include' })
         const data = await res.json()
-        setTree(Array.isArray(data?.layoutBuilder) ? data.layoutBuilder : [])
+        const initial = Array.isArray(data?.layoutBuilder) ? data.layoutBuilder : []
+        treeRef.current = initial
+        setTree(initial)
         setPageTitle(data?.title ?? pageId)
       } catch { /* ignore */ }
       finally { setLoading(false) }
     }
     load()
   }, [pageId])
+
+  // ── Keyboard shortcuts: Undo / Redo / Copy / Paste ────────────────────────
+  useEffect(() => {
+    const isInInput = (target: EventTarget | null) => {
+      if (!target) return false
+      const el = target as HTMLElement
+      return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || (el as HTMLElement).isContentEditable
+    }
+
+    const handler = (e: KeyboardEvent) => {
+      const meta = e.metaKey || e.ctrlKey
+      if (!meta) return
+      if (isInInput(e.target)) return
+
+      switch (e.key.toLowerCase()) {
+        case 'z':
+          e.preventDefault()
+          if (e.shiftKey) handleRedo()
+          else            handleUndo()
+          break
+        case 'y':
+          e.preventDefault()
+          handleRedo()
+          break
+        case 'c': {
+          const sel = selectedId ? findNode(treeRef.current, selectedId)?.[0] ?? null : null
+          if (sel) {
+            setClipboard(cloneBlockWithNewIds(sel))
+            e.preventDefault()
+          }
+          break
+        }
+        case 'v': {
+          if (!clipboard) break
+          const fresh = cloneBlockWithNewIds(clipboard)
+          const result = selectedId ? findNode(treeRef.current, selectedId) : null
+          const parentId = result ? (result[1][result[1].length - 1]?.id ?? null) : null
+          commitTree((prev) => insertNode(prev, fresh, parentId, selectedId ?? null))
+          e.preventDefault()
+          break
+        }
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [clipboard, selectedId, handleUndo, handleRedo, commitTree])
 
   // ── Save ──────────────────────────────────────────────────────────────────
   const handleSave = useCallback(async () => {
@@ -173,7 +261,7 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
         method: 'PATCH',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ layoutBuilder: tree }),
+        body: JSON.stringify({ layoutBuilder: treeRef.current }),
       })
       setSaveMsg('Saved ✓')
       try { sessionStorage.removeItem(`lb_tree_${pageId}`) } catch {}
@@ -183,20 +271,33 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
     } finally {
       setSaving(false)
     }
-  }, [pageId, tree])
+  }, [pageId])
 
-  // ── Tree change ───────────────────────────────────────────────────────────
-  const handleTreeChange = useCallback((next: LayoutTree) => setTree(next), [])
+  // ── Tree change (drag-drop from list view) ────────────────────────────────
+  const handleTreeChange = useCallback((next: LayoutTree) => {
+    pastRef.current   = [...pastRef.current.slice(-49), treeRef.current]
+    futureRef.current = []
+    setTree(next)
+  }, [])
 
   // ── Preview select — click on canvas section ──────────────────────────────
   const handlePreviewSelect = useCallback((id: string) => {
     setSelectedId(id)
+    setFocusedField(null)
+    setLeftTab('properties')
+  }, [])
+
+  // ── Preview field focus — click on specific element within selected block ──
+  const handleFieldFocus = useCallback((blockId: string, field: string) => {
+    setSelectedId(blockId)
+    setFocusedField(field)
     setLeftTab('properties')
   }, [])
 
   // ── Standard select (from list) ───────────────────────────────────────────
   const handleSelect = useCallback((id: string) => {
     setSelectedId(id)
+    setFocusedField(null)
     setLeftTab('properties')
   }, [])
 
@@ -211,12 +312,12 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
         children: [],
         overrides: getDefaultOverrides(blockType),
       }
-      setTree((prev) => addNode(prev, newBlock, parentId, afterId))
+      commitTree((prev) => addNode(prev, newBlock, parentId, afterId))
       if (parentId) setExpandedIds((prev) => new Set([...prev, parentId]))
       setPendingParentId(null)
       setPendingAfterId(null)
     },
-    [pendingParentId, pendingAfterId],
+    [pendingParentId, pendingAfterId, commitTree],
   )
 
   // ── Canvas add request — opens picker with position context ──────────────
@@ -229,19 +330,19 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
 
   // ── Add after specific block (from preview hover toolbar) ─────────────────
   const handleAddAfter = useCallback((afterId: string) => {
-    const result = findNode(tree, afterId)
+    const result = findNode(treeRef.current, afterId)
     const parentId = result ? (result[1][result[1].length - 1]?.id ?? null) : null
     setPendingParentId(parentId)
     setPendingAfterId(afterId)
     setSelectedId(null)
     setLeftTab('picker')
-  }, [tree])
+  }, [])
 
   // ── Delete ────────────────────────────────────────────────────────────────
   const handleDelete = useCallback((id: string) => {
-    setTree((prev) => removeNode(prev, id))
+    commitTree((prev) => removeNode(prev, id))
     if (selectedId === id) { setSelectedId(null); setLeftTab('picker') }
-  }, [selectedId])
+  }, [selectedId, commitTree])
 
   // ── Keep iframe handler ref up to date ───────────────────────────────────
   iframeHandlers.current.onAddAfter = handleAddAfter
@@ -256,17 +357,17 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
   const handleStartRename   = useCallback((id: string) => setRenamingId(id), [])
   const handleConfirmRename = useCallback((id: string, name: string) => {
     setRenamingId(null)
-    if (name.trim()) setTree((prev) => renameNode(prev, id, name.trim()))
-  }, [])
+    if (name.trim()) commitTree((prev) => renameNode(prev, id, name.trim()))
+  }, [commitTree])
 
   // ── Override change ───────────────────────────────────────────────────────
   const handleOverrideChange = useCallback((id: string, overrides: BlockOverrides) => {
-    setTree((prev) => updateNodeOverrides(prev, id, overrides))
-  }, [])
+    commitTree((prev) => updateNodeOverrides(prev, id, overrides))
+  }, [commitTree])
 
   // ── Detach ────────────────────────────────────────────────────────────────
   const handleDetach = useCallback((id: string) => {
-    setTree((prev) => {
+    commitTree((prev) => {
       const result = findNode(prev, id)
       if (!result) return prev
       const next = updateNodeOverrides(prev, id, result[0].overrides)
@@ -275,11 +376,11 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
       if (found) { found[0].detached = true; found[0].blockId = undefined }
       return cloned
     })
-  }, [])
+  }, [commitTree])
 
   // ── Inline edit (contenteditable text in preview) ────────────────────────
   const handleInlineEdit = useCallback((blockId: string, field: string, value: string) => {
-    setTree((prev) => {
+    commitTree((prev) => {
       const result = findNode(prev, blockId)
       if (!result) return prev
       const [node] = result
@@ -289,7 +390,7 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
         content: { ...(overrides.content ?? {}), [field]: value },
       })
     })
-  }, [])
+  }, [commitTree])
 
   // ── Collapse / expand all in floating list ────────────────────────────────
   const handleCollapseAll = useCallback(() => {
@@ -310,6 +411,7 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
   // ── Back to picker ────────────────────────────────────────────────────────
   const handleBack = useCallback(() => {
     setSelectedId(null)
+    setFocusedField(null)
     setLeftTab('picker')
   }, [])
 
@@ -379,6 +481,34 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
         </div>
 
         <div className="lbfs-topbar__right">
+          {/* Undo / Redo buttons */}
+          <button
+            className="lbfs-topbar__undo-btn"
+            onClick={handleUndo}
+            title="Undo (⌘Z)"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 7c0-2.761 2.239-5 5-5s5 2.239 5 5-2.239 5-5 5H4" />
+              <path d="M4 4L2 7l2 3" />
+            </svg>
+          </button>
+          <button
+            className="lbfs-topbar__undo-btn"
+            onClick={handleRedo}
+            title="Redo (⌘⇧Z)"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 7c0-2.761-2.239-5-5-5S2 4.239 2 7s2.239 5 5 5h3" />
+              <path d="M10 4l2 3-2 3" />
+            </svg>
+          </button>
+          {clipboard && (
+            <span className="lbfs-topbar__clipboard-hint" title="Clipboard: paste with ⌘V">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                <path d="M8 1H4a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V3L8 1zm0 1l1 1H8V2zM4 9V2h3v2h2v5H4z"/>
+              </svg>
+            </span>
+          )}
           <button
             className={`lbfs-topbar__list-btn${rightVisible ? ' lbfs-topbar__list-btn--active' : ''}`}
             onClick={() => setRightVisible((v) => !v)}
@@ -408,7 +538,6 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
       <div className="lbfs-body">
         {/* Left panel */}
         {!leftHidden && (
-        // {leftHidden && (
           <>
             <div className="lbfs-left" style={{ width: leftWidth }}>
               <div className="lbfs-left__tabs">
@@ -432,6 +561,7 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
                 ) : (
                   <BlockPropertiesPanel
                     block={selectedBlock}
+                    focusedField={focusedField}
                     onBack={handleBack}
                     onOverrideChange={handleOverrideChange}
                     onDetach={handleDetach}
@@ -457,6 +587,7 @@ export function LayoutBuilderFullScreen({ pageId }: LayoutBuilderFullScreenProps
                   selectedId={selectedId}
                   viewMode={viewMode}
                   onSelect={handlePreviewSelect}
+                  onFieldFocus={handleFieldFocus}
                   onAddRoot={() => handleCanvasAddRequest(null)}
                   onAddAfter={handleAddAfter}
                   onDelete={handleDelete}

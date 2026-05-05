@@ -29,6 +29,13 @@ export const Plugins: CollectionConfig = {
       label: 'Slug',
       admin: {
         description: 'Unique identifier. Built-in plugins use reserved slugs (e.g. "layout-builder").',
+        components: {
+          Field: '@/components/admin/SlugField#SlugField',
+        },
+        custom: {
+          watchField: 'name',
+          urlPrefix: '/plugins/',
+        },
       },
     },
     {

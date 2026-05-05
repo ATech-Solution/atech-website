@@ -51,7 +51,14 @@ export const Pages: CollectionConfig = {
               unique: true,
               label: 'Slug',
               admin: {
-                description: 'URL-friendly identifier (e.g. "home", "about", "services")',
+                description: 'URL-friendly identifier. Use "home" for the root page.',
+                components: {
+                  Field: '@/components/admin/SlugField#SlugField',
+                },
+                custom: {
+                  watchField: 'title',
+                  urlPrefix: '/',
+                },
               },
             },
             {

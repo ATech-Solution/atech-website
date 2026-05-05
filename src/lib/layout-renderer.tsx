@@ -73,6 +73,79 @@ export function mergeLayoutBlock(node: any, templates: Record<string, any>): any
   }
 }
 
+// ─── CSS custom-property builder (mirrors previewResolver.tsx withStyle) ─────
+
+export function buildCSSVarsFromBlockStyle(style: Record<string, unknown>): React.CSSProperties {
+  const vars: Record<string, string> = {}
+  const str = (v: unknown) => String(v)
+
+  if (style.heroBgColor)   vars['--color-bg']       = str(style.heroBgColor)
+  if (style.sectionBg)     vars['--color-bg']       = str(style.sectionBg)
+  if (style.gradientFrom)  vars['--gradient-from']  = str(style.gradientFrom)
+  if (style.gradientTo)    vars['--gradient-to']    = str(style.gradientTo)
+  if (style.heroBgImage || style.sectionBgImage)
+    vars['--bg-image'] = `url(${str(style.heroBgImage ?? style.sectionBgImage)})`
+  if (style.overlayOpacity != null) vars['--overlay-opacity'] = str(style.overlayOpacity)
+
+  if (style.headingColor)      vars['--color-text']          = str(style.headingColor)
+  if (style.headingFontSize)   vars['--heading-font-size']   = str(style.headingFontSize)
+  if (style.headingFontWeight) vars['--heading-font-weight'] = str(style.headingFontWeight)
+  if (style.headingLineHeight) vars['--heading-line-height'] = str(style.headingLineHeight)
+  if (style.headingTextShadow) vars['--heading-text-shadow'] = str(style.headingTextShadow)
+
+  if (style.bodyColor)    vars['--color-muted']    = str(style.bodyColor)
+  if (style.bodyFontSize) vars['--body-font-size'] = str(style.bodyFontSize)
+
+  if (style.labelColor)        vars['--color-accent']   = str(style.labelColor)
+  if (style.labelFontSize)     vars['--label-font-size'] = str(style.labelFontSize)
+  if (style.iconColor)         vars['--icon-color']      = str(style.iconColor)
+  if (style.iconBg)            vars['--icon-bg']         = str(style.iconBg)
+  if (style.iconBorderRadius)  vars['--icon-radius']     = str(style.iconBorderRadius)
+
+  if (style.cardBg)            vars['--color-surface']  = str(style.cardBg)
+  if (style.cardBorder)        vars['--color-border']   = str(style.cardBorder)
+  if (style.cardBorderRadius)  vars['--card-radius']    = str(style.cardBorderRadius)
+  if (style.cardHoverBg)       vars['--card-hover-bg']  = str(style.cardHoverBg)
+
+  if (style.ctaPrimaryBg)       vars['--cta-primary-bg']       = str(style.ctaPrimaryBg)
+  if (style.ctaPrimaryText)     vars['--cta-primary-text']     = str(style.ctaPrimaryText)
+  if (style.ctaSecondaryBg)     vars['--cta-secondary-bg']     = str(style.ctaSecondaryBg)
+  if (style.ctaSecondaryText)   vars['--cta-secondary-text']   = str(style.ctaSecondaryText)
+  if (style.ctaSecondaryBorder) vars['--cta-secondary-border'] = str(style.ctaSecondaryBorder)
+  if (style.buttonBg)           vars['--button-bg']            = str(style.buttonBg)
+  if (style.buttonText)         vars['--button-text']          = str(style.buttonText)
+  if (style.buttonBorderRadius) vars['--button-radius']        = str(style.buttonBorderRadius)
+  if (style.buttonHoverBg)      vars['--button-hover-bg']      = str(style.buttonHoverBg)
+
+  if (style.statsBg)        vars['--stats-bg']         = str(style.statsBg)
+  if (style.statsBorder)    vars['--stats-border']      = str(style.statsBorder)
+  if (style.statValueColor) vars['--stat-value-color'] = str(style.statValueColor)
+  if (style.statLabelColor) vars['--stat-label-color'] = str(style.statLabelColor)
+
+  if (style.badgeBg)           vars['--badge-bg']     = str(style.badgeBg)
+  if (style.badgeTextColor)    vars['--badge-text']   = str(style.badgeTextColor)
+  if (style.badgeBorderRadius) vars['--badge-radius'] = str(style.badgeBorderRadius)
+
+  if (style.quoteColor)         vars['--quote-color']       = str(style.quoteColor)
+  if (style.quoteFontSize)      vars['--quote-font-size']   = str(style.quoteFontSize)
+  if (style.quoteLineHeight)    vars['--quote-line-height'] = str(style.quoteLineHeight)
+  if (style.quoteIconColor)     vars['--quote-icon-color']  = str(style.quoteIconColor)
+  if (style.authorColor)        vars['--author-color']      = str(style.authorColor)
+  if (style.authorRoleColor)    vars['--author-role-color'] = str(style.authorRoleColor)
+  if (style.avatarBorderRadius) vars['--avatar-radius']     = str(style.avatarBorderRadius)
+
+  if (style.primaryTextColor) vars['--primary-text-color'] = str(style.primaryTextColor)
+
+  if (style.sectionMinHeight) vars['--section-min-height'] = str(style.sectionMinHeight)
+  if (style.contentMaxWidth)  vars['--content-max-width']  = str(style.contentMaxWidth)
+  if (style.sectionPaddingY)  vars['--section-padding-y']  = str(style.sectionPaddingY)
+  if (style.paddingX)         vars['--padding-x']          = str(style.paddingX)
+  if (style.gridGap)          vars['--grid-gap']           = str(style.gridGap)
+  if (style.columns != null)  vars['--grid-columns']       = str(style.columns)
+
+  return vars as React.CSSProperties
+}
+
 // ─── Inline style builder ────────────────────────────────────────────────────
 
 export function buildInlineStyle(data: any): React.CSSProperties {
@@ -121,6 +194,18 @@ export function LayoutBlockRenderer({
   ].filter(Boolean).join(' ')
 
   const wrapStyle = { ...inlineStyle }
+
+  // blockStyle → CSS custom properties (section-level theming vars)
+  const blockStyle   = (node.overrides?.blockStyle ?? {}) as Record<string, unknown>
+  const cssVars      = buildCSSVarsFromBlockStyle(blockStyle)
+  const sectionStyle = { ...cssVars, ...inlineStyle } as React.CSSProperties
+
+  const wrapAdvanced = (content: React.ReactNode): React.ReactNode => {
+    const hasStyle = Object.keys(sectionStyle).length > 0
+    const clsName  = [className, hideClasses].filter(Boolean).join(' ') || undefined
+    if (!hasStyle && !id && !clsName) return content
+    return <div id={id} className={clsName} style={hasStyle ? sectionStyle : undefined}>{content}</div>
+  }
 
   switch (node.blockType) {
     case 'container':
@@ -718,68 +803,68 @@ export function LayoutBlockRenderer({
 
     // ── Advance Sections ─────────────────────────────────────────────────────
     case 'hero':
-      return <HeroSection data={data} />
+      return wrapAdvanced(<HeroSection data={data} />)
     case 'features':
-      return <FeaturesSection data={data} />
+      return wrapAdvanced(<FeaturesSection data={data} />)
     case 'services':
-      return <ServicesSection data={data} />
+      return wrapAdvanced(<ServicesSection data={data} />)
     case 'testimonials':
-      return <TestimonialsSection data={data} />
+      return wrapAdvanced(<TestimonialsSection data={data} />)
     case 'contact':
-      return <ContactSection data={data} />
+      return wrapAdvanced(<ContactSection data={data} />)
     case 'card-grid':
-      return <CardGridSection data={data} />
+      return wrapAdvanced(<CardGridSection data={data} />)
     case 'cta-banner':
-      return <CTABannerSection data={data} />
+      return wrapAdvanced(<CTABannerSection data={data} />)
     case 'hero-split':
-      return <HeroSplitSection data={data} />
+      return wrapAdvanced(<HeroSplitSection data={data} />)
     case 'process-steps':
-      return <ProcessStepsSection data={data} />
+      return wrapAdvanced(<ProcessStepsSection data={data} />)
     case 'expertise-tiles':
-      return <ExpertiseTilesSection data={data} />
+      return wrapAdvanced(<ExpertiseTilesSection data={data} />)
     case 'hero-centered':
-      return <HeroCenteredSection data={data} />
+      return wrapAdvanced(<HeroCenteredSection data={data} />)
     case 'company-stats':
-      return <CompanyStatsSection data={data} />
+      return wrapAdvanced(<CompanyStatsSection data={data} />)
     case 'mission-vision':
-      return <MissionVisionSection data={data} />
+      return wrapAdvanced(<MissionVisionSection data={data} />)
     case 'team-section':
-      return <TeamSection data={data} />
+      return wrapAdvanced(<TeamSection data={data} />)
     case 'faq-section':
-      return <FAQSection data={data} />
+      return wrapAdvanced(<FAQSection data={data} />)
 
     case 'page-hero':
-      return <PageHeroSection data={data} />
+      return wrapAdvanced(<PageHeroSection data={data} />)
     case 'project-grid':
-      return <ProjectGridSection data={data} />
+      return wrapAdvanced(<ProjectGridSection data={data} />)
     case 'article-grid':
-      return <ArticleGridSection data={data} />
+      return wrapAdvanced(<ArticleGridSection data={data} />)
     case 'article-featured':
-      return <ArticleFeaturedSection data={data} />
+      return wrapAdvanced(<ArticleFeaturedSection data={data} />)
     case 'jobs-list':
-      return <JobsListSection data={data} />
+      return wrapAdvanced(<JobsListSection data={data} />)
     case 'involved-hero':
-      return <InvolvedHeroSection data={data} />
+      return wrapAdvanced(<InvolvedHeroSection data={data} />)
     case 'quote-form':
-      return <QuoteFormSection data={data} />
+      return wrapAdvanced(<QuoteFormSection data={data} />)
     case 'culture-values':
-      return <CultureValuesSection data={data} />
+      return wrapAdvanced(<CultureValuesSection data={data} />)
     case 'community-channels':
-      return <CommunityChannelsSection data={data} />
+      return wrapAdvanced(<CommunityChannelsSection data={data} />)
     case 'community-ambassador':
-      return <CommunityAmbassadorSection data={data} />
+      return wrapAdvanced(<CommunityAmbassadorSection data={data} />)
     case 'community-programs':
-      return <CommunityProgramsSection data={data} />
+      return wrapAdvanced(<CommunityProgramsSection data={data} />)
     case 'contact-hero':
-      return <ContactHeroSection data={data} />
+      return wrapAdvanced(<ContactHeroSection data={data} />)
     case 'contact-stats':
-      return <ContactStatsSection data={data} />
+      return wrapAdvanced(<ContactStatsSection data={data} />)
     case 'locations':
-      return <LocationsSection data={data} />
+      return wrapAdvanced(<LocationsSection data={data} />)
 
     // ── Service Page Sections ────────────────────────────────────────────────
     case 'web-dev-hero':
-      return <WebDevHeroSection data={data} />
+      return wrapAdvanced(<WebDevHeroSection data={data} />)
 
     default:
       return (

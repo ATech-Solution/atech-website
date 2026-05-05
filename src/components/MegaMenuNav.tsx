@@ -30,6 +30,7 @@ export interface NavItem {
   url?: string
   openInNewTab?: boolean
   megaMenu?: boolean
+  megaMenuStyle?: 'with-description' | 'category-grid'
   columns?: MegaMenuColumn[]
   featured?: FeaturedCard
 }
@@ -244,6 +245,161 @@ function GridLinkItem({ link }: { link: MegaMenuLink }) {
   )
 }
 
+// ── Category grid panel ───────────────────────────────────────────────────────
+
+function CategoryGridMegaPanel({ item }: { item: NavItem }) {
+  const columns  = item.columns ?? []
+  const ctaUrl   = item.featured?.url ?? '/contact'
+  const ctaLabel = item.featured?.cta ?? 'Get in touch'
+
+  return (
+    <div
+      role="region"
+      aria-label={`${item.label} menu`}
+      style={{
+        position: 'absolute',
+        top: '100%',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        marginTop: 16,
+        width: 652,
+        background: '#ffffff',
+        border: '1px solid #e5e5e5',
+        borderRadius: 16,
+        boxShadow: panelShadow,
+        padding: 25,
+        zIndex: 100,
+      }}
+    >
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${Math.max(columns.length, 1)}, 1fr)`,
+          gap: 32,
+          marginBottom: 20,
+        }}
+      >
+        {columns.map((col, i) => (
+          <div key={i}>
+            {col.columnTitle && (
+              <div
+                style={{
+                  fontFamily: fontWorkSans,
+                  fontWeight: 700,
+                  fontSize: 14,
+                  color: '#171717',
+                  marginBottom: 12,
+                  paddingLeft: 12,
+                }}
+              >
+                {col.columnTitle}
+              </div>
+            )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {(col.links ?? []).map((link) => (
+                <CategoryLinkItem key={link.url} link={link} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          background: '#f0f0f0',
+          borderRadius: 14,
+          height: 72,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          padding: '0 20px',
+        }}
+      >
+        <Link
+          href={ctaUrl}
+          style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 14 }}
+        >
+          <div
+            style={{
+              width: 40, height: 40,
+              background: '#f5f5f5',
+              border: '1px solid #e5e5e5',
+              borderRadius: 8,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <MailIcon />
+          </div>
+          <div>
+            <div
+              style={{
+                fontFamily: fontWorkSans, fontWeight: 700, fontSize: 16,
+                color: '#292929', lineHeight: 1.2,
+                display: 'flex', alignItems: 'center',
+              }}
+            >
+              {ctaLabel}<ArrowRight />
+            </div>
+            <div
+              style={{
+                fontFamily: fontWorkSans, fontWeight: 400, fontSize: 14,
+                color: '#525252', lineHeight: 1.2, marginTop: 2,
+              }}
+            >
+              {item.featured?.description ?? 'Let us assist you'}
+            </div>
+          </div>
+        </Link>
+      </div>
+    </div>
+  )
+}
+
+// ── Category link item ────────────────────────────────────────────────────────
+
+function CategoryLinkItem({ link }: { link: MegaMenuLink }) {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <Link
+      href={link.url}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 12,
+        padding: '10px 12px', borderRadius: 10, textDecoration: 'none',
+        background: hovered ? 'rgba(0,0,0,0.04)' : 'transparent',
+        transition: 'background 0.15s',
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div
+        style={{
+          width: 28, height: 28,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0, color: '#292929',
+        }}
+      >
+        {link.icon ? (
+          <span style={{ fontSize: 20 }}>{link.icon}</span>
+        ) : (
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+            <rect x="2" y="2" width="12" height="12" rx="2" stroke="#525252" strokeWidth="1.5" />
+          </svg>
+        )}
+      </div>
+      <span
+        style={{
+          fontFamily: fontWorkSans, fontWeight: 400, fontSize: 14,
+          color: '#171717', lineHeight: '20px',
+        }}
+      >
+        {link.label}
+      </span>
+    </Link>
+  )
+}
+
 // ── Simple list panel ─────────────────────────────────────────────────────────
 
 function ListMegaPanel({ item }: { item: NavItem }) {
@@ -295,12 +451,11 @@ function ListLinkItem({ link }: { link: MegaMenuLink }) {
 
 // ── Panel type helper ─────────────────────────────────────────────────────────
 
-function isGridPanel(item: NavItem): boolean {
-  // return (item.columns ?? []).flatMap((col) => col.links ?? []).some((l) => l.description)
-  if (!item.megaMenu)
-    return false
-  else
-    return (item.columns ?? []).flatMap((col) => col.links ?? []).some((l) => l.description || "")
+function resolveMegaPanel(item: NavItem) {
+  if (item.megaMenuStyle === 'category-grid') return <CategoryGridMegaPanel item={item} />
+  const hasDescriptions = (item.columns ?? []).flatMap((col) => col.links ?? []).some((l) => l.description)
+  if (item.megaMenuStyle === 'with-description' || hasDescriptions) return <GridMegaPanel item={item} />
+  return <ListMegaPanel item={item} />
 }
 
 // ── Mobile Drawer ─────────────────────────────────────────────────────────────
@@ -514,11 +669,7 @@ export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark'
                 onMouseLeave={closeMenu}
                 onKeyDown={(e) => e.key === 'Escape' && setActiveMenu(null)}
               >
-                {isGridPanel(item) ? (
-                  <GridMegaPanel item={item} />
-                ) : (
-                  <ListMegaPanel item={item} />
-                )}
+                {resolveMegaPanel(item)}
               </div>
             )}
           </div>

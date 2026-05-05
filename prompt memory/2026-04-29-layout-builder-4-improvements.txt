@@ -1,0 +1,37 @@
+Session: 2026-04-29
+Task: Layout Builder - 4 Major Improvements
+
+## Features Requested
+
+1. CLICK-TO-FIELD FOCUS
+   - Select element in main preview area (e.g., click button element)
+   - Left properties panel auto-scrolls to and highlights the related field
+   - Implementation: overlay elementFromPoint detection → BlockPropertiesPanel scrollIntoView + flash animation
+
+2. COPY / PASTE / UNDO / REDO (keyboard)
+   - Cmd/Ctrl+C  → copy selected block (deep clone)
+   - Cmd/Ctrl+V  → paste clipboard block after selected (or at end)
+   - Cmd/Ctrl+Z  → undo (history stack via refs)
+   - Cmd/Ctrl+Shift+Z / Cmd+Y → redo
+   - History max 50 entries; skips input/textarea elements
+
+3. LIVE STYLE + ADVANCED PREVIEW
+   - Changes in Style/Advanced tabs update the block visually immediately
+   - BlockStyle CSS vars already applied via withStyle wrapper in previewResolver.tsx
+   - Advanced padding/margin applied as wrapper inline styles (already works)
+   - Enhancement: ensure CSS var pass-through is complete
+
+4. PAYLOAD MEDIA UPLOAD in MediaField
+   - All image/icon fields get upload capability
+   - Single and bulk upload via <input type="file" multiple>
+   - POST to /api/media with FormData (Payload CMS default endpoint)
+   - Shows upload progress/spinner
+   - Uploaded files appear in grid and are auto-selected
+
+## Files Modified
+- src/components/LayoutBuilder/utils/treeOps.ts (insertNode, cloneBlockWithNewIds)
+- src/components/LayoutBuilder/LayoutBuilderFullScreen.tsx (history, clipboard, focusedField, keyboard shortcuts)
+- src/components/LayoutBuilder/LayoutPreview.tsx (onFieldFocus prop, elementFromPoint detection)
+- src/components/LayoutBuilder/BlockPropertiesPanel.tsx (focusedField auto-tab + scroll)
+- src/components/LayoutBuilder/fields/ContentFields.tsx (MediaField upload)
+- src/components/LayoutBuilder/LayoutBuilder.css (lb-field--focused flash, upload styles)

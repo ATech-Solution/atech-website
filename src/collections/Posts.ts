@@ -39,8 +39,16 @@ export const Posts: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
+      label: 'Slug',
       admin: {
         description: 'URL-friendly identifier, e.g. "my-first-post"',
+        components: {
+          Field: '@/components/admin/SlugField#SlugField',
+        },
+        custom: {
+          watchField: 'title',
+          urlPrefix: '/posts/',
+        },
       },
     },
     {

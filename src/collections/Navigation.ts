@@ -51,6 +51,21 @@ export const Navigation: GlobalConfig = {
           label: 'Enable Mega Menu Dropdown',
           defaultValue: false,
         },
+        // ── Mega Menu Style (shown when megaMenu = true) ───────────────────
+        {
+          name: 'megaMenuStyle',
+          type: 'select',
+          label: 'Mega Menu Style',
+          defaultValue: 'with-description',
+          options: [
+            { label: 'With Short Description', value: 'with-description' },
+            { label: 'Category Grid (column headers + icons)', value: 'category-grid' },
+          ],
+          admin: {
+            condition: (_, siblingData) => Boolean(siblingData?.megaMenu),
+            description: 'Visual layout for the mega menu dropdown.',
+          },
+        },
         // ── Mega Menu Columns (shown when megaMenu = true) ─────────────────
         {
           name: 'columns',

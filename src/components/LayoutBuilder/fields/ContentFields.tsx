@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import type { BlockOverrides, BlockType, MediaRef } from '../types'
 import { ADVANCE_BLOCK_TYPES } from '../types'
 
@@ -47,12 +47,15 @@ function MediaField({
   const [tab, setTab]                 = useState<'media' | 'url'>('media')
   const [mediaItems, setMediaItems]   = useState<MediaItem[]>([])
   const [mediaLoaded, setMediaLoaded] = useState(false)
+  const [uploading, setUploading]     = useState(false)
+  const [uploadError, setUploadError] = useState('')
+  const fileInputRef                  = useRef<HTMLInputElement>(null)
 
   const openPicker = async () => {
     setOpen(true)
     if (!mediaLoaded) {
       try {
-        const res  = await fetch('/api/media?limit=50&depth=0', { credentials: 'include' })
+        const res  = await fetch('/api/media?limit=100&depth=0', { credentials: 'include' })
         const data = await res.json()
         setMediaItems(data?.docs ?? [])
         setMediaLoaded(true)
@@ -61,6 +64,34 @@ function MediaField({
   }
 
   const pick = (url: string) => { onChange({ url }); setOpen(false) }
+
+  const handleUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return
+    setUploading(true)
+    setUploadError('')
+    const uploaded: MediaItem[] = []
+    for (const file of Array.from(files)) {
+      try {
+        const form = new FormData()
+        form.append('file', file)
+        const res  = await fetch('/api/media', { method: 'POST', credentials: 'include', body: form })
+        if (!res.ok) throw new Error('Upload failed')
+        const data = await res.json()
+        const doc  = data.doc ?? data
+        if (doc?.url) uploaded.push({ id: doc.id, url: doc.url, alt: doc.alt ?? '', filename: doc.filename })
+      } catch {
+        setUploadError(`Failed to upload ${file.name}`)
+      }
+    }
+    if (uploaded.length > 0) {
+      setMediaItems((prev) => [...uploaded, ...prev])
+      // Auto-select the last uploaded item and close
+      const last = uploaded[uploaded.length - 1]
+      onChange({ url: last.url, alt: last.alt })
+      setOpen(false)
+    }
+    setUploading(false)
+  }
 
   return (
     <div className="lb-field">
@@ -99,6 +130,7 @@ function MediaField({
         </div>
       ) : (
         <div style={{ border: '1px solid #e5e5e5', borderRadius: 8, overflow: 'hidden', background: '#fff' }}>
+          {/* Tab bar */}
           <div style={{ display: 'flex', borderBottom: '1px solid #e5e5e5' }}>
             {(['media', 'url'] as const).map((t) => (
               <button key={t} type="button" onClick={() => setTab(t)}
@@ -114,24 +146,56 @@ function MediaField({
           </div>
 
           {tab === 'media' ? (
-            <div style={{ padding: 10, maxHeight: 210, overflowY: 'auto' }}>
-              {!mediaLoaded ? (
-                <p style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center', margin: '16px 0' }}>Loading…</p>
-              ) : mediaItems.length === 0 ? (
-                <p style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center', margin: '16px 0' }}>No media files found</p>
-              ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>
-                  {mediaItems.map((item) => (
-                    <button key={item.id} type="button" onClick={() => pick(item.url)}
-                      title={item.alt ?? item.filename ?? item.url}
-                      style={{ padding: 0, border: value === item.url ? '2px solid #292929' : '1px solid #e5e5e5',
-                        borderRadius: 6, overflow: 'hidden', cursor: 'pointer', background: '#f5f5f5', aspectRatio: '1' }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={item.url} alt={item.alt ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                    </button>
-                  ))}
-                </div>
-              )}
+            <div>
+              {/* Upload bar */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderBottom: '1px solid #f0f0f0', background: '#fafafa' }}>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,video/*,.svg,.pdf"
+                  multiple
+                  style={{ display: 'none' }}
+                  onChange={(e) => handleUpload(e.target.files)}
+                />
+                <button
+                  type="button"
+                  className="lb-media-upload-btn"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  {uploading ? (
+                    <span className="lb-media-upload-btn__spinner" />
+                  ) : (
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                      <path d="M6 1v7M3 4l3-3 3 3" />
+                      <path d="M1 9.5v1a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-1" />
+                    </svg>
+                  )}
+                  {uploading ? 'Uploading…' : 'Upload'}
+                </button>
+                <span style={{ fontSize: 10, color: '#9ca3af' }}>or bulk select files</span>
+                {uploadError && <span style={{ fontSize: 10, color: '#ef4444', marginLeft: 'auto' }}>{uploadError}</span>}
+              </div>
+              {/* Grid */}
+              <div style={{ padding: 10, maxHeight: 190, overflowY: 'auto' }}>
+                {!mediaLoaded ? (
+                  <p style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center', margin: '16px 0' }}>Loading…</p>
+                ) : mediaItems.length === 0 ? (
+                  <p style={{ fontSize: 12, color: '#9ca3af', textAlign: 'center', margin: '16px 0' }}>No media files — upload one above</p>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>
+                    {mediaItems.map((item) => (
+                      <button key={item.id} type="button" onClick={() => pick(item.url)}
+                        title={item.alt ?? item.filename ?? item.url}
+                        style={{ padding: 0, border: value === item.url ? '2px solid #292929' : '1px solid #e5e5e5',
+                          borderRadius: 6, overflow: 'hidden', cursor: 'pointer', background: '#f5f5f5', aspectRatio: '1' }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={item.url} alt={item.alt ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <div style={{ padding: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>

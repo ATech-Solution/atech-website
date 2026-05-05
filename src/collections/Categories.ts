@@ -26,6 +26,16 @@ export const Categories: CollectionConfig = {
       required: true,
       unique: true,
       label: 'Slug',
+      admin: {
+        description: 'URL-friendly identifier, auto-generated from category name.',
+        components: {
+          Field: '@/components/admin/SlugField#SlugField',
+        },
+        custom: {
+          watchField: 'name',
+          urlPrefix: '/categories/',
+        },
+      },
     },
     {
       name: 'description',
