@@ -105,7 +105,7 @@ jobs:
             rm -rf .next next.zip
 
             echo "==> Pulling latest code..."
-            git pull origin dev
+            git pull https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ATech-Solution/atech-website.git dev
 
             echo "==> Regenerating Payload types & importmap..."
             npm run generate:types && npm run generate:importmap
@@ -158,7 +158,7 @@ jobs:
             rm -rf .next next.zip
 
             echo "==> Pulling latest code..."
-            git pull origin main
+            git pull https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ATech-Solution/atech-website.git main
 
             echo "==> Regenerating Payload types & importmap..."
             npm run generate:types && npm run generate:importmap
