@@ -43,3 +43,7 @@ data/payload.db-shm
 data/payload.db-wal
 src/payload-types.ts
 /prompt memory
+data/payload.db bk
+data/payload.db zero
+payload.db copy
+payload.db copy
