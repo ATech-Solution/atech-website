@@ -98,9 +98,6 @@ jobs:
             set -e
             cd $DEPLOY_PATH
 
-            echo "==> Stopping app..."
-            pm2 stop atech-website || true
-
             echo "==> Swapping build..."
             rm -rf .next
             unzip -q next.zip
@@ -113,7 +110,9 @@ jobs:
             npm run generate:types && npm run generate:importmap
 
             echo "==> Restarting app..."
-            pm2 start npm --name "atech-website" -- start || pm2 restart atech-website --update-env
+            pm2 delete atech-website 2>/dev/null || true
+            pm2 start npm --name "atech-website" -- start
+            pm2 save
 
             echo "==> Done"
             pm2 status
