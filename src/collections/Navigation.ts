@@ -60,6 +60,7 @@ export const Navigation: GlobalConfig = {
           options: [
             { label: 'With Short Description', value: 'with-description' },
             { label: 'Category Grid (column headers + icons)', value: 'category-grid' },
+            { label: 'No Icon (plain text list)', value: 'no-icon' },
           ],
           admin: {
             condition: (_, siblingData) => Boolean(siblingData?.megaMenu),
@@ -95,8 +96,9 @@ export const Navigation: GlobalConfig = {
                 },
                 {
                   name: 'icon',
-                  type: 'text',
-                  label: 'Icon (emoji or icon name, optional)',
+                  type: 'upload',
+                  relationTo: 'media',
+                  label: 'Icon Image (optional)',
                 },
               ],
             },

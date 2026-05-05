@@ -430,6 +430,33 @@
 .lb-input--textarea { resize: vertical; }
 .lb-input--code { font-family: monospace; font-size: 11px; }
 .lb-input--select { cursor: pointer; }
+.lb-input--color { flex: 1; min-width: 0; padding: 2px; height: 32px; cursor: pointer; }
+
+/* ── Color field with reset button ───────────────────────────────────────── */
+.lb-color-wrap { display: flex; align-items: center; gap: 6px; }
+.lb-color-reset {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--theme-elevation-150, #e5e7eb);
+  border-radius: 4px;
+  background: var(--theme-elevation-50, #f9fafb);
+  color: var(--theme-elevation-500, #6b7280);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  line-height: 1;
+  padding: 0;
+}
+.lb-color-reset:hover { background: var(--theme-elevation-100, #f3f4f6); color: var(--theme-elevation-900, #111827); }
+
+.lbfs-root .lb-color-reset {
+  border-color: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.4);
+}
+.lbfs-root .lb-color-reset:hover { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9); }
+
 .lb-collapsible { border: 1px solid var(--theme-elevation-100, #f3f4f6); border-radius: 4px; padding: 8px; }
 .lb-collapsible__title { font-size: 11px; font-weight: 600; color: var(--theme-elevation-500, #6b7280); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
 .lb-checkbox-row { display: flex; flex-direction: column; gap: 6px; }

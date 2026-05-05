@@ -43,7 +43,7 @@ const allowedOrigins = Array.from(new Set([payloadServerUrl, siteUrl, ...localDe
 // so auth operations (forgot-password, user create+verify) never return "Something went wrong"
 // due to an email transport error.
 const buildEmailAdapter = async () => {
-  const fromAddress = process.env.EMAIL_FROM || 'noreply@dev.atech.software'
+  const fromAddress = process.env.EMAIL_FROM || 'noreply@uat.atach.software'
   const fromName = process.env.EMAIL_FROM_NAME || 'Atech Software'
 
   const transport = process.env.AWS_SES_SMTP_USER
@@ -90,7 +90,6 @@ export default buildConfig({
   // sendEmail() is a no-op when AWS_SES_SMTP_USER is not set (bypass/dev mode).
   // email: payloadEmailAdapter,
   email: buildEmailAdapter(),
-  // server: "standalone",
   // ── Admin panel ────────────────────────────────────────────────────────────
   admin: {
     user: 'users',            // which collection handles auth
@@ -98,7 +97,7 @@ export default buildConfig({
     // autoLogin: process.env.NODE_ENV !== 'production'
     //   ? { email: 'tan@atech.software', prefillOnly: false }
     //   : false,
-    autoLogin: { email: 'tan@atech.software', prefillOnly: false },
+    // autoLogin: { email: 'tan@uat.atach.software', prefillOnly: false },
     meta: {
       titleSuffix: ' — ATech Admin',
     },
@@ -209,7 +208,7 @@ export default buildConfig({
         payment:  false,
       },
       // Email sent to admin on form submission
-      defaultToEmail: process.env.ADMIN_EMAIL ?? 'tan@atech.software.com',
+      defaultToEmail: process.env.ADMIN_EMAIL ?? 'tan@uat.atach.software',
     }),
 
     // 3. Nested Docs ──────────────────────────────────────────────────────────

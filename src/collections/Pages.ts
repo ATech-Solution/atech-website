@@ -8,10 +8,6 @@ export const Pages: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
-    livePreview: {
-      url: ({ data }) =>
-        `${process.env.PAYLOAD_PUBLIC_SERVER_URL ?? process.env.NEXT_PUBLIC_DOMAIN ?? 'http://localhost:3000'}/${data?.slug === 'home' ? '' : (data?.slug ?? '')}`,
-    },
   },
   access: {
     // Public visitors can read published pages; authenticated users are controlled by Settings

@@ -27,28 +27,55 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
-// ── Hero Block Styles (matches src/components/block/Advance/HeroSection.tsx) ─────────
+// ── Color input with reset button ─────────────────────────────────────────────
+
+function ColorInput({
+  value,
+  onChange,
+  onReset,
+}: {
+  value: string
+  onChange: (v: string) => void
+  onReset: () => void
+}) {
+  return (
+    <div className="lb-color-wrap">
+      <input
+        type="color"
+        className="lb-input lb-input--color"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      <button
+        type="button"
+        className="lb-color-reset"
+        title="Reset to default"
+        onClick={onReset}
+      >
+        ↺
+      </button>
+    </div>
+  )
+}
+
+// ── Hero Block Styles ─────────────────────────────────────────────────────────
 
 function HeroStyleFields({ style, onChange }: { style: any; onChange: (s: any) => void }) {
-  const set = (key: string, value: unknown) => onChange({ ...style, [key]: value })
+  const set   = (key: string, value: unknown) => onChange({ ...style, [key]: value })
+  const reset = (key: string) => { const next = { ...style }; delete next[key]; onChange(next) }
 
   return (
     <>
       <Section title="Background">
         <Field label="Background Color">
-          <input
-            type="color"
-            className="lb-input"
-            value={style.heroBgColor ?? '#292929'}
-            onChange={(e) => set('heroBgColor', e.target.value)}
-          />
+          <ColorInput value={style.heroBgColor ?? '#292929'} onChange={(v) => set('heroBgColor', v)} onReset={() => reset('heroBgColor')} />
         </Field>
         <Row>
           <Field label="Gradient Start">
-            <input type="color" className="lb-input" value={style.gradientFrom ?? '#292929'} onChange={(e) => set('gradientFrom', e.target.value)} />
+            <ColorInput value={style.gradientFrom ?? '#292929'} onChange={(v) => set('gradientFrom', v)} onReset={() => reset('gradientFrom')} />
           </Field>
           <Field label="Gradient End">
-            <input type="color" className="lb-input" value={style.gradientTo ?? '#1a1a1a'} onChange={(e) => set('gradientTo', e.target.value)} />
+            <ColorInput value={style.gradientTo ?? '#1a1a1a'} onChange={(v) => set('gradientTo', v)} onReset={() => reset('gradientTo')} />
           </Field>
         </Row>
         <Field label="Background Image URL">
@@ -62,7 +89,7 @@ function HeroStyleFields({ style, onChange }: { style: any; onChange: (s: any) =
       <Section title="Typography">
         <Row>
           <Field label="Heading Color">
-            <input type="color" className="lb-input" value={style.headingColor ?? '#fafafa'} onChange={(e) => set('headingColor', e.target.value)} />
+            <ColorInput value={style.headingColor ?? '#fafafa'} onChange={(v) => set('headingColor', v)} onReset={() => reset('headingColor')} />
           </Field>
           <Field label="Heading Font Size">
             <input className="lb-input" value={style.headingFontSize ?? ''} onChange={(e) => set('headingFontSize', e.target.value)} placeholder="3.5rem" />
@@ -78,7 +105,7 @@ function HeroStyleFields({ style, onChange }: { style: any; onChange: (s: any) =
         </Row>
         <Row>
           <Field label="Body Color">
-            <input type="color" className="lb-input" value={style.bodyColor ?? '#c4c4c4'} onChange={(e) => set('bodyColor', e.target.value)} />
+            <ColorInput value={style.bodyColor ?? '#c4c4c4'} onChange={(v) => set('bodyColor', v)} onReset={() => reset('bodyColor')} />
           </Field>
           <Field label="Body Font Size">
             <input className="lb-input" value={style.bodyFontSize ?? ''} onChange={(e) => set('bodyFontSize', e.target.value)} placeholder="18px" />
@@ -92,10 +119,10 @@ function HeroStyleFields({ style, onChange }: { style: any; onChange: (s: any) =
       <Section title="Badge">
         <Row>
           <Field label="Badge Background">
-            <input type="color" className="lb-input" value={style.badgeBg ?? 'rgba(255,211,105,0.12)'} onChange={(e) => set('badgeBg', e.target.value)} />
+            <ColorInput value={style.badgeBg ?? '#ffd369'} onChange={(v) => set('badgeBg', v)} onReset={() => reset('badgeBg')} />
           </Field>
           <Field label="Badge Text Color">
-            <input type="color" className="lb-input" value={style.badgeTextColor ?? '#ffd369'} onChange={(e) => set('badgeTextColor', e.target.value)} />
+            <ColorInput value={style.badgeTextColor ?? '#ffd369'} onChange={(v) => set('badgeTextColor', v)} onReset={() => reset('badgeTextColor')} />
           </Field>
         </Row>
         <Field label="Badge Border Radius">
@@ -106,18 +133,18 @@ function HeroStyleFields({ style, onChange }: { style: any; onChange: (s: any) =
       <Section title="CTAs (Buttons)">
         <Row>
           <Field label="Primary Bg Color">
-            <input type="color" className="lb-input" value={style.ctaPrimaryBg ?? '#ffd369'} onChange={(e) => set('ctaPrimaryBg', e.target.value)} />
+            <ColorInput value={style.ctaPrimaryBg ?? '#ffd369'} onChange={(v) => set('ctaPrimaryBg', v)} onReset={() => reset('ctaPrimaryBg')} />
           </Field>
           <Field label="Primary Text Color">
-            <input type="color" className="lb-input" value={style.ctaPrimaryText ?? '#171717'} onChange={(e) => set('ctaPrimaryText', e.target.value)} />
+            <ColorInput value={style.ctaPrimaryText ?? '#171717'} onChange={(v) => set('ctaPrimaryText', v)} onReset={() => reset('ctaPrimaryText')} />
           </Field>
         </Row>
         <Row>
           <Field label="Secondary Bg">
-            <input type="color" className="lb-input" value={style.ctaSecondaryBg ?? 'transparent'} onChange={(e) => set('ctaSecondaryBg', e.target.value)} />
+            <ColorInput value={style.ctaSecondaryBg ?? '#292929'} onChange={(v) => set('ctaSecondaryBg', v)} onReset={() => reset('ctaSecondaryBg')} />
           </Field>
           <Field label="Secondary Text">
-            <input type="color" className="lb-input" value={style.ctaSecondaryText ?? '#fafafa'} onChange={(e) => set('ctaSecondaryText', e.target.value)} />
+            <ColorInput value={style.ctaSecondaryText ?? '#fafafa'} onChange={(v) => set('ctaSecondaryText', v)} onReset={() => reset('ctaSecondaryText')} />
           </Field>
         </Row>
         <Field label="Secondary Border">
@@ -128,7 +155,7 @@ function HeroStyleFields({ style, onChange }: { style: any; onChange: (s: any) =
       <Section title="Stats Cards">
         <Row>
           <Field label="Stats Background">
-            <input type="color" className="lb-input" value={style.statsBg ?? 'rgba(255,255,255,0.05)'} onChange={(e) => set('statsBg', e.target.value)} />
+            <ColorInput value={style.statsBg ?? '#1e1e1e'} onChange={(v) => set('statsBg', v)} onReset={() => reset('statsBg')} />
           </Field>
           <Field label="Stats Border">
             <input className="lb-input" value={style.statsBorder ?? '1px solid rgba(255,255,255,0.1)'} onChange={(e) => set('statsBorder', e.target.value)} />
@@ -136,10 +163,10 @@ function HeroStyleFields({ style, onChange }: { style: any; onChange: (s: any) =
         </Row>
         <Row>
           <Field label="Stat Value Color">
-            <input type="color" className="lb-input" value={style.statValueColor ?? '#ffd369'} onChange={(e) => set('statValueColor', e.target.value)} />
+            <ColorInput value={style.statValueColor ?? '#ffd369'} onChange={(v) => set('statValueColor', v)} onReset={() => reset('statValueColor')} />
           </Field>
           <Field label="Stat Label Color">
-            <input type="color" className="lb-input" value={style.statLabelColor ?? '#c4c4c4'} onChange={(e) => set('statLabelColor', e.target.value)} />
+            <ColorInput value={style.statLabelColor ?? '#c4c4c4'} onChange={(v) => set('statLabelColor', v)} onReset={() => reset('statLabelColor')} />
           </Field>
         </Row>
       </Section>
@@ -164,26 +191,27 @@ function HeroStyleFields({ style, onChange }: { style: any; onChange: (s: any) =
   )
 }
 
-// ── About/Services Style Fields ─────────────────────────────────────────────────────
+// ── About/Services Style Fields ───────────────────────────────────────────────
 
 function SectionStyleFields({ style, onChange }: { style: any; onChange: (s: any) => void }) {
-  const set = (key: string, value: unknown) => onChange({ ...style, [key]: value })
+  const set   = (key: string, value: unknown) => onChange({ ...style, [key]: value })
+  const reset = (key: string) => { const next = { ...style }; delete next[key]; onChange(next) }
 
   return (
     <>
       <Section title="Background">
         <Field label="Background Color">
-          <input type="color" className="lb-input" value={style.sectionBg ?? '#292929'} onChange={(e) => set('sectionBg', e.target.value)} />
+          <ColorInput value={style.sectionBg ?? '#292929'} onChange={(v) => set('sectionBg', v)} onReset={() => reset('sectionBg')} />
         </Field>
         <Field label="Background Image URL">
           <input className="lb-input" value={style.sectionBgImage ?? ''} onChange={(e) => set('sectionBgImage', e.target.value)} placeholder="/images/section-bg.jpg" />
         </Field>
         <Row>
           <Field label="Gradient From">
-            <input type="color" className="lb-input" value={style.gradientFrom ?? ''} onChange={(e) => set('gradientFrom', e.target.value)} />
+            <ColorInput value={style.gradientFrom ?? '#292929'} onChange={(v) => set('gradientFrom', v)} onReset={() => reset('gradientFrom')} />
           </Field>
           <Field label="Gradient To">
-            <input type="color" className="lb-input" value={style.gradientTo ?? ''} onChange={(e) => set('gradientTo', e.target.value)} />
+            <ColorInput value={style.gradientTo ?? '#1a1a1a'} onChange={(v) => set('gradientTo', v)} onReset={() => reset('gradientTo')} />
           </Field>
         </Row>
       </Section>
@@ -191,14 +219,14 @@ function SectionStyleFields({ style, onChange }: { style: any; onChange: (s: any
       <Section title="Typography">
         <Row>
           <Field label="Section Label Color">
-            <input type="color" className="lb-input" value={style.labelColor ?? '#ffd369'} onChange={(e) => set('labelColor', e.target.value)} />
+            <ColorInput value={style.labelColor ?? '#ffd369'} onChange={(v) => set('labelColor', v)} onReset={() => reset('labelColor')} />
           </Field>
           <Field label="Label Font Size">
             <input className="lb-input" value={style.labelFontSize ?? ''} onChange={(e) => set('labelFontSize', e.target.value)} placeholder="14px" />
           </Field>
         </Row>
         <Field label="Heading Color">
-          <input type="color" className="lb-input" value={style.headingColor ?? '#fafafa'} onChange={(e) => set('headingColor', e.target.value)} />
+          <ColorInput value={style.headingColor ?? '#fafafa'} onChange={(v) => set('headingColor', v)} onReset={() => reset('headingColor')} />
         </Field>
         <Row>
           <Field label="Heading Font Size">
@@ -209,7 +237,7 @@ function SectionStyleFields({ style, onChange }: { style: any; onChange: (s: any
           </Field>
         </Row>
         <Field label="Body Color">
-          <input type="color" className="lb-input" value={style.bodyColor ?? '#c4c4c4'} onChange={(e) => set('bodyColor', e.target.value)} />
+          <ColorInput value={style.bodyColor ?? '#c4c4c4'} onChange={(v) => set('bodyColor', v)} onReset={() => reset('bodyColor')} />
         </Field>
         <Field label="Body Font Size">
           <input className="lb-input" value={style.bodyFontSize ?? ''} onChange={(e) => set('bodyFontSize', e.target.value)} placeholder="16px" />
@@ -219,7 +247,7 @@ function SectionStyleFields({ style, onChange }: { style: any; onChange: (s: any
       <Section title="Cards / Items">
         <Row>
           <Field label="Card Background">
-            <input type="color" className="lb-input" value={style.cardBg ?? '#1e1e1e'} onChange={(e) => set('cardBg', e.target.value)} />
+            <ColorInput value={style.cardBg ?? '#1e1e1e'} onChange={(v) => set('cardBg', v)} onReset={() => reset('cardBg')} />
           </Field>
           <Field label="Card Border">
             <input className="lb-input" value={style.cardBorder ?? '1px solid #383838'} onChange={(e) => set('cardBorder', e.target.value)} />
@@ -229,14 +257,14 @@ function SectionStyleFields({ style, onChange }: { style: any; onChange: (s: any
           <input className="lb-input" value={style.cardBorderRadius ?? '12px'} onChange={(e) => set('cardBorderRadius', e.target.value)} />
         </Field>
         <Field label="Card Hover Background">
-          <input type="color" className="lb-input" value={style.cardHoverBg ?? '#252525'} onChange={(e) => set('cardHoverBg', e.target.value)} />
+          <ColorInput value={style.cardHoverBg ?? '#252525'} onChange={(v) => set('cardHoverBg', v)} onReset={() => reset('cardHoverBg')} />
         </Field>
         <Row>
           <Field label="Card Icon Background">
-            <input type="color" className="lb-input" value={style.iconBg ?? 'rgba(255,211,105,0.10)'} onChange={(e) => set('iconBg', e.target.value)} />
+            <ColorInput value={style.iconBg ?? '#2a2a2a'} onChange={(v) => set('iconBg', v)} onReset={() => reset('iconBg')} />
           </Field>
           <Field label="Card Icon Color">
-            <input type="color" className="lb-input" value={style.iconColor ?? '#ffd369'} onChange={(e) => set('iconColor', e.target.value)} />
+            <ColorInput value={style.iconColor ?? '#ffd369'} onChange={(v) => set('iconColor', v)} onReset={() => reset('iconColor')} />
           </Field>
         </Row>
         <Field label="Card Icon Border Radius">
@@ -274,16 +302,17 @@ function SectionStyleFields({ style, onChange }: { style: any; onChange: (s: any
   )
 }
 
-// ── Testimonials Style Fields ─────────────────────────────────────────────────────
+// ── Testimonials Style Fields ─────────────────────────────────────────────────
 
 function TestimonialsStyleFields({ style, onChange }: { style: any; onChange: (s: any) => void }) {
-  const set = (key: string, value: unknown) => onChange({ ...style, [key]: value })
+  const set   = (key: string, value: unknown) => onChange({ ...style, [key]: value })
+  const reset = (key: string) => { const next = { ...style }; delete next[key]; onChange(next) }
 
   return (
     <>
       <Section title="Background">
         <Field label="Background Color">
-          <input type="color" className="lb-input" value={style.sectionBg ?? '#1e1e1e'} onChange={(e) => set('sectionBg', e.target.value)} />
+          <ColorInput value={style.sectionBg ?? '#1e1e1e'} onChange={(v) => set('sectionBg', v)} onReset={() => reset('sectionBg')} />
         </Field>
         <Field label="Use Gradient">
           <select className="lb-input lb-input--select" value={style.useGradient ? 'true' : 'false'} onChange={(e) => set('useGradient', e.target.value === 'true')}>
@@ -294,10 +323,10 @@ function TestimonialsStyleFields({ style, onChange }: { style: any; onChange: (s
         {style.useGradient && (
           <Row>
             <Field label="Gradient From">
-              <input type="color" className="lb-input" value={style.gradientFrom ?? '#1e1e1e'} onChange={(e) => set('gradientFrom', e.target.value)} />
+              <ColorInput value={style.gradientFrom ?? '#1e1e1e'} onChange={(v) => set('gradientFrom', v)} onReset={() => reset('gradientFrom')} />
             </Field>
             <Field label="Gradient To">
-              <input type="color" className="lb-input" value={style.gradientTo ?? '#292929'} onChange={(e) => set('gradientTo', e.target.value)} />
+              <ColorInput value={style.gradientTo ?? '#292929'} onChange={(v) => set('gradientTo', v)} onReset={() => reset('gradientTo')} />
             </Field>
           </Row>
         )}
@@ -305,11 +334,11 @@ function TestimonialsStyleFields({ style, onChange }: { style: any; onChange: (s
 
       <Section title="Typography">
         <Field label="Section Label Color">
-          <input type="color" className="lb-input" value={style.labelColor ?? '#ffd369'} onChange={(e) => set('labelColor', e.target.value)} />
+          <ColorInput value={style.labelColor ?? '#ffd369'} onChange={(v) => set('labelColor', v)} onReset={() => reset('labelColor')} />
         </Field>
         <Row>
           <Field label="Heading Color">
-            <input type="color" className="lb-input" value={style.headingColor ?? '#fafafa'} onChange={(e) => set('headingColor', e.target.value)} />
+            <ColorInput value={style.headingColor ?? '#fafafa'} onChange={(v) => set('headingColor', v)} onReset={() => reset('headingColor')} />
           </Field>
           <Field label="Heading Font Size">
             <input className="lb-input" value={style.headingFontSize ?? ''} onChange={(e) => set('headingFontSize', e.target.value)} placeholder="2.5rem" />
@@ -319,7 +348,7 @@ function TestimonialsStyleFields({ style, onChange }: { style: any; onChange: (s
 
       <Section title="Quote Card">
         <Field label="Card Background">
-          <input type="color" className="lb-input" value={style.cardBg ?? '#292929'} onChange={(e) => set('cardBg', e.target.value)} />
+          <ColorInput value={style.cardBg ?? '#292929'} onChange={(v) => set('cardBg', v)} onReset={() => reset('cardBg')} />
         </Field>
         <Field label="Card Border">
           <input className="lb-input" value={style.cardBorder ?? '1px solid #383838'} onChange={(e) => set('cardBorder', e.target.value)} />
@@ -328,7 +357,7 @@ function TestimonialsStyleFields({ style, onChange }: { style: any; onChange: (s
           <input className="lb-input" value={style.cardBorderRadius ?? '16px'} onChange={(e) => set('cardBorderRadius', e.target.value)} />
         </Field>
         <Field label="Quote Text Color">
-          <input type="color" className="lb-input" value={style.quoteColor ?? '#fafafa'} onChange={(e) => set('quoteColor', e.target.value)} />
+          <ColorInput value={style.quoteColor ?? '#fafafa'} onChange={(v) => set('quoteColor', v)} onReset={() => reset('quoteColor')} />
         </Field>
         <Field label="Quote Font Size">
           <input className="lb-input" value={style.quoteFontSize ?? ''} onChange={(e) => set('quoteFontSize', e.target.value)} placeholder="16px" />
@@ -337,17 +366,17 @@ function TestimonialsStyleFields({ style, onChange }: { style: any; onChange: (s
           <input className="lb-input" value={style.quoteLineHeight ?? ''} onChange={(e) => set('quoteLineHeight', e.target.value)} />
         </Field>
         <Field label="Quote Icon Color">
-          <input type="color" className="lb-input" value={style.quoteIconColor ?? '#ffd369'} onChange={(e) => set('quoteIconColor', e.target.value)} />
+          <ColorInput value={style.quoteIconColor ?? '#ffd369'} onChange={(v) => set('quoteIconColor', v)} onReset={() => reset('quoteIconColor')} />
         </Field>
       </Section>
 
       <Section title="Author">
         <Row>
           <Field label="Author Name Color">
-            <input type="color" className="lb-input" value={style.authorColor ?? '#fafafa'} onChange={(e) => set('authorColor', e.target.value)} />
+            <ColorInput value={style.authorColor ?? '#fafafa'} onChange={(v) => set('authorColor', v)} onReset={() => reset('authorColor')} />
           </Field>
           <Field label="Author Role Color">
-            <input type="color" className="lb-input" value={style.authorRoleColor ?? '#9ca3af'} onChange={(e) => set('authorRoleColor', e.target.value)} />
+            <ColorInput value={style.authorRoleColor ?? '#9ca3af'} onChange={(v) => set('authorRoleColor', v)} onReset={() => reset('authorRoleColor')} />
           </Field>
         </Row>
         <Field label="Avatar Border Radius">
@@ -393,47 +422,48 @@ function TestimonialsStyleFields({ style, onChange }: { style: any; onChange: (s
 // ── Contact Style Fields ──────────────────────────────────────────────────────
 
 function ContactStyleFields({ style, onChange }: { style: any; onChange: (s: any) => void }) {
-  const set = (key: string, value: unknown) => onChange({ ...style, [key]: value })
+  const set   = (key: string, value: unknown) => onChange({ ...style, [key]: value })
+  const reset = (key: string) => { const next = { ...style }; delete next[key]; onChange(next) }
 
   return (
     <>
       <Section title="Background">
         <Field label="Background Color">
-          <input type="color" className="lb-input" value={style.sectionBg ?? '#ffd369'} onChange={(e) => set('sectionBg', e.target.value)} />
+          <ColorInput value={style.sectionBg ?? '#ffd369'} onChange={(v) => set('sectionBg', v)} onReset={() => reset('sectionBg')} />
         </Field>
         <Field label="Text Color (Primary)">
-          <input type="color" className="lb-input" value={style.primaryTextColor ?? '#171717'} onChange={(e) => set('primaryTextColor', e.target.value)} />
+          <ColorInput value={style.primaryTextColor ?? '#171717'} onChange={(v) => set('primaryTextColor', v)} onReset={() => reset('primaryTextColor')} />
         </Field>
       </Section>
 
       <Section title="Typography">
         <Row>
           <Field label="Heading Color">
-            <input type="color" className="lb-input" value={style.headingColor ?? '#171717'} onChange={(e) => set('headingColor', e.target.value)} />
+            <ColorInput value={style.headingColor ?? '#171717'} onChange={(v) => set('headingColor', v)} onReset={() => reset('headingColor')} />
           </Field>
           <Field label="Heading Font Size">
             <input className="lb-input" value={style.headingFontSize ?? ''} onChange={(e) => set('headingFontSize', e.target.value)} placeholder="2.5rem" />
           </Field>
         </Row>
         <Field label="Body Color">
-          <input type="color" className="lb-input" value={style.bodyColor ?? '#525252'} onChange={(e) => set('bodyColor', e.target.value)} />
+          <ColorInput value={style.bodyColor ?? '#525252'} onChange={(v) => set('bodyColor', v)} onReset={() => reset('bodyColor')} />
         </Field>
       </Section>
 
       <Section title="CTA Button">
         <Row>
           <Field label="Button Background">
-            <input type="color" className="lb-input" value={style.buttonBg ?? '#171717'} onChange={(e) => set('buttonBg', e.target.value)} />
+            <ColorInput value={style.buttonBg ?? '#171717'} onChange={(v) => set('buttonBg', v)} onReset={() => reset('buttonBg')} />
           </Field>
           <Field label="Button Text">
-            <input type="color" className="lb-input" value={style.buttonText ?? '#fafafa'} onChange={(e) => set('buttonText', e.target.value)} />
+            <ColorInput value={style.buttonText ?? '#fafafa'} onChange={(v) => set('buttonText', v)} onReset={() => reset('buttonText')} />
           </Field>
         </Row>
         <Field label="Button Border Radius">
           <input className="lb-input" value={style.buttonBorderRadius ?? '8px'} onChange={(e) => set('buttonBorderRadius', e.target.value)} />
         </Field>
         <Field label="Button Hover Background">
-          <input type="color" className="lb-input" value={style.buttonHoverBg ?? '#292929'} onChange={(e) => set('buttonHoverBg', e.target.value)} />
+          <ColorInput value={style.buttonHoverBg ?? '#292929'} onChange={(v) => set('buttonHoverBg', v)} onReset={() => reset('buttonHoverBg')} />
         </Field>
       </Section>
 
@@ -454,37 +484,38 @@ function ContactStyleFields({ style, onChange }: { style: any; onChange: (s: any
   )
 }
 
-// ── Generic Section Style Fields (for all other block types) ─────────────────────────
+// ── Generic Section Style Fields ──────────────────────────────────────────────
 
 function GenericSectionStyleFields({ style, onChange }: { style: any; onChange: (s: any) => void }) {
-  const set = (key: string, value: unknown) => onChange({ ...style, [key]: value })
+  const set   = (key: string, value: unknown) => onChange({ ...style, [key]: value })
+  const reset = (key: string) => { const next = { ...style }; delete next[key]; onChange(next) }
 
   return (
     <>
       <Section title="Background">
         <Field label="Background Color">
-          <input type="color" className="lb-input" value={style.sectionBg ?? '#292929'} onChange={(e) => set('sectionBg', e.target.value)} />
+          <ColorInput value={style.sectionBg ?? '#292929'} onChange={(v) => set('sectionBg', v)} onReset={() => reset('sectionBg')} />
         </Field>
         <Field label="Background Image URL">
           <input className="lb-input" value={style.sectionBgImage ?? ''} onChange={(e) => set('sectionBgImage', e.target.value)} placeholder="/images/section-bg.jpg" />
         </Field>
         <Row>
           <Field label="Gradient From">
-            <input type="color" className="lb-input" value={style.gradientFrom ?? ''} onChange={(e) => set('gradientFrom', e.target.value)} />
+            <ColorInput value={style.gradientFrom ?? '#292929'} onChange={(v) => set('gradientFrom', v)} onReset={() => reset('gradientFrom')} />
           </Field>
           <Field label="Gradient To">
-            <input type="color" className="lb-input" value={style.gradientTo ?? ''} onChange={(e) => set('gradientTo', e.target.value)} />
+            <ColorInput value={style.gradientTo ?? '#1a1a1a'} onChange={(v) => set('gradientTo', v)} onReset={() => reset('gradientTo')} />
           </Field>
         </Row>
       </Section>
 
       <Section title="Typography">
         <Field label="Section Label Color">
-          <input type="color" className="lb-input" value={style.labelColor ?? '#ffd369'} onChange={(e) => set('labelColor', e.target.value)} />
+          <ColorInput value={style.labelColor ?? '#ffd369'} onChange={(v) => set('labelColor', v)} onReset={() => reset('labelColor')} />
         </Field>
         <Row>
           <Field label="Heading Color">
-            <input type="color" className="lb-input" value={style.headingColor ?? '#fafafa'} onChange={(e) => set('headingColor', e.target.value)} />
+            <ColorInput value={style.headingColor ?? '#fafafa'} onChange={(v) => set('headingColor', v)} onReset={() => reset('headingColor')} />
           </Field>
           <Field label="Heading Font Size">
             <input className="lb-input" value={style.headingFontSize ?? ''} onChange={(e) => set('headingFontSize', e.target.value)} placeholder="2.5rem" />
@@ -499,7 +530,7 @@ function GenericSectionStyleFields({ style, onChange }: { style: any; onChange: 
           </Field>
         </Row>
         <Field label="Body Color">
-          <input type="color" className="lb-input" value={style.bodyColor ?? '#c4c4c4'} onChange={(e) => set('bodyColor', e.target.value)} />
+          <ColorInput value={style.bodyColor ?? '#c4c4c4'} onChange={(v) => set('bodyColor', v)} onReset={() => reset('bodyColor')} />
         </Field>
         <Field label="Body Font Size">
           <input className="lb-input" value={style.bodyFontSize ?? ''} onChange={(e) => set('bodyFontSize', e.target.value)} placeholder="16px" />
@@ -530,7 +561,7 @@ function GenericSectionStyleFields({ style, onChange }: { style: any; onChange: 
       <Section title="Cards / Items">
         <Row>
           <Field label="Card Background">
-            <input type="color" className="lb-input" value={style.cardBg ?? '#1e1e1e'} onChange={(e) => set('cardBg', e.target.value)} />
+            <ColorInput value={style.cardBg ?? '#1e1e1e'} onChange={(v) => set('cardBg', v)} onReset={() => reset('cardBg')} />
           </Field>
           <Field label="Card Border">
             <input className="lb-input" value={style.cardBorder ?? '1px solid #383838'} onChange={(e) => set('cardBorder', e.target.value)} />
@@ -541,10 +572,10 @@ function GenericSectionStyleFields({ style, onChange }: { style: any; onChange: 
         </Field>
         <Row>
           <Field label="Icon Background">
-            <input type="color" className="lb-input" value={style.iconBg ?? 'rgba(255,211,105,0.10)'} onChange={(e) => set('iconBg', e.target.value)} />
+            <ColorInput value={style.iconBg ?? '#2a2a2a'} onChange={(v) => set('iconBg', v)} onReset={() => reset('iconBg')} />
           </Field>
           <Field label="Icon Color">
-            <input type="color" className="lb-input" value={style.iconColor ?? '#ffd369'} onChange={(e) => set('iconColor', e.target.value)} />
+            <ColorInput value={style.iconColor ?? '#ffd369'} onChange={(v) => set('iconColor', v)} onReset={() => reset('iconColor')} />
           </Field>
         </Row>
       </Section>
@@ -563,39 +594,28 @@ function GenericSectionStyleFields({ style, onChange }: { style: any; onChange: 
   )
 }
 
-// ── Main export: get style fields by block type ──────────────────────────────────────
+// ── Main export: get style fields by block type ───────────────────────────────
 
 export function getBlockStyleFields(
   blockType: BlockType,
   style: any,
   onChange: (s: any) => void,
 ): React.ReactNode {
-  // Hero variants
   if (['hero', 'hero-split', 'hero-centered', 'page-hero', 'contact-hero', 'involved-hero'].includes(blockType)) {
     return <HeroStyleFields style={style} onChange={onChange} />
   }
-
-  // About / Features
   if (['about', 'features', 'team-section', 'mission-vision'].includes(blockType)) {
     return <SectionStyleFields style={style} onChange={onChange} />
   }
-
-  // Services / Expertise
   if (['services', 'expertise-tiles', 'process-steps', 'card-grid'].includes(blockType)) {
     return <SectionStyleFields style={style} onChange={onChange} />
   }
-
-  // Testimonials / Reviews
   if (['testimonials', 'testimonial'].includes(blockType)) {
     return <TestimonialsStyleFields style={style} onChange={onChange} />
   }
-
-  // Contact / CTA
   if (['contact', 'cta-banner', 'contact-stats'].includes(blockType)) {
     return <ContactStyleFields style={style} onChange={onChange} />
   }
-
-  // Default: generic section styles
   return <GenericSectionStyleFields style={style} onChange={onChange} />
 }
 

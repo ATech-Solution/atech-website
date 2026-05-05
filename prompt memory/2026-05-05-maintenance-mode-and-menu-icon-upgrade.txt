@@ -1,0 +1,16 @@
+Session: 2026-05-05
+Prompt:
+1. Change maintenance mode to DB-only (remove MAINTENANCE_MODE env var). When enabled from admin, all frontend pages redirect to /maintenance. When disabled, visiting /maintenance redirects to home.
+2. Add new mega menu style 'no-icon' (plain text list, like screenshot).
+3. Change icon field from text/emoji to media upload (Payload media relation).
+4. Update frontend navigation accordingly.
+
+Changes made:
+- .env — removed MAINTENANCE_MODE=false and its comment block
+- src/middleware.ts — removed envMaintenance fast path; /maintenance now redirects to / when maintenance is OFF; non-admin paths rewrite to /maintenance when ON
+- src/collections/Navigation.ts — added 'no-icon' option to megaMenuStyle select; changed icon field from type:'text' to type:'upload' relationTo:'media'
+- src/components/MegaMenuNav.tsx:
+  - MegaMenuLink.icon changed from string to { url, alt?, width?, height? } | null
+  - NavItem.megaMenuStyle union extended to include 'no-icon'
+  - GridLinkItem and CategoryLinkItem now render icon as <img> tag
+  - resolveMegaPanel routes 'no-icon' to ListMegaPanel

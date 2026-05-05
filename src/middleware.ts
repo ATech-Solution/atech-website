@@ -1,27 +1,14 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Paths that always bypass maintenance mode
-const EXCLUDED_PREFIXES = ['/admin', '/api', '/maintenance', '/_next', '/favicon']
+// Admin and infra paths always bypass maintenance checks
+const ADMIN_PREFIXES = ['/admin', '/api', '/_next', '/favicon']
 
-function isExcluded(pathname: string): boolean {
-  return EXCLUDED_PREFIXES.some((p) => pathname.startsWith(p))
+function isAdminPath(pathname: string): boolean {
+  return ADMIN_PREFIXES.some((p) => pathname.startsWith(p))
 }
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-
-  // Allow excluded paths through unconditionally
-  if (isExcluded(pathname)) return NextResponse.next()
-
-  // 1. Fast path — env var toggle (instant, no network)
-  const envMaintenance = process.env.MAINTENANCE_MODE === 'true'
-  if (envMaintenance) {
-    return NextResponse.rewrite(new URL('/maintenance', request.url))
-  }
-
-  // 2. DB-backed toggle — fetch our lightweight API endpoint
-  //    Use absolute URL so it works in both server and edge runtimes
+async function isMaintenanceEnabled(request: NextRequest): Promise<boolean> {
   try {
     const origin =
       process.env.NEXT_PUBLIC_SITE_URL_PROD ??
@@ -35,19 +22,37 @@ export async function middleware(request: NextRequest) {
 
     if (res.ok) {
       const data = await res.json()
-      if (data?.maintenanceMode) {
-        return NextResponse.rewrite(new URL('/maintenance', request.url))
-      }
+      return Boolean(data?.maintenanceMode)
     }
   } catch {
-    // Fail open — if the API is unreachable, never block real traffic
+    // Fail open — never block real traffic on a network/DB error
+  }
+  return false
+}
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Admin, API, and Next.js internals pass through unconditionally
+  if (isAdminPath(pathname)) return NextResponse.next()
+
+  const maintenance = await isMaintenanceEnabled(request)
+
+  // /maintenance page: show when ON, redirect home when OFF
+  if (pathname.startsWith('/maintenance')) {
+    return maintenance
+      ? NextResponse.next()
+      : NextResponse.redirect(new URL('/', request.url))
+  }
+
+  // All other frontend pages: rewrite to maintenance page when ON
+  if (maintenance) {
+    return NextResponse.rewrite(new URL('/maintenance', request.url))
   }
 
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 }

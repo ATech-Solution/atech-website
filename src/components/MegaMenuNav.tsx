@@ -9,7 +9,7 @@ interface MegaMenuLink {
   label: string
   url: string
   description?: string
-  icon?: string
+  icon?: { url: string; alt?: string; width?: number; height?: number } | null
 }
 
 interface MegaMenuColumn {
@@ -30,7 +30,7 @@ export interface NavItem {
   url?: string
   openInNewTab?: boolean
   megaMenu?: boolean
-  megaMenuStyle?: 'with-description' | 'category-grid'
+  megaMenuStyle?: 'with-description' | 'category-grid' | 'no-icon'
   columns?: MegaMenuColumn[]
   featured?: FeaturedCard
 }
@@ -214,7 +214,8 @@ function GridLinkItem({ link }: { link: MegaMenuLink }) {
         }}
       >
         {link.icon ? (
-          <span>{link.icon}</span>
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={link.icon.url} alt={link.icon.alt ?? ''} style={{ width: 20, height: 20, objectFit: 'contain' }} />
         ) : (
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <rect x="2" y="2" width="12" height="12" rx="2" stroke="#525252" strokeWidth="1.5" />
@@ -381,7 +382,8 @@ function CategoryLinkItem({ link }: { link: MegaMenuLink }) {
         }}
       >
         {link.icon ? (
-          <span style={{ fontSize: 20 }}>{link.icon}</span>
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={link.icon.url} alt={link.icon.alt ?? ''} style={{ width: 20, height: 20, objectFit: 'contain' }} />
         ) : (
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
             <rect x="2" y="2" width="12" height="12" rx="2" stroke="#525252" strokeWidth="1.5" />
@@ -453,6 +455,7 @@ function ListLinkItem({ link }: { link: MegaMenuLink }) {
 
 function resolveMegaPanel(item: NavItem) {
   if (item.megaMenuStyle === 'category-grid') return <CategoryGridMegaPanel item={item} />
+  if (item.megaMenuStyle === 'no-icon') return <ListMegaPanel item={item} />
   const hasDescriptions = (item.columns ?? []).flatMap((col) => col.links ?? []).some((l) => l.description)
   if (item.megaMenuStyle === 'with-description' || hasDescriptions) return <GridMegaPanel item={item} />
   return <ListMegaPanel item={item} />
@@ -621,10 +624,14 @@ export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark'
           >
             {item.megaMenu ? (
               <button
-                onClick={() => 
-                  window.open(item.url ?? '#', "_blank")
-                  // setActiveMenu(activeMenu === item.label ? null : item.label)
-                }
+                onClick={() => {
+                  if (!item.url) return
+                  if (item.openInNewTab) {
+                    window.open(item.url, '_blank', 'noopener,noreferrer')
+                  } else {
+                    window.location.href = item.url
+                  }
+                }}
                 onFocus={() => openMenu(item.label)}
                 aria-expanded={activeMenu === item.label}
                 aria-haspopup="true"
