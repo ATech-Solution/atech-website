@@ -32,7 +32,7 @@ module.exports = {
         // (CORS/CSRF). Without them, serverURL defaults to http://localhost:3000, which
         // causes CSRF rejection for every admin panel API request and breaks the admin UI.
         NEXT_PUBLIC_SITE_URL_PROD: 'https://uat.atech.software',
-        PAYLOAD_PUBLIC_SERVER_URL_PROD: 'https:/uat.atech.software',
+        PAYLOAD_PUBLIC_SERVER_URL_PROD: 'https://uat.atech.software',
         NEXT_PUBLIC_DOMAIN_PROD: 'https://uat.atech.software',
          AWS_SES_SMTP_HOST: 'email-smtp.ap-southeast-1.amazonaws.com',
         AWS_SES_SMTP_PORT: '465',

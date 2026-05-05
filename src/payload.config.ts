@@ -46,11 +46,12 @@ const buildEmailAdapter = async () => {
   const fromAddress = process.env.EMAIL_FROM || 'noreply@uat.atech.software'
   const fromName = process.env.EMAIL_FROM_NAME || 'Atech Software'
 
+  const smtpPort = parseInt(process.env.AWS_SES_SMTP_PORT || '465')
   const transport = process.env.AWS_SES_SMTP_USER
     ? nodemailer.createTransport({
         host: process.env.AWS_SES_SMTP_HOST || 'email-smtp.ap-southeast-1.amazonaws.com',
-        port: parseInt(process.env.AWS_SES_SMTP_PORT || '465'),
-        secure: true,
+        port: smtpPort,
+        secure: smtpPort === 465,
         auth: {
           user: process.env.AWS_SES_SMTP_USER,
           pass: process.env.AWS_SES_SMTP_PASSWORD,
