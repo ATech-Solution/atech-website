@@ -122,7 +122,7 @@ jobs:
 
             echo "==> Restarting app..."
             pm2 delete atech-website 2>/dev/null || true
-            NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0 DATABASE_URL="file:${{ secrets.DEPLOY_PATH }}/data/payload.db" PAYLOAD_MEDIA_DIR="${{ secrets.DEPLOY_PATH }}/public/media" PAYLOAD_SECRET="${{ secrets.PAYLOAD_SECRET }}" NEXT_PUBLIC_SITE_URL="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" PAYLOAD_PUBLIC_SERVER_URL="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" pm2 start ${{ secrets.DEPLOY_PATH }}/standalone/server.js --name "atech-website" --cwd ${{ secrets.DEPLOY_PATH }}/standalone
+            NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0 DATABASE_URL="file:${{ secrets.DEPLOY_PATH }}/data/payload.db" PAYLOAD_MEDIA_DIR="${{ secrets.DEPLOY_PATH }}/public/media" PAYLOAD_SECRET="${{ secrets.PAYLOAD_SECRET }}" NEXT_PUBLIC_SITE_URL="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" NEXT_PUBLIC_SITE_URL_PROD="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" PAYLOAD_PUBLIC_SERVER_URL="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" PAYLOAD_PUBLIC_SERVER_URL_PROD="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" pm2 start ${{ secrets.DEPLOY_PATH }}/standalone/server.js --name "atech-website" --cwd ${{ secrets.DEPLOY_PATH }}/standalone
             pm2 save
 
             echo "==> Done"

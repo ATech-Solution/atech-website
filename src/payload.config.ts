@@ -74,18 +74,17 @@ const buildEmailAdapter = async () => {
 }
 
 // ── Server URL — resolved from NODE_ENV ────────────────────────────────────
-// Priority: env-specific override → shared fallback → localhost default
-// const serverURL =
-//   process.env.NODE_ENV === 'production'
-//     ? (process.env.PAYLOAD_PUBLIC_SERVER_URL_PROD
-//         ?? process.env.PAYLOAD_PUBLIC_SERVER_URL
-//         ?? 'http://localhost:3000')
-//     : (process.env.PAYLOAD_PUBLIC_SERVER_URL_DEV
-//         ?? process.env.PAYLOAD_PUBLIC_SERVER_URL
-//         ?? 'http://localhost:3000')
+const serverURL =
+  process.env.NODE_ENV === 'production'
+    ? (process.env.PAYLOAD_PUBLIC_SERVER_URL_PROD
+        ?? process.env.PAYLOAD_PUBLIC_SERVER_URL
+        ?? 'http://localhost:3000')
+    : (process.env.PAYLOAD_PUBLIC_SERVER_URL_DEV
+        ?? process.env.PAYLOAD_PUBLIC_SERVER_URL
+        ?? 'http://localhost:3000')
 
 export default buildConfig({
-  // serverURL,
+  serverURL,
   // ── Email (AWS SES) ────────────────────────────────────────────────────────
   // sendEmail() is a no-op when AWS_SES_SMTP_USER is not set (bypass/dev mode).
   // email: payloadEmailAdapter,
@@ -97,7 +96,7 @@ export default buildConfig({
     // autoLogin: process.env.NODE_ENV !== 'production'
     //   ? { email: 'tan@atech.software', prefillOnly: false }
     //   : false,
-    // autoLogin: { email: 'tan@uat.atach.software', prefillOnly: false },
+    // autoLogin: { email: 'tan@atech.software', prefillOnly: false },
     meta: {
       titleSuffix: ' — ATech Admin',
     },
@@ -208,7 +207,7 @@ export default buildConfig({
         payment:  false,
       },
       // Email sent to admin on form submission
-      defaultToEmail: process.env.ADMIN_EMAIL ?? 'tan@uat.atach.software',
+      defaultToEmail: process.env.ADMIN_EMAIL ?? 'dev@atach.software',
     }),
 
     // 3. Nested Docs ──────────────────────────────────────────────────────────
