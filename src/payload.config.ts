@@ -43,7 +43,7 @@ const allowedOrigins = Array.from(new Set([payloadServerUrl, siteUrl, ...localDe
 // so auth operations (forgot-password, user create+verify) never return "Something went wrong"
 // due to an email transport error.
 const buildEmailAdapter = async () => {
-  const fromAddress = process.env.EMAIL_FROM || 'noreply@uat.atach.software'
+  const fromAddress = process.env.EMAIL_FROM || 'noreply@uat.atech.software'
   const fromName = process.env.EMAIL_FROM_NAME || 'Atech Software'
 
   const transport = process.env.AWS_SES_SMTP_USER
@@ -207,7 +207,7 @@ export default buildConfig({
         payment:  false,
       },
       // Email sent to admin on form submission
-      defaultToEmail: process.env.ADMIN_EMAIL ?? 'dev@atach.software',
+      defaultToEmail: process.env.ADMIN_EMAIL ?? 'dev@atech.software',
     }),
 
     // 3. Nested Docs ──────────────────────────────────────────────────────────
