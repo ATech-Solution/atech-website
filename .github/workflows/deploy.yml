@@ -94,7 +94,7 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
         run: |
-          ssh $SSH_USER@$SSH_HOST << 'ENDSSH'
+          ssh $SSH_USER@$SSH_HOST << ENDSSH
             set -e
             cd $DEPLOY_PATH
 
@@ -111,7 +111,7 @@ jobs:
 
             echo "==> Restarting app..."
             pm2 delete atech-website 2>/dev/null || true
-            pm2 start npm --name "atech-website" -- start
+            pm2 start npm --name "atech-website" --cwd $DEPLOY_PATH -- start
             pm2 save
 
             echo "==> Done"
