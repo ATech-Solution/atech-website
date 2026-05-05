@@ -50,7 +50,7 @@ export default async function Footer({ theme, settings }: FooterProps = {}) {
                 alt={logo.alt} 
                 style={{ position: 'absolute', left: 0,top: 0.3,  width: 'auto', height: 'auto', filter: 'invert(100%)' }} 
                 />
-                </>): (theme.siteName)
+                </>): (t.siteName)
                 }
               </div>
             </Link>
