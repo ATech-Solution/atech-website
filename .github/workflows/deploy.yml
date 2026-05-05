@@ -112,7 +112,7 @@ jobs:
             git pull https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ATech-Solution/atech-website.git dev
 
             echo "==> Installing dependencies..."
-            npm install --omit=dev --ignore-scripts
+            npm install --ignore-scripts
 
             echo "==> Running database migrations..."
             DATABASE_URL="file:${{ secrets.DEPLOY_PATH }}/data/payload.db" PAYLOAD_SECRET="${{ secrets.PAYLOAD_SECRET }}" npm run migrate
