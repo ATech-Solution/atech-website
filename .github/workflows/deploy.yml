@@ -94,13 +94,19 @@ jobs:
 
       - name: Deploy on UAT server
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << ENDSSH
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
             set -e
-            cd ${{ secrets.DEPLOY_PATH }}
+            DEPLOY_PATH="${{ secrets.DEPLOY_PATH }}"
+            cd "$DEPLOY_PATH"
 
             echo "==> Ensuring persistent dirs exist..."
-            mkdir -p ${{ secrets.DEPLOY_PATH }}/data
-            mkdir -p ${{ secrets.DEPLOY_PATH }}/public/media
+            mkdir -p "$DEPLOY_PATH/data"
+            mkdir -p "$DEPLOY_PATH/media"
+
+            echo "==> Migrating old media files (public/media → media) if needed..."
+            if [ -d "$DEPLOY_PATH/public/media" ]; then
+              cp -rn "$DEPLOY_PATH/public/media/." "$DEPLOY_PATH/media/" 2>/dev/null || true
+            fi
 
             echo "==> Swapping build..."
             rm -rf standalone .next
@@ -108,21 +114,48 @@ jobs:
             mv .next/standalone standalone
             rm -rf .next next.zip
 
-            echo "==> Pulling latest code..."
+            echo "==> Symlinking persistent media into standalone/public..."
+            # Remove the empty media/ baked from the build zip, replace with a
+            # symlink to the persistent directory that survives every redeploy.
+            rm -rf "$DEPLOY_PATH/standalone/public/media"
+            mkdir -p "$DEPLOY_PATH/standalone/public"
+            ln -sfn "$DEPLOY_PATH/media" "$DEPLOY_PATH/standalone/public/media"
+
+            echo "==> Pulling latest code for migrations..."
             git pull https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ATech-Solution/atech-website.git dev
 
             echo "==> Installing dependencies..."
             npm install --ignore-scripts
 
             echo "==> Running database migrations..."
-            DATABASE_URL="file:${{ secrets.DEPLOY_PATH }}/data/payload.db" PAYLOAD_SECRET="${{ secrets.PAYLOAD_SECRET }}" npm run migrate
-
-            echo "==> Regenerating Payload types & importmap..."
-            npm run generate:types && npm run generate:importmap
+            DATABASE_URL="file:$DEPLOY_PATH/data/payload.db" \
+            PAYLOAD_SECRET="${{ secrets.PAYLOAD_SECRET }}" \
+            npm run migrate
 
             echo "==> Restarting app..."
             pm2 delete atech-website 2>/dev/null || true
-            NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0 DATABASE_URL="file:${{ secrets.DEPLOY_PATH }}/data/payload.db" PAYLOAD_MEDIA_DIR="${{ secrets.DEPLOY_PATH }}/public/media" PAYLOAD_SECRET="${{ secrets.PAYLOAD_SECRET }}" NEXT_PUBLIC_SITE_URL="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" NEXT_PUBLIC_SITE_URL_PROD="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" PAYLOAD_PUBLIC_SERVER_URL="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" PAYLOAD_PUBLIC_SERVER_URL_PROD="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" pm2 start ${{ secrets.DEPLOY_PATH }}/standalone/server.js --name "atech-website" --cwd ${{ secrets.DEPLOY_PATH }}/standalone
+            NODE_ENV=production \
+            PORT=3000 \
+            HOSTNAME=0.0.0.0 \
+            DATABASE_URL="file:$DEPLOY_PATH/data/payload.db" \
+            PAYLOAD_MEDIA_DIR="$DEPLOY_PATH/media" \
+            PAYLOAD_SECRET="${{ secrets.PAYLOAD_SECRET }}" \
+            NEXT_PUBLIC_SITE_URL="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" \
+            NEXT_PUBLIC_SITE_URL_PROD="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" \
+            NEXT_PUBLIC_DOMAIN="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" \
+            NEXT_PUBLIC_DOMAIN_PROD="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" \
+            PAYLOAD_PUBLIC_SERVER_URL="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" \
+            PAYLOAD_PUBLIC_SERVER_URL_PROD="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" \
+            AWS_SES_SMTP_HOST="${{ secrets.AWS_SES_SMTP_HOST }}" \
+            AWS_SES_SMTP_PORT="${{ secrets.AWS_SES_SMTP_PORT }}" \
+            AWS_SES_SMTP_USER="${{ secrets.AWS_SES_SMTP_USER }}" \
+            AWS_SES_SMTP_PASSWORD="${{ secrets.AWS_SES_SMTP_PASSWORD }}" \
+            EMAIL_FROM="${{ secrets.EMAIL_FROM }}" \
+            EMAIL_FROM_NAME="${{ secrets.EMAIL_FROM_NAME }}" \
+            ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}" \
+            pm2 start "$DEPLOY_PATH/standalone/server.js" \
+              --name "atech-website" \
+              --cwd "$DEPLOY_PATH/standalone"
             pm2 save
 
             echo "==> Done"
@@ -157,9 +190,19 @@ jobs:
 
       - name: Deploy on production server
         run: |
-          ssh ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} << ENDSSH
+          ssh ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} << 'ENDSSH'
             set -e
-            cd ${{ secrets.PROD_DEPLOY_PATH }}
+            DEPLOY_PATH="${{ secrets.PROD_DEPLOY_PATH }}"
+            cd "$DEPLOY_PATH"
+
+            echo "==> Ensuring persistent dirs exist..."
+            mkdir -p "$DEPLOY_PATH/data"
+            mkdir -p "$DEPLOY_PATH/media"
+
+            echo "==> Migrating old media files (public/media → media) if needed..."
+            if [ -d "$DEPLOY_PATH/public/media" ]; then
+              cp -rn "$DEPLOY_PATH/public/media/." "$DEPLOY_PATH/media/" 2>/dev/null || true
+            fi
 
             echo "==> Swapping build..."
             rm -rf standalone .next
@@ -167,15 +210,39 @@ jobs:
             mv .next/standalone standalone
             rm -rf .next next.zip
 
-            echo "==> Pulling latest code..."
+            echo "==> Symlinking persistent media into standalone/public..."
+            rm -rf "$DEPLOY_PATH/standalone/public/media"
+            mkdir -p "$DEPLOY_PATH/standalone/public"
+            ln -sfn "$DEPLOY_PATH/media" "$DEPLOY_PATH/standalone/public/media"
+
+            echo "==> Pulling latest code for migrations..."
             git pull https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ATech-Solution/atech-website.git main
 
-            echo "==> Regenerating Payload types & importmap..."
-            npm run generate:types && npm run generate:importmap
+            echo "==> Installing dependencies..."
+            npm install --ignore-scripts
+
+            echo "==> Running database migrations..."
+            DATABASE_URL="${{ secrets.PROD_DATABASE_URL }}" \
+            PAYLOAD_SECRET="${{ secrets.PROD_PAYLOAD_SECRET }}" \
+            npm run migrate
 
             echo "==> Restarting app..."
             pm2 delete atech-website-prod 2>/dev/null || true
-            NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0 DATABASE_URL="${{ secrets.PROD_DATABASE_URL }}" PAYLOAD_SECRET="${{ secrets.PROD_PAYLOAD_SECRET }}" NEXT_PUBLIC_SITE_URL="${{ secrets.PROD_SITE_URL }}" PAYLOAD_PUBLIC_SERVER_URL="${{ secrets.PROD_SITE_URL }}" pm2 start ${{ secrets.PROD_DEPLOY_PATH }}/standalone/server.js --name "atech-website-prod" --cwd ${{ secrets.PROD_DEPLOY_PATH }}/standalone
+            NODE_ENV=production \
+            PORT=3000 \
+            HOSTNAME=0.0.0.0 \
+            DATABASE_URL="${{ secrets.PROD_DATABASE_URL }}" \
+            PAYLOAD_MEDIA_DIR="$DEPLOY_PATH/media" \
+            PAYLOAD_SECRET="${{ secrets.PROD_PAYLOAD_SECRET }}" \
+            NEXT_PUBLIC_SITE_URL="${{ secrets.PROD_SITE_URL }}" \
+            NEXT_PUBLIC_SITE_URL_PROD="${{ secrets.PROD_SITE_URL }}" \
+            NEXT_PUBLIC_DOMAIN="${{ secrets.PROD_SITE_URL }}" \
+            NEXT_PUBLIC_DOMAIN_PROD="${{ secrets.PROD_SITE_URL }}" \
+            PAYLOAD_PUBLIC_SERVER_URL="${{ secrets.PROD_SITE_URL }}" \
+            PAYLOAD_PUBLIC_SERVER_URL_PROD="${{ secrets.PROD_SITE_URL }}" \
+            pm2 start "$DEPLOY_PATH/standalone/server.js" \
+              --name "atech-website-prod" \
+              --cwd "$DEPLOY_PATH/standalone"
             pm2 save
 
             echo "==> Done"

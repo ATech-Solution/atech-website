@@ -10,11 +10,9 @@ module.exports = {
     {
       name: 'atech-website',
       // script: 'node',
-      script: './.next/standalone/server.js', // Directly point to the standalone server    
-      instances: 'max', // Utilizes all CPU cores
-      // args: '.next/standalone/server.js',
-      cwd: '/home/deploy/atech-website/',       // Change to your deployment path
-      // instances: 1,                  // Must be 1 for SQLite
+      script: './standalone/server.js',
+      cwd: '/home/deploy/atech-website/',
+      instances: 1,                  // SQLite requires single process (no concurrent writers)
       exec_mode: 'fork',             // Must be fork (not cluster) for SQLite
       autorestart: true,
       watch: false,
@@ -27,7 +25,7 @@ module.exports = {
         // standalone/server.js runs process.chdir(__dirname) on startup, so process.cwd()
         // becomes .next/standalone/ — not the project root. Use an absolute path so
         // Payload always reads/writes media from the correct persistent location.
-        PAYLOAD_MEDIA_DIR: '/home/deploy/atech-website/media',
+        PAYLOAD_MEDIA_DIR: '/home/deploy/atech-website/media',  // persistent across deploys; symlinked into standalone/public/media
         // payload.config.ts reads these at runtime to build serverURL and allowedOrigins
         // (CORS/CSRF). Without them, serverURL defaults to http://localhost:3000, which
         // causes CSRF rejection for every admin panel API request and breaks the admin UI.
