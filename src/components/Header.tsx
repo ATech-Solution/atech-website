@@ -7,7 +7,6 @@ interface HeaderProps {
 }
 
 export default async function Header({ theme }: HeaderProps = {}) {
-  console.log("theme",theme)
   const nav = await getNavigation().catch(() => ({
     siteTitle: 'ATech',
     menuItems: [],
@@ -55,7 +54,7 @@ export default async function Header({ theme }: HeaderProps = {}) {
               alt={logo.alt}
               style={{ position: 'absolute', left: 0, top: 0.3, width: 'auto', height: 'auto' }}
               />
-              </>): (theme.siteName)
+              </>): (siteName)
             }
           </div>
         </Link>
