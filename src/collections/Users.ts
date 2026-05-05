@@ -5,7 +5,9 @@ export const Users: CollectionConfig = {
   auth: {
     useAPIKey: true,
     tokenExpiration: 7200,
-    verify: {
+    // Only require email verification when an SMTP transport is configured.
+    // Without it the verification email is never sent, locking users out.
+    ...(process.env.AWS_SES_SMTP_USER ? { verify: {
       generateEmailHTML: ({ token, user }) => {
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL_PROD
           ?? process.env.NEXT_PUBLIC_SITE_URL_DEV
@@ -59,7 +61,7 @@ export const Users: CollectionConfig = {
         `
       },
       generateEmailSubject: () => 'Verify your ATech account email',
-    },
+    } } : {}),
     forgotPassword: {
       generateEmailHTML: ({ token, user }) => {
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL_PROD
