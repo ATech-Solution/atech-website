@@ -27,7 +27,7 @@ module.exports = {
         // standalone/server.js runs process.chdir(__dirname) on startup, so process.cwd()
         // becomes .next/standalone/ — not the project root. Use an absolute path so
         // Payload always reads/writes media from the correct persistent location.
-        PAYLOAD_MEDIA_DIR: '/home/deploy/atech-website/public/media',
+        PAYLOAD_MEDIA_DIR: '/home/deploy/atech-website/media',
         // payload.config.ts reads these at runtime to build serverURL and allowedOrigins
         // (CORS/CSRF). Without them, serverURL defaults to http://localhost:3000, which
         // causes CSRF rejection for every admin panel API request and breaks the admin UI.
