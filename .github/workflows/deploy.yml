@@ -99,10 +99,10 @@ jobs:
             cd ${{ secrets.DEPLOY_PATH }}
 
             echo "==> Swapping build..."
-            rm -rf standalone
-            unzip -q next.zip
-            mv .next/standalone standalone 2>/dev/null || true
-            rm -f next.zip
+            rm -rf standalone .next
+            unzip -o -q next.zip
+            mv .next/standalone standalone
+            rm -rf .next next.zip
 
             echo "==> Pulling latest code..."
             git pull origin dev
@@ -152,10 +152,10 @@ jobs:
             cd ${{ secrets.PROD_DEPLOY_PATH }}
 
             echo "==> Swapping build..."
-            rm -rf standalone
-            unzip -q next.zip
-            mv .next/standalone standalone 2>/dev/null || true
-            rm -f next.zip
+            rm -rf standalone .next
+            unzip -o -q next.zip
+            mv .next/standalone standalone
+            rm -rf .next next.zip
 
             echo "==> Pulling latest code..."
             git pull origin main
