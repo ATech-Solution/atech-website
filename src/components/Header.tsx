@@ -7,7 +7,6 @@ interface HeaderProps {
 }
 
 export default async function Header({ theme }: HeaderProps = {}) {
-  console.log("theme",theme)
   const nav = await getNavigation().catch(() => ({
     siteTitle: 'ATech',
     menuItems: [],

@@ -42,3 +42,4 @@ next-env.d.ts
 data/payload.db-shm
 data/payload.db-wal
 src/payload-types.ts
+/prompt memory

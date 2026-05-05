@@ -20,6 +20,8 @@ export const layoutBuilderPlugin = (): Plugin => (incomingConfig: Config): Confi
         await incomingConfig.onInit(payload)
       }
 
+      if (process.env.NEXT_PHASE === 'phase-production-build') return
+
       try {
         const existing = await payload.find({
           collection: 'plugins',

@@ -65,9 +65,9 @@ export default async function Footer({ theme, settings }: FooterProps = {}) {
             {/* Social icons */}
             <div className="flex gap-4">
               {[
-                { src: '/images/twitter.png',  href: settings.twitter, label: 'Twitter',  w: 14, h: 16  },
-                { src: '/images/linkedn.png', href: settings.linkedin, label: 'LinkedIn',  w: 16, h: 16  },
-                { src: '/images/github.png',   href: settings.github, label: 'GitHub',    w: 15.5, h: 16 },
+                { src: '/images/twitter.png',  href: settings?.twitter, label: 'Twitter',  w: 14, h: 16  },
+                { src: '/images/linkedn.png', href: settings?.linkedin, label: 'LinkedIn',  w: 16, h: 16  },
+                { src: '/images/github.png',   href: settings?.github, label: 'GitHub',    w: 15.5, h: 16 },
               ].map(({ src, href, label, w, h }) => (
                 // { src: '/images/facebook.png',   href: settings.facebook, label: 'Facebook',    w: 15.5, h: 16 },
                 // { src: '/images/instagram.png',   href: settings.instagram, label: 'Instagram',    w: 15.5, h: 16 },
