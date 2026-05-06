@@ -9,10 +9,11 @@ export const Users: CollectionConfig = {
     // Without it the verification email is never sent, locking users out.
     ...(process.env.AWS_SES_SMTP_USER ? { verify: {
       generateEmailHTML: ({ token, user }) => {
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL_PROD
-          ?? process.env.NEXT_PUBLIC_SITE_URL_DEV
-          ?? process.env.NEXT_PUBLIC_SITE_URL
-          ?? 'http://localhost:3000'
+        // Use PAYLOAD_PUBLIC_SERVER_URL_* — these are resolved at runtime from process.env.
+        // NEXT_PUBLIC_* vars are baked at build time by Next.js and cannot be overridden at runtime.
+        const siteUrl = process.env.NODE_ENV === 'production'
+          ? (process.env.PAYLOAD_PUBLIC_SERVER_URL_PROD ?? process.env.PAYLOAD_PUBLIC_SERVER_URL ?? 'http://localhost:3000')
+          : (process.env.PAYLOAD_PUBLIC_SERVER_URL_DEV  ?? process.env.PAYLOAD_PUBLIC_SERVER_URL ?? 'http://localhost:3000')
 
         const verifyUrl = `${siteUrl}/api/users/verify/${token}`
 
@@ -64,10 +65,9 @@ export const Users: CollectionConfig = {
     } } : {}),
     forgotPassword: {
       generateEmailHTML: ({ token, user }) => {
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL_PROD
-          ?? process.env.NEXT_PUBLIC_SITE_URL_DEV
-          ?? process.env.NEXT_PUBLIC_SITE_URL
-          ?? 'http://localhost:3000'
+        const siteUrl = process.env.NODE_ENV === 'production'
+          ? (process.env.PAYLOAD_PUBLIC_SERVER_URL_PROD ?? process.env.PAYLOAD_PUBLIC_SERVER_URL ?? 'http://localhost:3000')
+          : (process.env.PAYLOAD_PUBLIC_SERVER_URL_DEV  ?? process.env.PAYLOAD_PUBLIC_SERVER_URL ?? 'http://localhost:3000')
 
         const resetUrl = `${siteUrl}/reset-password?token=${token}`
 
@@ -105,7 +105,7 @@ export const Users: CollectionConfig = {
                     </tr>
                     <tr>
                       <td style="background:#f9fafb;padding:16px 48px;border-top:1px solid #e5e7eb;">
-                        <p style="margin:0;font-size:12px;color:#9ca3af;">ATech — atech.software</p>
+                        <p style="margin:0;font-size:12px;color:#9ca3af;"><a href="${resetUrl}" style="color:#034F98;">ATech Software</a></p>
                       </td>
                     </tr>
                   </table>
