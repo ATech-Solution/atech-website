@@ -51,6 +51,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className={`${syne.variable} ${dmSans.variable} ${workSans.variable}`}>
       <head>
+        {/* Runs synchronously before any chunk loads. On ChunkLoadError, force-reloads once
+            (bypassing cache) so the browser fetches fresh HTML with current chunk hashes. */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){
+  function isChunk(msg,name){return name==='ChunkLoadError'||/ChunkLoadError|Loading chunk/.test(msg||'')}
+  function recover(){if(sessionStorage.getItem('_cer'))return;sessionStorage.setItem('_cer','1');window.location.reload(true)}
+  window.addEventListener('error',function(e){if(isChunk(e.message,e.error&&e.error.name))recover()});
+  window.addEventListener('unhandledrejection',function(e){if(isChunk(e.reason&&e.reason.message,e.reason&&e.reason.name)){e.preventDefault();recover()}});
+})()` }} />
         <link rel="icon" href={favicon.url} sizes="any" />
         {themeVars && <style dangerouslySetInnerHTML={{ __html: themeVars }} />}
         {customCSS  && <style dangerouslySetInnerHTML={{ __html: customCSS  }} />}

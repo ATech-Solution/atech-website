@@ -3,19 +3,30 @@ import { useEffect } from 'react'
 
 export default function ChunkErrorRecovery() {
   useEffect(() => {
-    const handle = (event: ErrorEvent) => {
-      const isChunkError =
-        event.message?.includes('ChunkLoadError') ||
-        event.message?.includes('Loading chunk') ||
-        (event.error as Error | null)?.name === 'ChunkLoadError'
+    const isChunk = (msg?: string, name?: string) =>
+      name === 'ChunkLoadError' ||
+      msg?.includes('ChunkLoadError') ||
+      msg?.includes('Loading chunk')
 
-      if (isChunkError) {
+    const handleError = (e: ErrorEvent) => {
+      if (isChunk(e.message, (e.error as Error | null)?.name)) {
         window.location.reload()
       }
     }
 
-    window.addEventListener('error', handle)
-    return () => window.removeEventListener('error', handle)
+    const handleRejection = (e: PromiseRejectionEvent) => {
+      if (isChunk(e.reason?.message, e.reason?.name)) {
+        e.preventDefault()
+        window.location.reload()
+      }
+    }
+
+    window.addEventListener('error', handleError)
+    window.addEventListener('unhandledrejection', handleRejection)
+    return () => {
+      window.removeEventListener('error', handleError)
+      window.removeEventListener('unhandledrejection', handleRejection)
+    }
   }, [])
 
   return null

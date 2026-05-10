@@ -47,9 +47,10 @@ jobs:
           PAYLOAD_PUBLIC_SERVER_URL_PROD: ${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}
         run: npm run build
 
-      - name: Copy static & public into standalone
+      - name: Copy public assets into standalone
         run: |
-          cp -r .next/static .next/standalone/.next/static
+          # npm run build already copies .next/static → standalone/.next/static
+          # (doing it again would nest it as static/static — don't repeat it)
           cp -r public/. .next/standalone/public/
 
       - name: Create deployment archive
