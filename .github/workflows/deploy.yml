@@ -108,11 +108,22 @@ jobs:
               cp -rn "$DEPLOY_PATH/public/media/." "$DEPLOY_PATH/media/" 2>/dev/null || true
             fi
 
+            echo "==> Backing up old static chunks..."
+            if [ -d "$DEPLOY_PATH/standalone/.next/static" ]; then
+              cp -r "$DEPLOY_PATH/standalone/.next/static" /tmp/old-next-static
+            fi
+
             echo "==> Swapping build..."
             rm -rf standalone .next
             unzip -o -q next.zip
             mv .next/standalone standalone
             rm -rf .next next.zip
+
+            echo "==> Merging old static chunks (keeps in-flight browsers working)..."
+            if [ -d /tmp/old-next-static ]; then
+              cp -rn /tmp/old-next-static/. "$DEPLOY_PATH/standalone/.next/static/"
+              rm -rf /tmp/old-next-static
+            fi
 
             echo "==> Symlinking persistent media into standalone/public..."
             # Remove the empty media/ baked from the build zip, replace with a
@@ -205,11 +216,22 @@ jobs:
               cp -rn "$DEPLOY_PATH/public/media/." "$DEPLOY_PATH/media/" 2>/dev/null || true
             fi
 
+            echo "==> Backing up old static chunks..."
+            if [ -d "$DEPLOY_PATH/standalone/.next/static" ]; then
+              cp -r "$DEPLOY_PATH/standalone/.next/static" /tmp/old-next-static
+            fi
+
             echo "==> Swapping build..."
             rm -rf standalone .next
             unzip -o -q next.zip
             mv .next/standalone standalone
             rm -rf .next next.zip
+
+            echo "==> Merging old static chunks (keeps in-flight browsers working)..."
+            if [ -d /tmp/old-next-static ]; then
+              cp -rn /tmp/old-next-static/. "$DEPLOY_PATH/standalone/.next/static/"
+              rm -rf /tmp/old-next-static
+            fi
 
             echo "==> Symlinking persistent media into standalone/public..."
             rm -rf "$DEPLOY_PATH/standalone/public/media"

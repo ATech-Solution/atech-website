@@ -3,6 +3,7 @@ import { Syne, DM_Sans, Work_Sans } from 'next/font/google'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ThemeProvider from '@/components/ThemeProvider'
+import ChunkErrorRecovery from '@/components/ChunkErrorRecovery'
 import { getTheme, getSettings } from '@/lib/payload'
 import { buildThemeCssVars } from '@/lib/theme'
 import '../../../public/assets/css/globals.css'
@@ -55,6 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {customCSS  && <style dangerouslySetInnerHTML={{ __html: customCSS  }} />}
       </head>
       <body>
+        <ChunkErrorRecovery />
         <ThemeProvider initialVars={themeVars}>
           <Header theme={theme} />
           <main className="main-content">{children}</main>
