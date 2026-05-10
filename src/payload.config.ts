@@ -94,6 +94,12 @@ export default buildConfig({
   admin: {
     user: 'users',            // which collection handles auth
     suppressHydrationWarning: true,
+    components: {
+      graphics: {
+        Logo: '@/components/admin/AdminLogo#AdminLogo',
+        Icon: '@/components/admin/AdminLogo#AdminLogo',
+      },
+    },
     // autoLogin: process.env.NODE_ENV !== 'production'
     //   ? { email: 'tan@atech.software', prefillOnly: false }
     //   : false,
@@ -158,6 +164,7 @@ export default buildConfig({
     client: {
       url: process.env.DATABASE_URL || 'file:./data/payload.db',
     },
+    migrationDir: path.resolve(dirname, 'migrations'),
   }),
 
   // ── Secret ─────────────────────────────────────────────────────────────────
