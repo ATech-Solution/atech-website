@@ -30,6 +30,28 @@ const serverPattern = toRemotePattern(serverURL)
 const nextConfig: NextConfig = {
   output: 'standalone', // Critical for self-hosting
   transpilePackages: ['file-type'],
+
+  // ── Cache headers ────────────────────────────────────────────────────────────
+  // HTML pages: never cache — ensures the browser always fetches fresh HTML with
+  // current chunk hashes, preventing ChunkLoadError after a new deployment.
+  // _next/static chunks: cache forever — safe because filenames are content-hashed.
+  async headers() {
+    return [
+      {
+        source: '/((?!_next/static).*)',
+        headers: [
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+        ],
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+    ]
+  },
+
   images: {
     unoptimized: process.env.NODE_ENV === 'production',
     remotePatterns: [
