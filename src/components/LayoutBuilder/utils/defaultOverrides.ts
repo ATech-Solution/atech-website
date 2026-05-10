@@ -32,6 +32,7 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
         content: {
           badge:              h.hero.badge,
           heading:            h.hero.heading,
+          headingSub:         h.hero.headingSub,
           body:               h.hero.body,
           ctaPrimaryLabel:    h.hero.cta.primary.label,
           ctaPrimaryUrl:      h.hero.cta.primary.url,
@@ -428,6 +429,30 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
             officeName:    o.name,
             officeAddress: o.address,
           })),
+        },
+      }
+
+    case 'featured-case-study':
+      return {
+        content: {
+          sectionLabel:        'Featured Case Study',
+          caseTitle:           'Numiracle Group — MIFASHOW App',
+          caseDesc:            'MiFaShow was developed to solve the challenge of limited access to live events by building a mobile application that integrates ticket purchasing with real-time streaming. The app enables users to buy tickets and instantly watch concerts, stage plays, and business conferences through a seamless in-app experience.',
+          floatingPlatform:    'Android & iOS',
+          floatingPlatformType: 'Mobile apps development',
+          ctaPrimaryLabel:     'View Case Study',
+          ctaPrimaryUrl:       '#',
+          imagePosition:       'right',
+        },
+      }
+
+    case 'partnership':
+      return {
+        content: {
+          heading:         'Get Partnership Opportunities',
+          description:     'Have ideas, questions, or want to collaborate?\nLeave your details and we\'ll get in touch with you soon.',
+          partnershipNote: 'Join 15,000+ developers and tech leaders. Unsubscribe anytime.',
+          submitLabel:     'Send Message',
         },
       }
 

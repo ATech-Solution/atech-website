@@ -27,3 +27,5 @@ export { default as CommunityProgramsSection   } from './CommunityProgramsSectio
 export { default as ContactHeroSection         } from './ContactHeroSection'
 export { default as ContactStatsSection        } from './ContactStatsSection'
 export { default as LocationsSection           } from './LocationsSection'
+export { default as FeaturedCaseStudySection   } from './FeaturedCaseStudySection'
+export { default as PartnershipSection         } from './PartnershipSection'

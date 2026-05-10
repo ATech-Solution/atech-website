@@ -33,6 +33,8 @@ import {
   ContactHeroSection,
   ContactStatsSection,
   LocationsSection,
+  FeaturedCaseStudySection,
+  PartnershipSection,
   WebDevHeroSection,
 } from '@/components/block'
 
@@ -861,6 +863,10 @@ export function LayoutBlockRenderer({
       return wrapAdvanced(<ContactStatsSection data={data} />)
     case 'locations':
       return wrapAdvanced(<LocationsSection data={data} />)
+    case 'featured-case-study':
+      return wrapAdvanced(<FeaturedCaseStudySection data={data} />)
+    case 'partnership':
+      return wrapAdvanced(<PartnershipSection data={data} />)
 
     // ── Service Page Sections ────────────────────────────────────────────────
     case 'web-dev-hero':

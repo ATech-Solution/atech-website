@@ -1,7 +1,6 @@
 // Hero Section — Layout Builder variant (Advance)
 // Used by: hero block type
 
-import type React from 'react'
 import Link from 'next/link'
 
 interface HeroStat         { statValue: string; statLabel: string }
@@ -10,6 +9,7 @@ interface HeroSectionData {
   badge?:              string
   badgeIcon?:          { url: string } | null
   heading?:            string
+  headingSub?:         string
   body?:               string
   ctaPrimaryLabel?:    string
   ctaPrimaryUrl?:      string
@@ -37,21 +37,18 @@ function ArrowDefault() {
   )
 }
 
-function StatItem({ statValue, statLabel, hasBorder }: HeroStat & { hasBorder: boolean }) {
+function StatItem({ statValue, statLabel }: HeroStat) {
   return (
-    <div
-      className="flex-1"
-      style={hasBorder ? { paddingLeft: '1.5rem', borderLeft: '1px solid rgba(255,255,255,0.15)' } : {}}
-    >
+    <div className="flex-1">
       <p
-        className="leading-none mb-1"
-        style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.875rem', fontWeight: 700, color: 'var(--stat-value-color, #ffd369)' }}
+        className="mb-1"
+        style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.875rem', fontWeight: 400, color: '#ffd369', lineHeight: '36px' }}
       >
         {statValue}
       </p>
       <p
         className="text-xs tracking-wider uppercase"
-        style={{ color: 'var(--stat-label-color, #ffd369)', fontFamily: 'var(--font-work-sans, sans-serif)', opacity: 0.85 }}
+        style={{ color: '#ffd369', fontFamily: 'var(--font-work-sans, sans-serif)', letterSpacing: '0.6px' }}
       >
         {statLabel}
       </p>
@@ -145,20 +142,26 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
             </div>
           )}
 
-          {data.heading && (
+          {(data.heading || data.headingSub) && (
             <h1
-              className="leading-tight mb-6"
+              className="mb-6"
               style={{
                 fontFamily: 'var(--font-work-sans, sans-serif)',
-                fontSize: 'var(--heading-font-size, clamp(2rem, 4.5vw, 3.5rem))',
-                fontWeight: 'var(--heading-font-weight, 700)' as React.CSSProperties['fontWeight'],
-                color: 'var(--color-text, #fafafa)',
-                letterSpacing: '-0.02em',
-                lineHeight: 'var(--heading-line-height, 1.1)',
-                textShadow: 'var(--heading-text-shadow, none)',
+                color: '#ffffff',
+                lineHeight: '60px',
+                fontSize: '0',
               }}
             >
-              {data.heading}
+              {data.heading && (
+                <span style={{ fontSize: '64px', fontWeight: 700, lineHeight: '60px' }}>
+                  {data.heading}{data.headingSub ? ' ' : ''}
+                </span>
+              )}
+              {data.headingSub && (
+                <span style={{ fontSize: '48px', fontWeight: 400, lineHeight: '60px' }}>
+                  {data.headingSub}
+                </span>
+              )}
             </h1>
           )}
 
@@ -168,7 +171,7 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
               style={{
                 fontFamily: 'var(--font-work-sans, sans-serif)',
                 fontSize: 'var(--body-font-size, 1.125rem)',
-                color: 'var(--color-muted, #a3a3a3)',
+                color: '#ffffff',
                 lineHeight: '1.625',
               }}
             >
@@ -181,11 +184,15 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
               {data.ctaPrimaryLabel && data.ctaPrimaryUrl && (
                 <Link
                   href={data.ctaPrimaryUrl}
-                  className="inline-flex items-center gap-2.5 px-8 py-4 rounded-md text-base font-normal transition-opacity duration-200 hover:opacity-90"
+                  className="inline-flex items-center gap-2 transition-opacity duration-200 hover:opacity-90"
                   style={{
-                    background: 'var(--cta-primary-bg, #ffd369)',
-                    color: 'var(--cta-primary-text, #171717)',
+                    background: '#ffffff',
+                    color: '#000000',
                     fontFamily: 'var(--font-work-sans, sans-serif)',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    padding: '16px 32px',
+                    borderRadius: '6px',
                   }}
                 >
                   {data.ctaPrimaryIcon?.url && primaryIconPos === 'left' && (
@@ -202,12 +209,16 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
               {data.ctaSecondaryLabel && data.ctaSecondaryUrl && (
                 <Link
                   href={data.ctaSecondaryUrl}
-                  className="inline-flex items-center gap-2.5 px-8 py-4 rounded-md text-base font-normal transition-opacity duration-200 hover:opacity-80"
+                  className="inline-flex items-center gap-2.5 transition-opacity duration-200 hover:opacity-80"
                   style={{
-                    background: 'var(--cta-secondary-bg, transparent)',
-                    color: 'var(--cta-secondary-text, #fafafa)',
-                    border: 'var(--cta-secondary-border, 1px solid rgba(250,250,250,0.25))',
+                    background: '#41403f',
+                    color: '#ffffff',
+                    border: '1px solid #e5e5e5',
                     fontFamily: 'var(--font-work-sans, sans-serif)',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    padding: '16px 33px',
+                    borderRadius: '6px',
                   }}
                 >
                   {data.ctaSecondaryIcon?.url && secondaryIconPos === 'left' && (
@@ -224,14 +235,11 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
 
           {stats.length > 0 && (
             <div
-              className="flex items-start pt-8 gap-0"
-              style={{
-                borderTop: 'var(--stats-border, 1px solid rgba(255,255,255,0.12))',
-                background: 'var(--stats-bg, transparent)',
-              }}
+              className="flex items-start gap-6"
+              style={{ borderTop: '1px solid #e5e5e5', paddingTop: '33px' }}
             >
               {stats.map((stat, i) => (
-                <StatItem key={i} {...stat} hasBorder={i > 0} />
+                <StatItem key={i} {...stat} />
               ))}
             </div>
           )}

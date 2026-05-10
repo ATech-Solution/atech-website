@@ -34,6 +34,8 @@ import {
   ContactHeroSection,
   ContactStatsSection,
   LocationsSection,
+  FeaturedCaseStudySection,
+  PartnershipSection,
 } from '@/components/block'
 
 // ── CSS custom property injection ─────────────────────────────────────────────
@@ -193,6 +195,10 @@ export function resolvePreviewComponent(
       return withStyle(<ContactStatsSection data={data as any} />, blockStyle)
     case 'locations':
       return withStyle(<LocationsSection data={data as any} />, blockStyle)
+    case 'featured-case-study':
+      return withStyle(<FeaturedCaseStudySection data={data as any} />, blockStyle)
+    case 'partnership':
+      return withStyle(<PartnershipSection data={data as any} />, blockStyle)
 
     // ── Basic blocks — inline previews ────────────────────────────────────────
     case 'heading':

@@ -17,29 +17,26 @@ interface FeaturesSectionData {
 
 function PillarCard({ pillar }: { pillar: Pillar }) {
   return (
-    <div
-      className="flex flex-col items-center text-center p-8 rounded-2xl h-full"
-      style={{ border: '1px solid var(--color-border, #383838)', background: 'var(--color-surface, #2f2f2f)' }}
-    >
+    <div className="flex flex-col items-center text-center gap-3">
       <div
-        className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 mb-5"
-        style={{ background: 'rgba(255,211,105,0.10)', border: '1px solid rgba(255,211,105,0.20)', color: 'var(--color-accent, #ffd369)' }}
+        className="flex items-center justify-center flex-shrink-0 rounded-[8px]"
+        style={{ background: '#f5f5f5', width: '64px', height: '64px' }}
       >
         {pillar.pillarIcon?.url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={pillar.pillarIcon.url} alt={pillar.pillarIcon.alt ?? ''} className="w-6 h-6 object-contain" />
+          <img src={pillar.pillarIcon.url} alt={pillar.pillarIcon.alt ?? ''} className="object-contain" style={{ maxWidth: '30px', maxHeight: '24px' }} />
         ) : (
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
-            <path d="M8 12l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="12" cy="12" r="9" stroke="#292929" strokeWidth="1.5" />
+            <path d="M8 12l3 3 5-5" stroke="#292929" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
       </div>
 
       {pillar.pillarTitle && (
         <h3
-          className="text-base font-semibold leading-snug mb-2"
-          style={{ color: 'var(--color-text, #fafafa)', fontFamily: 'var(--font-work-sans, sans-serif)' }}
+          className="leading-[28px] pt-1"
+          style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '20px', fontWeight: 400, color: '#ffd369' }}
         >
           {pillar.pillarTitle}
         </h3>
@@ -47,8 +44,8 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
 
       {pillar.pillarDesc && (
         <p
-          className="text-sm leading-relaxed"
-          style={{ color: 'var(--color-muted, #525252)', fontFamily: 'var(--font-work-sans, sans-serif)' }}
+          className="leading-[24px]"
+          style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '16px', fontWeight: 400, color: '#f0f5fc' }}
         >
           {pillar.pillarDesc}
         </p>
@@ -110,16 +107,16 @@ export default function FeaturesSection({ data }: { data: FeaturesSectionData })
           <div className="flex flex-col gap-6 items-center w-full mb-16">
             {data.heading && (
               <h2
-                className="text-center w-full leading-tight tracking-tight"
-                style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: 'clamp(1.75rem, 3vw, 2.25rem)', fontWeight: isLight ? 400 : 700, color: headingColor, letterSpacing: '-0.01em' }}
+                className="text-center w-full"
+                style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '2.25rem', fontWeight: 400, color: headingColor, lineHeight: '40px' }}
               >
                 {data.heading}
               </h2>
             )}
             {data.description && (
               <p
-                className="text-center w-full leading-relaxed"
-                style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.125rem', color: descColor, maxWidth: '44rem', marginLeft: 'auto', marginRight: 'auto' }}
+                className="text-center leading-[28px]"
+                style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: isLight ? '1.125rem' : '1.25rem', color: isLight ? descColor : '#fafafa', maxWidth: '768px', marginLeft: 'auto', marginRight: 'auto' }}
               >
                 {data.description}
               </p>
@@ -128,7 +125,7 @@ export default function FeaturesSection({ data }: { data: FeaturesSectionData })
         )}
 
         {pillars.length > 0 && (
-          <div className={`grid ${gridCols} gap-6`}>
+          <div className={`grid ${gridCols} gap-8`}>
             {pillars.map((pillar, i) => (
               isLight
                 ? <PillarCardLight key={i} pillar={pillar} />

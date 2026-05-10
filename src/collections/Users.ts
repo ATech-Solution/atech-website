@@ -71,6 +71,8 @@ export const Users: CollectionConfig = {
 
         const resetUrl = `${siteUrl}/reset-password?token=${token}`
 
+        const logoUrl = `${siteUrl}/images/logo_atech.png`
+
         return `
           <!DOCTYPE html>
           <html>
@@ -78,34 +80,50 @@ export const Users: CollectionConfig = {
             <meta charset="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           </head>
-          <body style="margin:0;padding:0;background:#f5f5f5;font-family:'DM Sans',Helvetica,Arial,sans-serif;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:40px 0;">
+          <body style="margin:0;padding:0;background:#f0f2f5;font-family:'DM Sans',Helvetica,Arial,sans-serif;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f2f5;padding:48px 0;">
               <tr>
                 <td align="center">
-                  <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;border-top:3px solid #034F98;overflow:hidden;">
+                  <!-- Logo above card -->
+                  <table width="560" cellpadding="0" cellspacing="0">
                     <tr>
-                      <td style="padding:40px 48px 32px;">
-                        <h1 style="margin:0 0 8px;font-size:24px;font-weight:700;color:#0d1117;">Reset your password</h1>
-                        <p style="margin:0 0 24px;font-size:15px;color:#6b7280;line-height:1.6;">
+                      <td align="center" style="padding-bottom:24px;">
+                        <a href="${siteUrl}" style="display:inline-block;">
+                          <img src="${logoUrl}" alt="ATech Software" width="140" height="auto"
+                               style="display:block;border:0;outline:none;max-width:140px;" />
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                  <!-- Card -->
+                  <table width="560" cellpadding="0" cellspacing="0"
+                         style="background:#ffffff;border-radius:10px;border-top:3px solid #034F98;box-shadow:0 4px 24px rgba(0,0,0,0.08);overflow:hidden;">
+                    <tr>
+                      <td style="padding:40px 48px 36px;">
+                        <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#0d1117;letter-spacing:-0.01em;">Reset your password</h1>
+                        <p style="margin:0 0 28px;font-size:15px;color:#6b7280;line-height:1.65;">
                           Hi ${(user as any)?.firstName ?? 'there'}, we received a request to reset your ATech account password.
-                          Click the button below to choose a new password. This link expires in 1 hour.
+                          Click the button below to choose a new password. This link expires in <strong>1 hour</strong>.
                         </p>
                         <a href="${resetUrl}"
-                           style="display:inline-block;background:#034F98;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:6px;font-size:15px;font-weight:600;">
+                           style="display:inline-block;background:#034F98;color:#ffffff;text-decoration:none;padding:13px 32px;border-radius:7px;font-size:15px;font-weight:600;letter-spacing:0.01em;">
                           Reset Password
                         </a>
-                        <p style="margin:24px 0 0;font-size:12px;color:#9ca3af;">
-                          Or copy this link: <a href="${resetUrl}" style="color:#034F98;">${resetUrl}</a>
+                        <p style="margin:28px 0 0;font-size:12px;color:#9ca3af;line-height:1.6;">
+                          Or paste this link into your browser:<br/>
+                          <a href="${resetUrl}" style="color:#034F98;word-break:break-all;">${resetUrl}</a>
                         </p>
                         <p style="margin:16px 0 0;font-size:12px;color:#9ca3af;">
-                          If you did not request a password reset, you can safely ignore this email.
-                          Your password will not change.
+                          If you did not request a password reset, you can safely ignore this email — your password will not change.
                         </p>
                       </td>
                     </tr>
                     <tr>
                       <td style="background:#f9fafb;padding:16px 48px;border-top:1px solid #e5e7eb;">
-                        <p style="margin:0;font-size:12px;color:#9ca3af;"><a href="${resetUrl}" style="color:#034F98;">ATech Software</a></p>
+                        <p style="margin:0;font-size:12px;color:#9ca3af;">
+                          © ${new Date().getFullYear()} ATech Software &nbsp;·&nbsp;
+                          <a href="${siteUrl}" style="color:#034F98;text-decoration:none;">atech.software</a>
+                        </p>
                       </td>
                     </tr>
                   </table>

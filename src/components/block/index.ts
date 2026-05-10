@@ -29,6 +29,8 @@ export {
   ContactHeroSection,
   ContactStatsSection,
   LocationsSection,
+  FeaturedCaseStudySection,
+  PartnershipSection,
 } from './Advance'
 
 // ── Service Page Sections ────────────────────────────────────────────────────

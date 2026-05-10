@@ -24,6 +24,8 @@ const BLOCK_ICONS: Record<string, string> = {
   'community-channels': '📡', 'community-ambassador': '🏆',
   'community-programs': '🎓', 'contact-hero': '📞', 'contact-stats': '📈',
   'locations': '📍',
+  'featured-case-study': '🏆',
+  'partnership': '🤝',
 }
 
 const BLOCK_LABELS: Record<string, string> = {
@@ -46,6 +48,8 @@ const BLOCK_LABELS: Record<string, string> = {
   'culture-values': 'Culture Values', 'community-channels': 'Community Channels',
   'community-ambassador': 'Community Ambassador', 'community-programs': 'Community Programs',
   'contact-hero': 'Contact Hero', 'contact-stats': 'Contact Stats', 'locations': 'Locations',
+  'featured-case-study': 'Featured Case Study',
+  'partnership': 'Partnership',
 }
 
 export function BlockPicker({ onAdd }: BlockPickerProps) {

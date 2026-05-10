@@ -11,11 +11,11 @@ function ResetPasswordForm() {
   const router = useRouter()
   const token = searchParams.get('token') ?? ''
 
-  const [password, setPassword]   = useState('')
-  const [confirm, setConfirm]     = useState('')
-  const [status, setStatus]       = useState<Status>('idle')
-  const [errorMsg, setErrorMsg]   = useState('')
-  const [showPass, setShowPass]   = useState(false)
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm]   = useState('')
+  const [status, setStatus]     = useState<Status>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
+  const [showPass, setShowPass] = useState(false)
 
   useEffect(() => {
     if (!token) setStatus('invalid')
@@ -50,7 +50,6 @@ function ResetPasswordForm() {
 
       if (res.ok) {
         setStatus('success')
-        // Redirect to admin after 3 s
         setTimeout(() => router.push('/admin'), 3000)
       } else {
         setErrorMsg(
@@ -66,36 +65,49 @@ function ResetPasswordForm() {
     }
   }
 
+  const strengthColor = (i: number) =>
+    password.length > (i + 1) * 3
+      ? i < 1 ? '#f87171' : i < 2 ? '#fbbf24' : i < 3 ? '#34d399' : '#22c55e'
+      : 'rgba(255,255,255,0.1)'
+
   return (
-    <div className="card">
-      <div className="logo">A<span>Tech</span></div>
+    <div className="rp-card">
+      {/* Site logo — white version for dark background */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/logo-white.png"
+        alt="ATech Software"
+        className="rp-logo"
+        width={120}
+        height={26}
+      />
 
       {status === 'invalid' && (
         <>
-          <div className="alert-box">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0 }}>
+          <div className="rp-alert">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
               <circle cx="10" cy="10" r="9" stroke="#f87171" strokeWidth="1.5" />
               <path d="M10 6v5M10 13.5v.5" stroke="#f87171" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
             <p>This reset link is missing or invalid. Request a new one below.</p>
           </div>
-          <div className="footer">
-            <Link href="/forgot-password">Request a new reset link</Link>
+          <div className="rp-foot">
+            <Link href="/forgot-password">Request a new reset link →</Link>
           </div>
         </>
       )}
 
       {status === 'success' && (
         <>
-          <div className="success-box">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ marginBottom: 8 }}>
-              <circle cx="10" cy="10" r="9" stroke="#4ade80" strokeWidth="1.5" />
-              <path d="M6 10l3 3 5-5" stroke="#4ade80" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <div className="rp-success">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ marginBottom: 12 }}>
+              <circle cx="12" cy="12" r="11" stroke="#4ade80" strokeWidth="1.5" />
+              <path d="M7 12l3.5 3.5L17 9" stroke="#4ade80" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <p>Password updated successfully!</p>
-            <p className="sub">Redirecting you to login…</p>
+            <p className="rp-sub">Redirecting you to login…</p>
           </div>
-          <div className="footer">
+          <div className="rp-foot">
             <Link href="/admin">Go to login now →</Link>
           </div>
         </>
@@ -103,15 +115,15 @@ function ResetPasswordForm() {
 
       {(status === 'idle' || status === 'submitting' || status === 'error') && (
         <>
-          <h1>Set a new password</h1>
-          <p className="desc">Choose a strong password for your ATech account.</p>
+          <h1 className="rp-title">Set a new password</h1>
+          <p className="rp-desc">Choose a strong password for your ATech account.</p>
 
           <form onSubmit={handleSubmit}>
-            <div className="field-group">
-              <label htmlFor="password">New password</label>
-              <div className="input-wrap">
+            <div className="rp-field">
+              <label htmlFor="rp-password">New password</label>
+              <div className="rp-input-wrap">
                 <input
-                  id="password"
+                  id="rp-password"
                   type={showPass ? 'text' : 'password'}
                   placeholder="Min. 8 characters"
                   value={password}
@@ -119,20 +131,40 @@ function ResetPasswordForm() {
                   required
                   autoFocus
                 />
-                <button type="button" className="eye-btn" onClick={() => setShowPass(!showPass)} aria-label="Toggle password visibility">
+                <button
+                  type="button"
+                  className="rp-eye"
+                  onClick={() => setShowPass(!showPass)}
+                  aria-label="Toggle password visibility"
+                >
                   {showPass ? (
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.2"/><circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.2"/><path d="M2 2l12 12" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.2"/>
+                      <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.2"/>
+                      <path d="M2 2l12 12" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                    </svg>
                   ) : (
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.2"/><circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.2"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.2"/>
+                      <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.2"/>
+                    </svg>
                   )}
                 </button>
               </div>
             </div>
 
-            <div className="field-group">
-              <label htmlFor="confirm">Confirm password</label>
+            {password.length > 0 && (
+              <div className="rp-strength">
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className="rp-seg" style={{ background: strengthColor(i) }} />
+                ))}
+              </div>
+            )}
+
+            <div className="rp-field">
+              <label htmlFor="rp-confirm">Confirm password</label>
               <input
-                id="confirm"
+                id="rp-confirm"
                 type={showPass ? 'text' : 'password'}
                 placeholder="Repeat new password"
                 value={confirm}
@@ -141,31 +173,14 @@ function ResetPasswordForm() {
               />
             </div>
 
-            {/* Password strength hint */}
-            {password.length > 0 && (
-              <div className="strength-row">
-                {['Weak', 'Fair', 'Good', 'Strong'].map((label, i) => (
-                  <div
-                    key={label}
-                    className="strength-seg"
-                    style={{
-                      background: password.length > (i + 1) * 3
-                        ? i < 1 ? '#f87171' : i < 2 ? '#fbbf24' : i < 3 ? '#34d399' : '#22c55e'
-                        : 'rgba(255,255,255,0.08)',
-                    }}
-                  />
-                ))}
-              </div>
-            )}
+            {status === 'error' && <p className="rp-error">{errorMsg}</p>}
 
-            {status === 'error' && <p className="error">{errorMsg}</p>}
-
-            <button type="submit" className="btn" disabled={status === 'submitting'}>
+            <button type="submit" className="rp-btn" disabled={status === 'submitting'}>
               {status === 'submitting' ? 'Updating…' : 'Update password'}
             </button>
           </form>
 
-          <div className="footer">
+          <div className="rp-foot">
             <Link href="/admin">← Back to login</Link>
           </div>
         </>
@@ -178,115 +193,236 @@ export default function ResetPasswordPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-          --bg: #0d1117;
-          --surface: #161b22;
-          --border: rgba(255,255,255,0.06);
-          --border-solid: rgba(255,255,255,0.1);
-          --accent: #034F98;
-          --accent-hover: #023a70;
-          --accent-light: #3c97eb;
-          --text: #e6edf3;
-          --muted: rgba(230,237,243,0.45);
-          --input-bg: rgba(255,255,255,0.04);
-          --input-border: rgba(255,255,255,0.1);
-          --input-focus: #3c97eb;
+        /* ── Section wrapper — sits inside the site layout (Header + Footer already rendered) ── */
+        .rp-section {
+          background: #292929;
+          min-height: 70vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 80px 24px;
+          position: relative;
+          isolation: isolate;
         }
-        html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; }
-        .wrap {
-          min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-          position: relative; padding: 2rem; isolation: isolate;
-        }
-        .wrap::before {
-          content: ''; position: absolute; inset: 0;
+        /* Subtle brand glow — mirrors the homepage atmosphere */
+        .rp-section::before {
+          content: '';
+          position: absolute;
+          inset: 0;
           background:
-            radial-gradient(ellipse 70% 50% at 15% 15%, rgba(3,79,152,0.12) 0%, transparent 60%),
-            radial-gradient(ellipse 50% 60% at 85% 85%, rgba(60,151,235,0.06) 0%, transparent 55%);
-          z-index: -2;
-        }
-        .wrap::after {
-          content: ''; position: absolute; inset: 0;
-          background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
-          background-size: 48px 48px;
-          mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 75%);
+            radial-gradient(ellipse 60% 80% at 10% 20%, rgba(3,79,152,0.18) 0%, transparent 55%),
+            radial-gradient(ellipse 50% 60% at 90% 80%, rgba(3,79,152,0.10) 0%, transparent 50%);
           z-index: -1;
+          pointer-events: none;
         }
-        .card {
-          width: 100%; max-width: 440px;
-          background: var(--surface);
-          border: 1px solid var(--border-solid);
-          border-top: 3px solid var(--accent);
-          border-radius: 12px;
-          padding: 40px 40px 36px;
-          animation: slide-up 0.5s cubic-bezier(0.16,1,0.3,1) both;
-          box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03);
+        /* Faint grid texture */
+        .rp-section::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background-image:
+            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+          background-size: 48px 48px;
+          mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 20%, transparent 80%);
+          z-index: -1;
+          pointer-events: none;
         }
-        .logo { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 28px; letter-spacing: -0.02em; }
-        .logo span { color: var(--accent-light); }
-        h1 { font-size: 1.35rem; font-weight: 600; color: var(--text); margin-bottom: 8px; letter-spacing: -0.01em; }
-        p.desc { font-size: 0.875rem; color: var(--muted); line-height: 1.6; margin-bottom: 28px; }
-        .field-group { margin-bottom: 16px; }
-        label { display: block; font-size: 0.78rem; font-weight: 500; color: var(--muted); margin-bottom: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
-        input[type="text"], input[type="password"] {
-          width: 100%; padding: 11px 14px; border-radius: 7px;
-          background: var(--input-bg); border: 1px solid var(--input-border);
-          color: var(--text); font-size: 0.95rem; font-family: inherit;
-          transition: border-color 0.15s, box-shadow 0.15s; outline: none;
+
+        /* ── Card ── */
+        .rp-card {
+          width: 100%;
+          max-width: 460px;
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.09);
+          border-top: 3px solid #034F98;
+          border-radius: 14px;
+          padding: 44px 44px 40px;
+          animation: rp-rise 0.55s cubic-bezier(0.16,1,0.3,1) both;
+          box-shadow: 0 12px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04);
         }
-        input[type="text"]:focus, input[type="password"]:focus {
-          border-color: var(--input-focus);
-          box-shadow: 0 0 0 3px rgba(60,151,235,0.15);
+        @keyframes rp-rise {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-        .input-wrap { position: relative; }
-        .input-wrap input { padding-right: 42px; }
-        .eye-btn {
+
+        /* Logo */
+        .rp-logo {
+          display: block;
+          height: 28px;
+          width: auto;
+          margin-bottom: 36px;
+          object-fit: contain;
+        }
+
+        /* Headings & text */
+        .rp-title {
+          font-family: var(--font-work-sans, 'Work Sans', sans-serif);
+          font-size: 1.35rem;
+          font-weight: 700;
+          color: #f0f0f0;
+          margin: 0 0 8px;
+          letter-spacing: -0.01em;
+        }
+        .rp-desc {
+          font-family: var(--font-work-sans, 'Work Sans', sans-serif);
+          font-size: 0.9rem;
+          color: rgba(240,240,240,0.5);
+          line-height: 1.6;
+          margin: 0 0 28px;
+        }
+
+        /* Fields */
+        .rp-field { margin-bottom: 16px; }
+        .rp-field label {
+          display: block;
+          font-family: var(--font-work-sans, 'Work Sans', sans-serif);
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: rgba(240,240,240,0.5);
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          margin-bottom: 7px;
+        }
+        .rp-field input {
+          width: 100%;
+          padding: 11px 14px;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 8px;
+          color: #f0f0f0;
+          font-size: 0.95rem;
+          font-family: var(--font-work-sans, 'Work Sans', sans-serif);
+          outline: none;
+          transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .rp-field input:focus {
+          border-color: #034F98;
+          box-shadow: 0 0 0 3px rgba(3,79,152,0.2);
+        }
+        .rp-field input::placeholder { color: rgba(240,240,240,0.25); }
+
+        /* Eye toggle */
+        .rp-input-wrap { position: relative; }
+        .rp-input-wrap input { padding-right: 44px; }
+        .rp-eye {
           position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-          background: none; border: none; color: var(--muted); cursor: pointer; padding: 2px;
+          background: none; border: none; color: rgba(240,240,240,0.35);
+          cursor: pointer; padding: 4px; transition: color 0.15s; line-height: 0;
+        }
+        .rp-eye:hover { color: rgba(240,240,240,0.8); }
+
+        /* Strength bar */
+        .rp-strength { display: flex; gap: 5px; margin: -8px 0 16px; }
+        .rp-seg { flex: 1; height: 3px; border-radius: 3px; transition: background 0.25s; }
+
+        /* Submit button */
+        .rp-btn {
+          width: 100%;
+          padding: 12px;
+          margin-top: 8px;
+          background: #034F98;
+          color: #fff;
+          border: none;
+          border-radius: 8px;
+          font-family: var(--font-work-sans, 'Work Sans', sans-serif);
+          font-size: 0.95rem;
+          font-weight: 600;
+          letter-spacing: 0.01em;
+          cursor: pointer;
+          transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+        }
+        .rp-btn:hover:not(:disabled) {
+          background: #023a70;
+          box-shadow: 0 4px 16px rgba(3,79,152,0.45);
+        }
+        .rp-btn:active:not(:disabled) { transform: translateY(1px); }
+        .rp-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Error message */
+        .rp-error {
+          font-family: var(--font-work-sans, 'Work Sans', sans-serif);
+          font-size: 0.83rem;
+          color: #f87171;
+          margin-bottom: 12px;
+          line-height: 1.5;
+        }
+
+        /* Alert box (invalid token) */
+        .rp-alert {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          background: rgba(248,113,113,0.08);
+          border: 1px solid rgba(248,113,113,0.2);
+          border-radius: 8px;
+          padding: 16px;
+          margin-bottom: 20px;
+        }
+        .rp-alert p {
+          font-family: var(--font-work-sans, 'Work Sans', sans-serif);
+          font-size: 0.875rem;
+          color: rgba(240,240,240,0.85);
+          line-height: 1.6;
+          margin: 0;
+        }
+
+        /* Success box */
+        .rp-success {
+          text-align: center;
+          padding: 32px 20px;
+          background: rgba(3,79,152,0.08);
+          border: 1px solid rgba(3,79,152,0.2);
+          border-radius: 10px;
+          margin-bottom: 20px;
+        }
+        .rp-success p {
+          font-family: var(--font-work-sans, 'Work Sans', sans-serif);
+          font-size: 0.95rem;
+          color: #f0f0f0;
+          line-height: 1.6;
+          margin: 0;
+        }
+        .rp-sub {
+          color: rgba(240,240,240,0.45) !important;
+          font-size: 0.82rem !important;
+          margin-top: 6px !important;
+        }
+
+        /* Footer link row */
+        .rp-foot {
+          margin-top: 24px;
+          text-align: center;
+          font-family: var(--font-work-sans, 'Work Sans', sans-serif);
+          font-size: 0.83rem;
+          color: rgba(240,240,240,0.4);
+        }
+        .rp-foot a {
+          color: #3c97eb;
+          text-decoration: none;
           transition: color 0.15s;
         }
-        .eye-btn:hover { color: var(--text); }
-        .strength-row { display: flex; gap: 4px; margin-bottom: 16px; }
-        .strength-seg { flex: 1; height: 3px; border-radius: 2px; transition: background 0.2s; }
-        .btn {
-          width: 100%; padding: 12px; border-radius: 8px; margin-top: 8px;
-          background: var(--accent); color: #ffffff; border: none;
-          font-size: 0.95rem; font-weight: 600; font-family: inherit; cursor: pointer;
-          transition: background 0.15s, box-shadow 0.15s; letter-spacing: 0.01em;
+        .rp-foot a:hover { color: #60aef0; text-decoration: underline; }
+
+        @media (max-width: 500px) {
+          .rp-card { padding: 32px 24px 28px; }
+          .rp-section { padding: 48px 16px; }
         }
-        .btn:hover:not(:disabled) { background: var(--accent-hover); box-shadow: 0 4px 12px rgba(3,79,152,0.4); }
-        .btn:disabled { opacity: 0.55; cursor: not-allowed; }
-        .error { font-size: 0.83rem; color: #f87171; margin-bottom: 12px; line-height: 1.5; }
-        .alert-box {
-          display: flex; align-items: flex-start; gap: 12px;
-          background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2);
-          border-radius: 8px; padding: 16px; margin-bottom: 20px;
-        }
-        .alert-box p { color: var(--text); font-size: 0.875rem; line-height: 1.6; }
-        .success-box {
-          text-align: center; padding: 28px 20px;
-          background: rgba(3,79,152,0.08); border: 1px solid rgba(3,79,152,0.2);
-          border-radius: 8px; margin-bottom: 20px;
-        }
-        .success-box p { color: var(--text); font-size: 0.9rem; line-height: 1.6; }
-        .success-box p.sub { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
-        .footer { margin-top: 24px; text-align: center; font-size: 0.83rem; color: var(--muted); }
-        .footer a { color: var(--accent-light); text-decoration: none; }
-        .footer a:hover { text-decoration: underline; }
-        .corner { position: fixed; width: 60px; height: 60px; opacity: 0.15; }
-        .corner.tl { top: 1.5rem; left: 1.5rem; border-top: 1px solid var(--accent); border-left: 1px solid var(--accent); }
-        .corner.br { bottom: 1.5rem; right: 1.5rem; border-bottom: 1px solid var(--accent); border-right: 1px solid var(--accent); }
-        @keyframes slide-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
 
-      <div className="wrap">
-        <div className="corner tl" />
-        <div className="corner br" />
-        <Suspense fallback={<div className="card"><div className="logo">A<span>Tech</span></div><p className="desc">Loading…</p></div>}>
+      <section className="rp-section">
+        <Suspense
+          fallback={
+            <div className="rp-card">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/logo-white.png" alt="ATech Software" className="rp-logo" width={120} height={26} />
+              <p className="rp-desc">Loading…</p>
+            </div>
+          }
+        >
           <ResetPasswordForm />
         </Suspense>
-      </div>
+      </section>
     </>
   )
 }

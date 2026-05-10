@@ -20,6 +20,8 @@ export const ADVANCE_BLOCK_TYPES = [
   'jobs-list', 'involved-hero', 'quote-form', 'culture-values',
   'community-channels', 'community-ambassador', 'community-programs',
   'contact-hero', 'contact-stats', 'locations',
+  'featured-case-study',
+  'partnership',
 ] as const
 
 export type BasicBlockType   = typeof BASIC_BLOCK_TYPES[number]
@@ -119,6 +121,7 @@ export interface BlockOverrides {
     // ── Home Hero ────────────────────────────────────────────────────────
     badge?: string
     heading?: string
+    headingSub?: string
     body?: string
     ctaPrimaryLabel?: string
     ctaPrimaryUrl?: string
@@ -270,6 +273,19 @@ export interface BlockOverrides {
 
     // ── Locations ─────────────────────────────────────────────────────────
     officeItems?: Array<{ officeName?: string; officeAddress?: string }>
+
+    // ── Featured Case Study ───────────────────────────────────────────────
+    caseTitle?:              string
+    caseDesc?:               string
+    clientLogo?:             MediaRef | null
+    caseImage?:              MediaRef | null
+    floatingPlatform?:       string
+    floatingPlatformType?:   string
+    floatingIconSrc?:        string
+    imagePosition?:          'left' | 'right'
+
+    // ── Partnership ───────────────────────────────────────────────────────────
+    partnershipNote?: string
   }
   style?: Partial<Pick<BlockTemplate,
     'textAlign' | 'fontFamily' | 'fontSize' | 'fontWeight' | 'lineHeight' |

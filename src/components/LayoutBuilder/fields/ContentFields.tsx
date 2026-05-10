@@ -384,8 +384,11 @@ function HomeHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => 
       </Field>
       <MediaField label="Badge Icon (optional)" value={ov.badgeIcon?.url ?? ''} onChange={(ref) => set('badgeIcon', ref)} />
 
-      <Field label="Heading">
-        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Main headline…" />
+      <Field label="Heading (Bold)">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="ATech Solution" />
+      </Field>
+      <Field label="Heading Sub (Regular)">
+        <input className="lb-input" value={ov.headingSub ?? ''} onChange={(e) => set('headingSub', e.target.value)} placeholder="Your Technology Partner" />
       </Field>
       <Field label="Body Text">
         <textarea className="lb-input lb-input--textarea" rows={3} value={ov.body ?? ''} onChange={(e) => set('body', e.target.value)} placeholder="Supporting paragraph…" />
@@ -1546,6 +1549,65 @@ function ContactStatsFields({ ov, set }: { ov: any; set: (k: string, v: unknown)
 }
 
 // ── Locations fields ──────────────────────────────────────────────────────────
+function FeaturedCaseStudyFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  return (
+    <>
+      <Field label="Section Label">
+        <input className="lb-input" value={ov.sectionLabel ?? ''} onChange={(e) => set('sectionLabel', e.target.value)} placeholder="Featured Case Study" />
+      </Field>
+      <Field label="Case Title">
+        <input className="lb-input" value={ov.caseTitle ?? ''} onChange={(e) => set('caseTitle', e.target.value)} placeholder="Client — Project Name" />
+      </Field>
+      <Field label="Description">
+        <textarea className="lb-input lb-input--textarea" rows={4} value={ov.caseDesc ?? ''} onChange={(e) => set('caseDesc', e.target.value)} placeholder="Project description…" />
+      </Field>
+      <Row>
+        <Field label="CTA Label">
+          <input className="lb-input" value={ov.ctaPrimaryLabel ?? ''} onChange={(e) => set('ctaPrimaryLabel', e.target.value)} placeholder="View Case Study" />
+        </Field>
+        <LinkField label="CTA URL" value={ov.ctaPrimaryUrl ?? ''} onChange={(v) => set('ctaPrimaryUrl', v)} placeholder="/portfolio-detail" />
+      </Row>
+      <MediaField label="Client Logo" value={ov.clientLogo?.url ?? ''} onChange={(ref) => set('clientLogo', ref)} />
+      <MediaField label="Case Study Image" value={ov.caseImage?.url ?? ''} onChange={(ref) => set('caseImage', ref)} />
+      <Field label="Platform (floating badge)">
+        <input className="lb-input" value={ov.floatingPlatform ?? ''} onChange={(e) => set('floatingPlatform', e.target.value)} placeholder="Android & iOS" />
+      </Field>
+      <Field label="Platform Type">
+        <input className="lb-input" value={ov.floatingPlatformType ?? ''} onChange={(e) => set('floatingPlatformType', e.target.value)} placeholder="Mobile apps development" />
+      </Field>
+      <Field label="Badge Icon URL (optional)">
+        <input className="lb-input" value={ov.floatingIconSrc ?? ''} onChange={(e) => set('floatingIconSrc', e.target.value)} placeholder="https://…" />
+      </Field>
+      <Field label="Image Position">
+        <select className="lb-input" value={ov.imagePosition ?? 'right'} onChange={(e) => set('imagePosition', e.target.value)}>
+          <option value="right">Right (text left, image right)</option>
+          <option value="left">Left (image left, text right)</option>
+        </select>
+      </Field>
+    </>
+  )
+}
+
+// ── Partnership fields ────────────────────────────────────────────────────────
+function PartnershipFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  return (
+    <>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Get Partnership Opportunities" />
+      </Field>
+      <Field label="Description">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.description ?? ''} onChange={(e) => set('description', e.target.value)} placeholder="Have ideas, questions, or want to collaborate?…" />
+      </Field>
+      <Field label="Note (small print)">
+        <input className="lb-input" value={ov.partnershipNote ?? ''} onChange={(e) => set('partnershipNote', e.target.value)} placeholder="Join 15,000+ developers…" />
+      </Field>
+      <Field label="Submit Button Label">
+        <input className="lb-input" value={ov.submitLabel ?? ''} onChange={(e) => set('submitLabel', e.target.value)} placeholder="Send Message" />
+      </Field>
+    </>
+  )
+}
+
 function LocationsFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   const offices: any[] = ov.officeItems ?? []
   return (
@@ -1613,6 +1675,8 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'contact-hero'          && <ContactHeroFields         ov={ov} set={set} />}
         {blockType === 'contact-stats'         && <ContactStatsFields        ov={ov} set={set} />}
         {blockType === 'locations'             && <LocationsFields           ov={ov} set={set} />}
+        {blockType === 'featured-case-study'   && <FeaturedCaseStudyFields   ov={ov} set={set} />}
+        {blockType === 'partnership'            && <PartnershipFields         ov={ov} set={set} />}
       </div>
     )
   }

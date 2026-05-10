@@ -1,5 +1,6 @@
-// Contact Section — Layout Builder variant (Advance)
-// Used by: home-contact, about-contact block types
+'use client'
+
+import { useState } from 'react'
 
 interface ContactSectionData {
   heading?:           string
@@ -11,6 +12,8 @@ interface ContactSectionData {
   contactPhone?:      string
   contactLocation?:   string
 }
+
+type FormStatus = 'idle' | 'loading' | 'success' | 'error'
 
 function EmailIcon() {
   return (
@@ -94,6 +97,38 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
   const formHeading = data.formHeading ?? 'Send us a Message'
   const infoHeading = data.infoHeading ?? 'Contact Information'
 
+  const [status, setStatus] = useState<FormStatus>('idle')
+  const [fields, setFields] = useState({
+    firstName: '',
+    lastName:  '',
+    email:     '',
+    phone:     '',
+    message:   '',
+  })
+
+  const set = (key: keyof typeof fields) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setFields(prev => ({ ...prev, [key]: e.target.value }))
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!fields.firstName || !fields.email || !fields.message) return
+
+    setStatus('loading')
+    try {
+      const res = await fetch('/api/contact', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(fields),
+      })
+      if (!res.ok) throw new Error()
+      setStatus('success')
+      setFields({ firstName: '', lastName: '', email: '', phone: '', message: '' })
+    } catch {
+      setStatus('error')
+    }
+  }
+
   return (
     <section
       className="py-24"
@@ -170,33 +205,137 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
               {formHeading}
             </h3>
 
-            <form className="flex flex-col gap-4" action="/contact" method="POST">
-              <div className="grid grid-cols-2 gap-4">
-                <input type="text" placeholder="First Name" className="w-full focus:outline-none" style={inputStyle} />
-                <input type="text" placeholder="Last Name"  className="w-full focus:outline-none" style={inputStyle} />
-              </div>
-              <input type="email" placeholder="Email" className="w-full focus:outline-none" style={inputStyle} />
-              <textarea
-                placeholder="Message"
-                rows={5}
-                className="w-full focus:outline-none"
-                style={{ ...inputStyle, resize: 'none' }}
-              />
-              <div>
-                <button
-                  type="submit"
-                  className="px-8 py-3 rounded-lg text-base font-normal transition-opacity duration-200 hover:opacity-90"
+            {status === 'success' ? (
+              <div className="flex flex-col gap-4 py-8">
+                <div
+                  className="flex items-center justify-center"
                   style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: '50%',
                     background: 'var(--button-bg, #ffffff)',
-                    color: 'var(--button-text, #000000)',
-                    fontFamily: 'var(--font-work-sans, sans-serif)',
-                    borderRadius: 'var(--button-radius, 8px)',
                   }}
                 >
-                  {submitLabel}
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+                    <path d="M5 12l5 5 9-10" stroke="var(--button-text, #000000)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-work-sans, sans-serif)',
+                    fontSize: '1.125rem',
+                    fontWeight: 500,
+                    color: 'var(--color-text, #fafafa)',
+                  }}
+                >
+                  Message Sent
+                </p>
+                <p style={{ fontFamily: 'var(--font-work-sans, sans-serif)', color: 'var(--color-muted, #525252)', lineHeight: 1.6, fontSize: '14px' }}>
+                  Thank you for reaching out. We&apos;ll get back to you within 1–2 business days.
+                </p>
+                <button
+                  onClick={() => setStatus('idle')}
+                  style={{
+                    alignSelf: 'flex-start',
+                    marginTop: 8,
+                    background: 'transparent',
+                    border: '1px solid var(--color-border, #383838)',
+                    borderRadius: 8,
+                    padding: '10px 20px',
+                    fontFamily: 'var(--font-work-sans, sans-serif)',
+                    fontSize: '14px',
+                    color: 'var(--color-muted, #525252)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Send Another Message
                 </button>
               </div>
-            </form>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="First Name *"
+                    required
+                    value={fields.firstName}
+                    onChange={set('firstName')}
+                    className="focus:outline-none"
+                    style={inputStyle}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Last Name"
+                    value={fields.lastName}
+                    onChange={set('lastName')}
+                    className="focus:outline-none"
+                    style={inputStyle}
+                  />
+                </div>
+                <input
+                  type="email"
+                  placeholder="Email *"
+                  required
+                  value={fields.email}
+                  onChange={set('email')}
+                  className="focus:outline-none"
+                  style={inputStyle}
+                />
+                <input
+                  type="tel"
+                  placeholder="Phone (optional)"
+                  value={fields.phone}
+                  onChange={set('phone')}
+                  className="focus:outline-none"
+                  style={inputStyle}
+                />
+                <textarea
+                  placeholder="Message *"
+                  required
+                  rows={5}
+                  value={fields.message}
+                  onChange={set('message')}
+                  className="focus:outline-none"
+                  style={{ ...inputStyle, resize: 'none' }}
+                />
+
+                {status === 'error' && (
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-work-sans, sans-serif)',
+                      fontSize: '13px',
+                      color: '#ef4444',
+                      padding: '10px 14px',
+                      background: 'rgba(239,68,68,0.08)',
+                      borderRadius: 6,
+                      border: '1px solid rgba(239,68,68,0.2)',
+                    }}
+                  >
+                    Something went wrong. Please try again or email us directly.
+                  </p>
+                )}
+
+                <div>
+                  <button
+                    type="submit"
+                    disabled={status === 'loading'}
+                    className="px-8 py-3 rounded-lg text-base font-normal"
+                    style={{
+                      background: 'var(--button-bg, #ffffff)',
+                      color: 'var(--button-text, #000000)',
+                      fontFamily: 'var(--font-work-sans, sans-serif)',
+                      borderRadius: 'var(--button-radius, 8px)',
+                      border: 'none',
+                      cursor: status === 'loading' ? 'not-allowed' : 'pointer',
+                      opacity: status === 'loading' ? 0.6 : 1,
+                      transition: 'opacity 0.2s',
+                    }}
+                  >
+                    {status === 'loading' ? 'Sending…' : submitLabel}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </div>

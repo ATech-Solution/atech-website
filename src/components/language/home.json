@@ -1,8 +1,9 @@
 {
   "home": {
     "hero": {
-      "badge": "Welcome to ATech Solutions",
-      "heading": "Build Software That Scales Your Business Forward",
+      "badge": "",
+      "heading": "ATech Solution",
+      "headingSub": "Your Technology Partner",
       "body": "We build robust, scalable, and intelligent software solutions for startups and enterprises. Elevate your technological capabilities with our expert engineering teams.",
       "cta": {
         "primary": { "label": "Explore Services", "url": "/services" },
