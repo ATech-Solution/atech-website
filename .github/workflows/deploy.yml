@@ -142,9 +142,9 @@ jobs:
 
             echo "==> Running database migrations..."
             set +e
-            DATABASE_URL="file:$DEPLOY_PATH/data/payload.db" \
-            PAYLOAD_SECRET="${{ secrets.PAYLOAD_SECRET }}" \
-            npm run migrate 2>&1
+            export DATABASE_URL="file:$DEPLOY_PATH/data/payload.db"
+            export PAYLOAD_SECRET="${{ secrets.PAYLOAD_SECRET }}"
+            yes | npm run migrate 2>&1
             MIGRATE_EXIT=$?
             set -e
             if [ $MIGRATE_EXIT -ne 0 ]; then
@@ -254,9 +254,9 @@ jobs:
 
             echo "==> Running database migrations..."
             set +e
-            DATABASE_URL="${{ secrets.PROD_DATABASE_URL }}" \
-            PAYLOAD_SECRET="${{ secrets.PROD_PAYLOAD_SECRET }}" \
-            npm run migrate 2>&1
+            export DATABASE_URL="${{ secrets.PROD_DATABASE_URL }}"
+            export PAYLOAD_SECRET="${{ secrets.PROD_PAYLOAD_SECRET }}"
+            yes | npm run migrate 2>&1
             MIGRATE_EXIT=$?
             set -e
             if [ $MIGRATE_EXIT -ne 0 ]; then
