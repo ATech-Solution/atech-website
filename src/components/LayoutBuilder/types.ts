@@ -229,7 +229,14 @@ export interface BlockOverrides {
     pageHeroDark?:  boolean
 
     // ── Project Grid ──────────────────────────────────────────────────────
-    projectItems?: Array<{ projectTag?: string; projectType?: string; projectTitle?: string; projectDesc?: string; projectCta?: string; projectUrl?: string }>
+    projectHeading?: string
+    projectSubheading?: string
+    showCategoryFilter?: 'yes' | 'no'
+    projectContentSource?: 'collection' | 'manual'
+    projectLimit?: number
+    projectCategory?: string
+    projectOrderBy?: 'publishedAt_desc' | 'publishedAt_asc'
+    projectItems?: Array<{ projectTag?: string; projectType?: string; projectTitle?: string; projectDesc?: string; projectCta?: string; projectUrl?: string; projectImage?: MediaRef | null }>
 
     // ── Article Grid ──────────────────────────────────────────────────────
     sectionLabel?:          string

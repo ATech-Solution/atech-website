@@ -18,6 +18,8 @@ import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Categories } from './collections/Categories'
+import { Portfolio } from './collections/Portfolio'
+import { PortfolioCategories } from './collections/PortfolioCategories'
 import { Users } from './collections/Users'
 import { Plugins } from './collections/Plugins'
 import { Blocks } from './collections/Blocks'
@@ -125,7 +127,7 @@ export default buildConfig({
   csrf: allowedOrigins,
 
   // ── Collections ────────────────────────────────────────────────────────────
-  collections: [Users, Pages, Posts, Categories, Media, Plugins, Blocks],
+  collections: [Users, Pages, Posts, Categories, Portfolio, PortfolioCategories, Media, Plugins, Blocks],
 
   // ── Globals ────────────────────────────────────────────────────────────────
   globals: [Navigation, Settings, Theme],

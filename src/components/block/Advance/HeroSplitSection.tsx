@@ -36,15 +36,27 @@ export interface HeroSplitSectionData {
   heroStatLabel?:       string
 }
 
-const H_PAD = 104   // section horizontal padding (px)
-const V_PAD = 80    // section vertical padding (px)
-const IMG_INSET = 40 // inset when padded
+
 
 export default function HeroSplitSection({ data }: { data: HeroSplitSectionData }) {
   const breadcrumbs = data.breadcrumbs ?? []
   const imageOnLeft = data.heroImagePosition === 'left'
   const hasPadding  = data.heroImagePadding === true
   const badgeIcon   = data.badgeIcon?.url ?? data.badgeIconSrc ?? null
+
+  const H_PAD = 104   // section horizontal padding (px)
+  const V_PAD = 80    // section vertical padding (px)
+  const IMG_INSET = 40 // inset when padded
+
+  if(hasPadding) {
+    const H_PAD = 104   // section horizontal padding (px)
+    const V_PAD = 80    // section vertical padding (px)
+    const IMG_INSET = 40 // inset when padded
+  } else {
+    const H_PAD = 80    // section horizontal padding (px)
+    const V_PAD = 80    // section vertical padding (px)
+    const IMG_INSET = 40 // inset when padded
+  }
 
   // ── Image panel ──────────────────────────────────────────────────────────────
   // Uses alignSelf: stretch so height matches the content column naturally.
@@ -59,12 +71,16 @@ export default function HeroSplitSection({ data }: { data: HeroSplitSectionData 
       <div
         style={{
           position: 'absolute',
-          top:    hasPadding ? `${IMG_INSET}px` : '0',
-          right:  hasPadding ? `${IMG_INSET}px` : '0',
-          bottom: hasPadding ? `${IMG_INSET}px` : '0',
-          left:   hasPadding ? `${IMG_INSET}px` : '0',
-          border: '1px solid #e5e5e5',
-          background: '#f5f5f5',
+          // top:    hasPadding ? `${IMG_INSET}px` : '0',
+          // right:  hasPadding ? `${IMG_INSET}px` : '0',
+          // bottom: hasPadding ? `${IMG_INSET}px` : '0',
+          // left:   hasPadding ? `${IMG_INSET}px` : '0',
+          top: '0',
+          right: '0',
+          bottom: '0',
+          left: '0',
+          // border: '1px solid #e5e5e5',
+          // background: '#f5f5f5',
           overflow: 'hidden',
         }}
       >
@@ -83,7 +99,7 @@ export default function HeroSplitSection({ data }: { data: HeroSplitSectionData 
   return (
     <section style={{ background: '#ffffff', position: 'relative' }}>
       {/* ── Breadcrumbs — normal flow, above the main grid ── */}
-      {breadcrumbs.length > 0 && (
+      {/* {breadcrumbs.length > 0 && (
         <div style={{ paddingLeft: `${H_PAD}px`, paddingRight: `${H_PAD}px`, paddingTop: '27px' }}>
           <nav className="flex items-center gap-6 flex-wrap" aria-label="Breadcrumb">
             {breadcrumbs.map((item, idx) => (
@@ -113,23 +129,63 @@ export default function HeroSplitSection({ data }: { data: HeroSplitSectionData 
             ))}
           </nav>
         </div>
-      )}
+      )} */}
 
       {/* ── Main 2-column grid ── */}
       <div
-        className="grid grid-cols-1 lg:grid-cols-2"
+        className="grid grid-cols-1 lg:grid-cols-2"        
         style={{
-          gap: '48px',
-          paddingLeft: `${H_PAD}px`,
-          paddingRight: `${H_PAD}px`,
-          paddingTop: breadcrumbs.length > 0 ? `${V_PAD - 27}px` : `${V_PAD}px`,
+          // gap: '48px',
+          // paddingLeft: `${H_PAD}px`,
+          // paddingRight: `${H_PAD}px`,
+          paddingLeft:  !imageOnLeft ? `${H_PAD}px` : `0`,
+          paddingRight: imageOnLeft ? `${H_PAD}px` : `0`,
+          // paddingTop: breadcrumbs.length > 0 ? `${V_PAD - 27}px` : `${V_PAD}px`,
           paddingBottom: `${V_PAD}px`,
         }}
       >
         {imageOnLeft && ImagePanel}
 
         {/* ── Content column ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          justifyContent: 'center', 
+          paddingLeft: imageOnLeft ? `60px` : '0',
+          paddingRight: !imageOnLeft ? `60px` : '0',
+        }}>
+           {breadcrumbs.length > 0 && (
+            <div style={{paddingTop: '27px',paddingBottom: '27px'  }}>
+              <nav className="flex items-center gap-6 flex-wrap" aria-label="Breadcrumb">
+                {breadcrumbs.map((item, idx) => (
+                  <span key={idx} className="flex items-center gap-2">
+                    {idx > 0 && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={'/images/breadcrumb-chevron.png'}
+                        alt=""
+                        style={{ width: '6.25px', height: '10px', objectFit: 'contain' }}
+                      />
+                    )}
+                    {item.bcHref ? (
+                      <Link
+                        href={item.bcHref}
+                        className="transition-colors duration-150 hover:text-[#171717]"
+                        style={{ color: '#737373', fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '14px', lineHeight: '20px' }}
+                      >
+                        {item.bcLabel}
+                      </Link>
+                    ) : (
+                      <span style={{ color: '#171717', fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '14px', lineHeight: '20px' }}>
+                        {item.bcLabel}
+                      </span>
+                    )}
+                  </span>
+                ))}
+              </nav>
+            </div>
+          )}
+          
           {data.badge && (
             <div
               className="inline-flex items-center gap-2 self-start"

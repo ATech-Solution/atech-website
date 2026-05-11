@@ -104,7 +104,7 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
       className="relative overflow-hidden"
       style={{
         background: 'var(--color-bg, #292929)',
-        minHeight: '90.5vh',
+        minHeight: '90.1vh',
       }}
     >
       {/* minHeight: 'var(--section-min-height, auto)', */}
@@ -263,9 +263,11 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
                 position: 'absolute',
                 top:    data.heroImagePadding ? '80px' : '0',
                 right:  data.heroImagePadding ? '40px' : '0',
-                bottom: data.heroImagePadding ? '80px' : '0',
-                // left:   data.heroImagePadding ? '40px' : '0',
+                bottom: data.heroImagePadding ? '40px' : '0',
+                left:   data.heroImagePadding ? '40px' : 'unset',
                 objectFit: 'cover',
+                maxHeight: data.heroImagePadding ? '600px' : 'none',
+                margin: data.heroImagePadding ? '0 auto' : 'auto',
               }}
             />
             {topCard    && <FloatingBadgeCard {...topCard}    className="top-[250px] w-[200px] right-20"  />}

@@ -21,6 +21,7 @@ import {
   FAQSection,
   PageHeroSection,
   ProjectGridSection,
+  ProjectGridServerSection,
   ArticleGridSection,
   ArticleGridServerSection,
   ArticleFeaturedSection,
@@ -839,7 +840,7 @@ export function LayoutBlockRenderer({
     case 'page-hero':
       return wrapAdvanced(<PageHeroSection data={data} />)
     case 'project-grid':
-      return wrapAdvanced(<ProjectGridSection data={data} />)
+      return wrapAdvanced(<ProjectGridServerSection data={data} />)
     case 'article-grid':
       return wrapAdvanced(<ArticleGridServerSection data={data} />)
     case 'article-featured':

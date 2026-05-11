@@ -17,6 +17,7 @@ export {
   FAQSection,
   PageHeroSection,
   ProjectGridSection,
+  ProjectGridServerSection,
   ArticleGridSection,
   ArticleGridServerSection,
   ArticleFeaturedSection,

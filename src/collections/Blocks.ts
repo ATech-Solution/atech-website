@@ -56,7 +56,7 @@ const CONTENT_SECTION_TYPES = [
   { label: 'Article — Featured', value: 'article-featured' },
   { label: 'Article — Grid',     value: 'article-grid' },
   { label: 'Portfolio — Hero',   value: 'portfolio-hero' },
-  { label: 'Portfolio — Grid',   value: 'portfolio-grid' },
+  { label: 'Portfolio — Grid',   value: 'project-grid' },
 ]
 
 const GET_INVOLVED_SECTION_TYPES = [
@@ -862,6 +862,105 @@ export const Blocks: CollectionConfig = {
                 label: 'Features (one per line)',
                 admin: { description: 'Enter each feature on a new line' },
               },
+            ],
+          },
+
+          // ── PROJECT GRID (project-grid) fields ───────────────────────────
+          // Non-localized fields FIRST (must precede localized fields to render)
+          {
+            name: 'showCategoryFilter',
+            type: 'select',
+            label: 'Show Category Filter Tabs',
+            defaultValue: 'yes',
+            options: [
+              { label: 'Yes', value: 'yes' },
+              { label: 'No',  value: 'no'  },
+            ],
+            admin: { condition: (data) => data.blockType === 'project-grid' },
+          },
+          {
+            name: 'projectContentSource',
+            type: 'select',
+            label: 'Content Source',
+            defaultValue: 'manual',
+            options: [
+              { label: 'Portfolio Collection (CMS)', value: 'collection' },
+              { label: 'Manual Items',               value: 'manual'     },
+            ],
+            admin: { condition: (data) => data.blockType === 'project-grid' },
+          },
+          {
+            name: 'projectLimit',
+            type: 'number',
+            label: 'Items Limit',
+            defaultValue: 9,
+            admin: {
+              description: 'Max portfolio items to load from the collection.',
+              condition: (data) => data.blockType === 'project-grid' && data.projectContentSource === 'collection',
+            },
+          },
+          {
+            name: 'projectCategory',
+            type: 'text',
+            label: 'Filter by Category Slug',
+            admin: {
+              description: 'Optional: show only items from this portfolio-category slug.',
+              condition: (data) => data.blockType === 'project-grid' && data.projectContentSource === 'collection',
+            },
+          },
+          {
+            name: 'projectOrderBy',
+            type: 'select',
+            label: 'Sort Order',
+            defaultValue: 'publishedAt_desc',
+            options: [
+              { label: 'Newest First', value: 'publishedAt_desc' },
+              { label: 'Oldest First', value: 'publishedAt_asc'  },
+            ],
+            admin: {
+              condition: (data) => data.blockType === 'project-grid' && data.projectContentSource === 'collection',
+            },
+          },
+          // Localized fields AFTER non-localized
+          {
+            name: 'projectHeading',
+            type: 'text',
+            label: 'Heading',
+            localized: true,
+            admin: { condition: (data) => data.blockType === 'project-grid' },
+          },
+          {
+            name: 'projectSubheading',
+            type: 'textarea',
+            label: 'Subheading',
+            localized: true,
+            admin: { condition: (data) => data.blockType === 'project-grid' },
+          },
+          {
+            name: 'projectItems',
+            type: 'array',
+            label: 'Project Items (Manual Mode)',
+            admin: {
+              condition: (data) => data.blockType === 'project-grid' && data.projectContentSource !== 'collection',
+            },
+            fields: [
+              {
+                name: 'projectImage',
+                type: 'upload',
+                relationTo: 'media',
+                label: 'Project Image',
+              },
+              { name: 'projectTag',   type: 'text',     label: 'Primary Category / Tag' },
+              { name: 'projectType',  type: 'text',     label: 'Project Type (second badge)' },
+              { name: 'projectTitle', type: 'text',     label: 'Project Title', required: true },
+              { name: 'projectDesc',  type: 'textarea', label: 'Short Description' },
+              {
+                name: 'projectCta',
+                type: 'text',
+                label: 'CTA Label',
+                admin: { placeholder: 'View Case Study' },
+              },
+              { name: 'projectUrl', type: 'text', label: 'Project URL' },
             ],
           },
           ],

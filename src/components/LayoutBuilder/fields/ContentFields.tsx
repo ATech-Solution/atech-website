@@ -1123,38 +1123,128 @@ function PageHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => 
 
 // ── Project Grid fields ───────────────────────────────────────────────────────
 function ProjectGridFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const source = (ov.projectContentSource ?? 'manual') as 'collection' | 'manual'
+  const showFilter = (ov.showCategoryFilter ?? 'yes') as 'yes' | 'no'
   const items: any[] = ov.projectItems ?? []
   return (
     <>
       <Field label="Heading">
-        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Featured Projects" />
+        <input className="lb-input" value={ov.projectHeading ?? ''} onChange={(e) => set('projectHeading', e.target.value)} placeholder="Featured Projects" />
       </Field>
       <Field label="Subheading">
-        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="A curated selection…" />
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.projectSubheading ?? ''} onChange={(e) => set('projectSubheading', e.target.value)} placeholder="A curated selection…" />
       </Field>
-      <Field label="Projects">
-        <div className="lb-items">
-          {items.map((p: any, i: number) => (
-            <div key={i} className="lb-item">
-              <div className="lb-item__header">
-                <span>Project {i + 1}</span>
-                <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); set('projectItems', a) }}>✕</button>
-              </div>
-              <Row>
-                <input className="lb-input" placeholder="Tag (e.g. FinTech)" value={p.projectTag ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectTag: e.target.value }; set('projectItems', a) }} />
-                <input className="lb-input" placeholder="Type (e.g. Mobile App)" value={p.projectType ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectType: e.target.value }; set('projectItems', a) }} />
-              </Row>
-              <input className="lb-input" placeholder="Title" value={p.projectTitle ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectTitle: e.target.value }; set('projectItems', a) }} />
-              <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={p.projectDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectDesc: e.target.value }; set('projectItems', a) }} />
-              <Row>
-                <input className="lb-input" placeholder="CTA Label" value={p.projectCta ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectCta: e.target.value }; set('projectItems', a) }} />
-                <LinkField label="CTA URL" value={p.projectUrl ?? ''} onChange={(v) => { const a = [...items]; a[i] = { ...a[i], projectUrl: v }; set('projectItems', a) }} />
-              </Row>
-            </div>
+
+      {/* ── Category filter toggle ────────────────────────────────────────── */}
+      <Field label="Show Category Filter">
+        <div style={{ display: 'flex', gap: 0, border: '1px solid #e5e5e5', borderRadius: 4, overflow: 'hidden' }}>
+          {(['yes', 'no'] as const).map((v) => (
+            <button
+              key={v}
+              onClick={() => set('showCategoryFilter', v)}
+              style={{
+                flex: 1,
+                padding: '6px 12px',
+                fontSize: 12,
+                fontWeight: showFilter === v ? 600 : 400,
+                background: showFilter === v ? '#171717' : '#fff',
+                color: showFilter === v ? '#fff' : '#525252',
+                border: 'none',
+                cursor: 'pointer',
+                textTransform: 'capitalize',
+              }}
+            >
+              {v === 'yes' ? 'Show Tabs' : 'Hide Tabs'}
+            </button>
           ))}
-          <button className="lb-items__add" onClick={() => set('projectItems', [...items, {}])}>+ Add Project</button>
         </div>
       </Field>
+
+      {/* ── Content source toggle ─────────────────────────────────────────── */}
+      <Field label="Content Source">
+        <div style={{ display: 'flex', gap: 0, border: '1px solid #e5e5e5', borderRadius: 4, overflow: 'hidden' }}>
+          {(['collection', 'manual'] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => set('projectContentSource', s)}
+              style={{
+                flex: 1,
+                padding: '6px 12px',
+                fontSize: 12,
+                fontWeight: source === s ? 600 : 400,
+                background: source === s ? '#171717' : '#fff',
+                color: source === s ? '#fff' : '#525252',
+                border: 'none',
+                cursor: 'pointer',
+                textTransform: 'capitalize',
+              }}
+            >
+              {s === 'collection' ? 'From Portfolio' : 'Manual'}
+            </button>
+          ))}
+        </div>
+      </Field>
+
+      {source === 'collection' ? (
+        <>
+          <Row>
+            <Field label="Limit">
+              <input
+                className="lb-input"
+                type="number"
+                min={1}
+                max={24}
+                value={ov.projectLimit ?? 9}
+                onChange={(e) => set('projectLimit', Number(e.target.value))}
+                placeholder="9"
+              />
+            </Field>
+            <Field label="Sort">
+              <select
+                className="lb-input"
+                value={ov.projectOrderBy ?? 'publishedAt_desc'}
+                onChange={(e) => set('projectOrderBy', e.target.value)}
+              >
+                <option value="publishedAt_desc">Newest First</option>
+                <option value="publishedAt_asc">Oldest First</option>
+              </select>
+            </Field>
+          </Row>
+          <Field label="Category Slug (optional)">
+            <input
+              className="lb-input"
+              value={ov.projectCategory ?? ''}
+              onChange={(e) => set('projectCategory', e.target.value)}
+              placeholder="Leave empty for all"
+            />
+          </Field>
+        </>
+      ) : (
+        <Field label="Projects">
+          <div className="lb-items">
+            {items.map((p: any, i: number) => (
+              <div key={i} className="lb-item">
+                <div className="lb-item__header">
+                  <span>Project {i + 1}</span>
+                  <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); set('projectItems', a) }}>✕</button>
+                </div>
+                <MediaField label="Project Image" value={p.projectImage?.url ?? ''} onChange={(ref) => { const a = [...items]; a[i] = { ...a[i], projectImage: ref }; set('projectItems', a) }} />
+                <Row>
+                  <input className="lb-input" placeholder="Tag (e.g. FinTech)" value={p.projectTag ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectTag: e.target.value }; set('projectItems', a) }} />
+                  <input className="lb-input" placeholder="Type (e.g. Mobile App)" value={p.projectType ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectType: e.target.value }; set('projectItems', a) }} />
+                </Row>
+                <input className="lb-input" placeholder="Title" value={p.projectTitle ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectTitle: e.target.value }; set('projectItems', a) }} />
+                <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={p.projectDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectDesc: e.target.value }; set('projectItems', a) }} />
+                <Row>
+                  <input className="lb-input" placeholder="CTA Label" value={p.projectCta ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], projectCta: e.target.value }; set('projectItems', a) }} />
+                  <LinkField label="CTA URL" value={p.projectUrl ?? ''} onChange={(v) => { const a = [...items]; a[i] = { ...a[i], projectUrl: v }; set('projectItems', a) }} />
+                </Row>
+              </div>
+            ))}
+            <button className="lb-items__add" onClick={() => set('projectItems', [...items, {}])}>+ Add Project</button>
+          </div>
+        </Field>
+      )}
     </>
   )
 }
