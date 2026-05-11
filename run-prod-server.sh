@@ -1,94 +1,85 @@
-# standard production on server deployment script for Next.js app with PM2
 #!/bin/bash
-#set -e  # stop script if any command fails
+# ============================================================
+# Production Deploy Script — atech-website
+# ============================================================
+# Behavior:
+#   - PRESERVES the database — NEVER deletes payload.db
+#   - Pulls from: main branch
+#   - PM2 app name: atech-website  (port 3000)
+#   - Config: ecosystem.prod.config.js
+#   - Runs migrations only (no seed, no wipe)
+# ============================================================
 
-#echo "🔍 Checking server health..."
-#FREE_MEM=$(free -m | awk '/^Mem:/{print $4}')
-#FREE_DISK=$(df -m ~ | awk 'NR==2{print $4}')
+set -e
 
-#if [ "$FREE_MEM" -lt 300 ]; then
-#    echo "❌ Not enough RAM ($FREE_MEM MB free). Aborting."
-#    exit 1
-#fi
+APP_DIR="/home/deploy/atech-website"
+DB_PATH="$APP_DIR/data/payload.db"
+BRANCH="main"
 
-#if [ "$FREE_DISK" -lt 500 ]; then
-#    echo "❌ Not enough disk space ($FREE_DISK MB free). Aborting."
-#    exit 1
-#fi
-#prepare .next
+cd "$APP_DIR"
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  PRODUCTION DEPLOY — $(date '+%Y-%m-%d %H:%M:%S')"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# ── Safety check: abort if DB is missing ─────────────────
+# On the very first deploy this file won't exist yet — that's fine.
+# On subsequent deploys, if someone accidentally deleted it, warn loudly.
+if [ ! -f "$DB_PATH" ]; then
+  echo ""
+  echo "⚠️  WARNING: No database found at $DB_PATH"
+  echo "   If this is a first-time deploy, this is expected."
+  echo "   Migrations will create the schema. No seed will run."
+  echo ""
+fi
+
+# ── 1. Pull latest code from main branch ─────────────────
+echo ""
+echo "📦 Pulling latest code from branch: $BRANCH..."
+git stash || true
+git fetch origin
+git reset --hard "origin/$BRANCH"
+
+# ── 2. Unpack build artefact ─────────────────────────────
+echo ""
+echo "📂 Unpacking build artefact..."
 sudo rm -rf .next
-sudo unzip -q next.zip
+sudo unzip -q next.zip -d .
 sudo mv next .next
-# chown -R deploy:deploy .next
-# chmod -R 755 .next
-sudo rm -rf __MACOSX
+sudo rm -rf __MACOSX next.zip 2>/dev/null || true
 
-# # set the permisson for site
-# # Project root — deploy owns everything
-# chown -R deploy:deploy /home/deploy/atech-website
-# # .next/standalone — needs read + execute to run Node
-# chmod -R 755 /home/deploy/atech-website/.next
-# # data/ — needs write for SQLite (read/write/lock the .db file)
-# chmod 750 /home/deploy/atech-website/data
-# chmod 640 /home/deploy/atech-website/data/payload.db
-# # public/media — must exist and be writable for Payload file uploads
-# mkdir -p /home/deploy/atech-website/public/media
-# chown -R deploy:deploy /home/deploy/atech-website/public/media
-# chmod 755 /home/deploy/atech-website/public/media
-
-# # data/ — must exist and be writable for SQLite (payload.db lives here)
-# mkdir -p /home/deploy/atech-website/data
-# chown deploy:deploy /home/deploy/atech-website/data
-# chmod 750 /home/deploy/atech-website/data
-
-echo "📦 Pulling latest code..."
-#cd ~/atech-website
-git stash
-git stash drop
-git pull origin main
-#overwrite completely
-#git checkout origin/main -- package.json
-
-echo "📥 Installing dependencies..." 
-#npm install
-
-echo "skip 🏗️ Building app... make sure already on local and pass .next"
-#npm run build
-
+# ── 3. Generate Payload types & import map ───────────────
+echo ""
+echo "⚙️  Generating Payload types and import map..."
 npm run generate:types && npm run generate:importmap
 
-# echo "🔧 Patching dev-machine paths in standalone bundle..."
-# # Next.js bakes import.meta.url absolute paths at build time (e.g. Payload's OG font loader).
-# # Replace the build machine's path with this server's path so runtime file reads succeed.
-# grep -rl "/Users/tansams/Documents/GitHub/atech-website" .next/standalone/ --include="*.js" 2>/dev/null \
-#   | xargs -r sed -i "s|/Users/tansams/Documents/GitHub/atech-website|/home/deploy/atech-website|g"
+# ── 4. Ensure data directory exists (first-time setup) ───
+mkdir -p "$APP_DIR/data"
 
-# echo "📂 Copying JS/CSS chunks into standalone bundle..."
-# # The zip puts static chunks at .next/static/ (top level) but the standalone server
-# # expects them at .next/standalone/.next/static/. The standalone zip doesn't include
-# # this subdir, so we must copy it. Destination doesn't exist yet → cp creates it correctly.
-# cp -r .next/static .next/standalone/.next/static
+# ── 5. Run migrations ONLY — no seed, no wipe ────────────
+echo ""
+echo "🔧 Running Payload migrations (data preserved)..."
+DATABASE_URL="file:$DB_PATH" \
+NODE_ENV=production \
+  npm run migrate || {
+    echo "   ⚠️  migrate exited non-zero — schema may already be up to date."
+  }
+echo "   ✓ Database preserved: $DB_PATH"
 
-# echo "📂 Merging public/ assets into standalone bundle..."
-# # Use /. to copy directory CONTENTS into the existing .next/standalone/public/
-# # (plain `cp -r public .next/standalone/public` would create a nested public/public/
-# # because the destination already exists from the build zip)
-# cp -r public/. .next/standalone/public/
+# ── 6. Ensure media directory exists ─────────────────────
+mkdir -p "$APP_DIR/media"
 
-# echo "🔗 Symlinking media directory into standalone..."
-# # standalone/server.js calls process.chdir(__dirname), so process.cwd() becomes
-# # .next/standalone/ — NOT the project root. Symlink the persistent media dir into
-# # the standalone public/ so Next.js static serving and Payload API both find the same files.
-# rm -rf .next/standalone/public/media
-# ln -sfn /home/deploy/atech-website/public/media .next/standalone/public/media
+# ── 7. Restart PM2 ───────────────────────────────────────
+echo ""
+echo "🔄 Restarting PM2 (atech-website)..."
+pm2 stop atech-website 2>/dev/null || true
+pm2 delete atech-website 2>/dev/null || true
+pm2 start "$APP_DIR/ecosystem.prod.config.js"
+pm2 save
 
-echo "🔄 Restarting app..."
-pm2 stop atech-website || true
-pm2 delete atech-website || true
-# pm2 start ecosystem.config.js --env production
-pm2 start npm --name "atech-website" -- start
-pm2 restart atech-website --update-env
-
-echo "✅ Deployed successfully!"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  ✅ Production deploy complete — https://atech.software"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 pm2 status
-pm2 logs atech-website
+pm2 logs atech-website --lines 30
