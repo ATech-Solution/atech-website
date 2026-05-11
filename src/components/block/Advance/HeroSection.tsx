@@ -64,8 +64,7 @@ function FloatingBadgeCard({ cardText, cardIcon, className }: { cardText: string
       style={{
         background: 'var(--badge-bg, #ffffff)',
         border: '1px solid #e5e5e5',
-        boxShadow: '0px 10px 15px -3px rgba(0,0,0,0.1), 0px 4px 6px -4px rgba(0,0,0,0.1)',
-        minWidth: '180px',
+        boxShadow: '0px 10px 15px -3px rgba(0,0,0,0.1), 0px 4px 6px -4px rgba(0,0,0,0.1)',        
       }}
     >
       <div
@@ -105,9 +104,10 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
       className="relative overflow-hidden"
       style={{
         background: 'var(--color-bg, #292929)',
-        minHeight: 'var(--section-min-height, auto)',
+        minHeight: '90.5vh',
       }}
     >
+      {/* minHeight: 'var(--section-min-height, auto)', */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{ backgroundImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0) 100%)' }}
@@ -115,10 +115,12 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
 
       <div
         className="relative mx-auto flex flex-col lg:flex-row items-stretch"
-        style={{ maxWidth: 'var(--content-max-width, 1280px)' }}
+        style={{ maxWidth: '1470px' }}
       >
+        {/* maxWidth: 'var(--content-max-width, 1280px)' */}
         {/* ── Left ── */}
-        <div className="flex-1 flex flex-col px-6 md:px-10 py-20 lg:py-24">
+        {/* flex-1 */}
+        <div className="flex flex-col px-6 md:px-10 py-20 lg:py-24 lg:pl-24 lg:pr-16 lg:mt-5">
           {data.badge && (
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 self-start"
@@ -151,10 +153,11 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
                 color: '#ffffff',
                 lineHeight: '60px',
                 fontSize: '0',
+                paddingRight: '30px'
               }}
             >
               {data.heading && (
-                <span style={{ fontSize: '64px', fontWeight: 700, lineHeight: '60px' }}>
+                <span style={{ fontSize: '64px', fontWeight: 700, lineHeight: '60px', display: 'block' }}>
                   {data.heading}{data.headingSub ? ' ' : ''}
                 </span>
               )}
@@ -237,7 +240,7 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
           {stats.length > 0 && (
             <div
               className="flex items-start gap-6"
-              style={{ borderTop: '1px solid #e5e5e5', paddingTop: '33px' }}
+              style={{ borderTop: '1px solid #FFCD37', paddingTop: '33px' }}
             >
               {stats.map((stat, i) => (
                 <StatItem key={i} {...stat} />
@@ -249,7 +252,7 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
         {/* ── Right — image + floating cards ── */}
         {data.heroImage?.url && (
           <div
-            className="hidden lg:block relative"
+            className="hidden lg:block relative 2xl:mt-8"
             style={{ flex: 1, minHeight: '480px' }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -261,14 +264,14 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
                 top:    data.heroImagePadding ? '80px' : '0',
                 right:  data.heroImagePadding ? '40px' : '0',
                 bottom: data.heroImagePadding ? '80px' : '0',
-                left:   data.heroImagePadding ? '40px' : '0',
+                // left:   data.heroImagePadding ? '40px' : '0',
                 objectFit: 'cover',
               }}
             />
-            {topCard    && <FloatingBadgeCard {...topCard}    className="top-[174px] -right-3" />}
-            {bottomCard && <FloatingBadgeCard {...bottomCard} className="bottom-[144px] left-[-24px]" />}
-            {topLeftCard  && <FloatingBadgeCard {...topLeftCard}  className="top-[174px] -left-3" />}
-            {botRightCard && <FloatingBadgeCard {...botRightCard} className="bottom-[144px] -right-3" />}
+            {topCard    && <FloatingBadgeCard {...topCard}    className="top-[250px] w-[200px] right-20"  />}
+            {bottomCard && <FloatingBadgeCard {...bottomCard} className="bottom-[100px] min-w-[200px]  left-[-24px]" />}
+            {topLeftCard  && <FloatingBadgeCard {...topLeftCard}  className="top-[174px] min-w-[250px]  -left-3" />}
+            {botRightCard && <FloatingBadgeCard {...botRightCard} className="bottom-[144px] min-w-[250px] -right-3" />}
           </div>
         )}
       </div>

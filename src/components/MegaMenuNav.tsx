@@ -138,7 +138,7 @@ function GridMegaPanel({ item }: { item: NavItem }) {
 
       <div
         style={{
-          background: '#f0f0f0',
+          background: '#FFCD37',
           borderRadius: 14,
           height: 72,
           display: 'flex',
@@ -307,7 +307,7 @@ function CategoryGridMegaPanel({ item }: { item: NavItem }) {
 
       <div
         style={{
-          background: '#f0f0f0',
+          background: '#FFCD37',
           borderRadius: 14,
           height: 72,
           display: 'flex',

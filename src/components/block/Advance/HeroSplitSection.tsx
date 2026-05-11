@@ -85,13 +85,13 @@ export default function HeroSplitSection({ data }: { data: HeroSplitSectionData 
       {/* ── Breadcrumbs — normal flow, above the main grid ── */}
       {breadcrumbs.length > 0 && (
         <div style={{ paddingLeft: `${H_PAD}px`, paddingRight: `${H_PAD}px`, paddingTop: '27px' }}>
-          <nav className="flex items-center gap-2 flex-wrap" aria-label="Breadcrumb">
+          <nav className="flex items-center gap-6 flex-wrap" aria-label="Breadcrumb">
             {breadcrumbs.map((item, idx) => (
               <span key={idx} className="flex items-center gap-2">
                 {idx > 0 && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={BREADCRUMB_CHEVRON}
+                    src={'/images/breadcrumb-chevron.png'}
                     alt=""
                     style={{ width: '6.25px', height: '10px', objectFit: 'contain' }}
                   />
