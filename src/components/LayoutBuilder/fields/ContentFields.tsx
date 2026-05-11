@@ -417,6 +417,13 @@ function HomeHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => 
 
       <MediaField label="Hero Image" value={ov.heroImage?.url ?? ''} onChange={(ref) => set('heroImage', ref)} />
 
+      <Field label="Image Padding">
+        <select className="lb-input lb-input--select" value={ov.heroImagePadding ? 'padded' : 'none'} onChange={(e) => set('heroImagePadding', e.target.value === 'padded')}>
+          <option value="none">No Padding — image fills column edge-to-edge</option>
+          <option value="padded">Padded — image inset 40px (matches text content rhythm)</option>
+        </select>
+      </Field>
+
       {/* Stats array */}
       <Field label="Stats">
         <div className="lb-items">
@@ -874,6 +881,13 @@ function ServiceHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
         </select>
       </Field>
 
+      <Field label="Image Padding">
+        <select className="lb-input lb-input--select" value={ov.heroImagePadding ? 'padded' : 'none'} onChange={(e) => set('heroImagePadding', e.target.value === 'padded')}>
+          <option value="none">No Padding — image fills column edge-to-edge</option>
+          <option value="padded">Padded — image inset 40px (matches text content rhythm)</option>
+        </select>
+      </Field>
+
       <Row>
         <Field label="Stat Value (optional)">
           <input className="lb-input" value={ov.heroStatValue ?? ''} onChange={(e) => set('heroStatValue', e.target.value)} placeholder='e.g. "500+"' />
@@ -1147,6 +1161,7 @@ function ProjectGridFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
 
 // ── Article Grid fields ───────────────────────────────────────────────────────
 function ArticleGridFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const source = (ov.articleContentSource ?? 'manual') as 'collection' | 'manual'
   const items: any[] = ov.articleItems ?? []
   return (
     <>
@@ -1159,29 +1174,92 @@ function ArticleGridFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
       <Field label="Subheading">
         <textarea className="lb-input lb-input--textarea" rows={2} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="Expert insights on…" />
       </Field>
-      <Field label="Articles">
-        <div className="lb-items">
-          {items.map((a: any, i: number) => (
-            <div key={i} className="lb-item">
-              <div className="lb-item__header">
-                <span>Article {i + 1}</span>
-                <button className="lb-item__remove" onClick={() => { const arr = [...items]; arr.splice(i, 1); set('articleItems', arr) }}>✕</button>
-              </div>
-              <Row>
-                <input className="lb-input" placeholder="Category" value={a.articleCategory ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleCategory: e.target.value }; set('articleItems', arr) }} />
-                <input className="lb-input" placeholder="Date" value={a.articleDate ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleDate: e.target.value }; set('articleItems', arr) }} />
-              </Row>
-              <input className="lb-input" placeholder="Title" value={a.articleTitle ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleTitle: e.target.value }; set('articleItems', arr) }} />
-              <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={a.articleDesc ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleDesc: e.target.value }; set('articleItems', arr) }} />
-              <Row>
-                <input className="lb-input" placeholder="CTA Label" value={a.articleCta ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleCta: e.target.value }; set('articleItems', arr) }} />
-                <LinkField label="CTA URL" value={a.articleUrl ?? ''} onChange={(v) => { const arr = [...items]; arr[i] = { ...arr[i], articleUrl: v }; set('articleItems', arr) }} />
-              </Row>
-            </div>
+
+      {/* ── Content source toggle ─────────────────────────────────────── */}
+      <Field label="Content Source">
+        <div style={{ display: 'flex', gap: 0, border: '1px solid #e5e5e5', borderRadius: 4, overflow: 'hidden' }}>
+          {(['collection', 'manual'] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => set('articleContentSource', s)}
+              style={{
+                flex: 1,
+                padding: '6px 12px',
+                fontSize: 12,
+                fontWeight: source === s ? 600 : 400,
+                background: source === s ? '#171717' : '#fff',
+                color: source === s ? '#fff' : '#525252',
+                border: 'none',
+                cursor: 'pointer',
+                textTransform: 'capitalize',
+              }}
+            >
+              {s === 'collection' ? 'From Posts Collection' : 'Manual'}
+            </button>
           ))}
-          <button className="lb-items__add" onClick={() => set('articleItems', [...items, {}])}>+ Add Article</button>
         </div>
       </Field>
+
+      {source === 'collection' ? (
+        <>
+          <Row>
+            <Field label="Number of Posts">
+              <input
+                className="lb-input"
+                type="number"
+                min={1}
+                max={24}
+                value={ov.articlePostsLimit ?? 6}
+                onChange={(e) => set('articlePostsLimit', Number(e.target.value))}
+                placeholder="6"
+              />
+            </Field>
+            <Field label="Order">
+              <select
+                className="lb-input"
+                value={ov.articlePostsOrderBy ?? 'publishedAt_desc'}
+                onChange={(e) => set('articlePostsOrderBy', e.target.value)}
+              >
+                <option value="publishedAt_desc">Newest First</option>
+                <option value="publishedAt_asc">Oldest First</option>
+              </select>
+            </Field>
+          </Row>
+          <Field label="Category Filter (slug)">
+            <input
+              className="lb-input"
+              value={ov.articlePostsCategory ?? ''}
+              onChange={(e) => set('articlePostsCategory', e.target.value)}
+              placeholder="Leave empty for all categories"
+            />
+          </Field>
+        </>
+      ) : (
+        <Field label="Articles">
+          <div className="lb-items">
+            {items.map((a: any, i: number) => (
+              <div key={i} className="lb-item">
+                <div className="lb-item__header">
+                  <span>Article {i + 1}</span>
+                  <button className="lb-item__remove" onClick={() => { const arr = [...items]; arr.splice(i, 1); set('articleItems', arr) }}>✕</button>
+                </div>
+                <MediaField label="Cover Image" value={a.articleImage?.url ?? ''} onChange={(ref) => { const arr = [...items]; arr[i] = { ...arr[i], articleImage: ref }; set('articleItems', arr) }} />
+                <Row>
+                  <input className="lb-input" placeholder="Category" value={a.articleCategory ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleCategory: e.target.value }; set('articleItems', arr) }} />
+                  <input className="lb-input" placeholder="Date (e.g. Jan 15, 2025)" value={a.articleDate ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleDate: e.target.value }; set('articleItems', arr) }} />
+                </Row>
+                <input className="lb-input" placeholder="Title" value={a.articleTitle ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleTitle: e.target.value }; set('articleItems', arr) }} />
+                <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Short Description" value={a.articleDesc ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleDesc: e.target.value }; set('articleItems', arr) }} />
+                <Row>
+                  <input className="lb-input" placeholder="CTA Label" value={a.articleCta ?? ''} onChange={(e) => { const arr = [...items]; arr[i] = { ...arr[i], articleCta: e.target.value }; set('articleItems', arr) }} />
+                  <LinkField label="CTA URL" value={a.articleUrl ?? ''} onChange={(v) => { const arr = [...items]; arr[i] = { ...arr[i], articleUrl: v }; set('articleItems', arr) }} />
+                </Row>
+              </div>
+            ))}
+            <button className="lb-items__add" onClick={() => set('articleItems', [...items, {}])}>+ Add Article</button>
+          </div>
+        </Field>
+      )}
     </>
   )
 }

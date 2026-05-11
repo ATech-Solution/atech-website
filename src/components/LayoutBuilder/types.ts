@@ -174,6 +174,7 @@ export interface BlockOverrides {
     badgeIconSrc?: string
     breadcrumbs?: Array<{ bcLabel?: string; bcHref?: string | null }>
     heroImagePosition?: 'left' | 'right'
+    heroImagePadding?: boolean
     heroStatValue?: string
     heroStatLabel?: string
 
@@ -231,8 +232,12 @@ export interface BlockOverrides {
     projectItems?: Array<{ projectTag?: string; projectType?: string; projectTitle?: string; projectDesc?: string; projectCta?: string; projectUrl?: string }>
 
     // ── Article Grid ──────────────────────────────────────────────────────
-    sectionLabel?:  string
-    articleItems?:  Array<{ articleCategory?: string; articleDate?: string; articleTitle?: string; articleDesc?: string; articleCta?: string; articleUrl?: string }>
+    sectionLabel?:          string
+    articleContentSource?:  'collection' | 'manual'
+    articlePostsLimit?:     number
+    articlePostsCategory?:  string
+    articlePostsOrderBy?:   'publishedAt_desc' | 'publishedAt_asc'
+    articleItems?:          Array<{ articleCategory?: string; articleDate?: string; articleTitle?: string; articleDesc?: string; articleCta?: string; articleUrl?: string; articleImage?: MediaRef | null }>
 
     // ── Article Featured ──────────────────────────────────────────────────
     featCategory?: string

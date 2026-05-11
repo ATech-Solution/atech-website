@@ -18,6 +18,7 @@ export {
   PageHeroSection,
   ProjectGridSection,
   ArticleGridSection,
+  ArticleGridServerSection,
   ArticleFeaturedSection,
   JobsListSection,
   InvolvedHeroSection,

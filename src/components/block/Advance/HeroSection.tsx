@@ -20,6 +20,7 @@ interface HeroSectionData {
   ctaSecondaryIcon?:   { url: string } | null
   ctaSecondaryIconPos?: 'left' | 'right'
   heroImage?:          { url: string; alt?: string }
+  heroImagePadding?:   boolean
   heroStats?:          HeroStat[]
   floatingCards?:      FloatingCard[]
 }
@@ -113,11 +114,11 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
       />
 
       <div
-        className="relative mx-auto px-6 md:px-10 py-20 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+        className="relative mx-auto flex flex-col lg:flex-row items-stretch"
         style={{ maxWidth: 'var(--content-max-width, 1280px)' }}
       >
         {/* ── Left ── */}
-        <div className="flex flex-col">
+        <div className="flex-1 flex flex-col px-6 md:px-10 py-20 lg:py-24">
           {data.badge && (
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 self-start"
@@ -247,12 +248,22 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
 
         {/* ── Right — image + floating cards ── */}
         {data.heroImage?.url && (
-          <div className="relative w-full hidden lg:block" style={{ height: '580px' }}>
+          <div
+            className="hidden lg:block relative"
+            style={{ flex: 1, minHeight: '480px' }}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={data.heroImage.url}
               alt={data.heroImage.alt ?? ''}
-              className="absolute inset-0 w-full h-full object-cover"
+              style={{
+                position: 'absolute',
+                top:    data.heroImagePadding ? '80px' : '0',
+                right:  data.heroImagePadding ? '40px' : '0',
+                bottom: data.heroImagePadding ? '80px' : '0',
+                left:   data.heroImagePadding ? '40px' : '0',
+                objectFit: 'cover',
+              }}
             />
             {topCard    && <FloatingBadgeCard {...topCard}    className="top-[174px] -right-3" />}
             {bottomCard && <FloatingBadgeCard {...bottomCard} className="bottom-[144px] left-[-24px]" />}

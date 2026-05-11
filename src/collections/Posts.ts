@@ -74,7 +74,10 @@ export const Posts: CollectionConfig = {
       name: 'excerpt',
       type: 'textarea',
       localized: true,
-      label: 'Excerpt',
+      label: 'Short Description',
+      admin: {
+        description: 'A brief summary shown on article cards and grid listings (2–3 sentences).',
+      },
     },
     {
       name: 'content',

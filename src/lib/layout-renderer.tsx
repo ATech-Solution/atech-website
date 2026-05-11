@@ -22,6 +22,7 @@ import {
   PageHeroSection,
   ProjectGridSection,
   ArticleGridSection,
+  ArticleGridServerSection,
   ArticleFeaturedSection,
   JobsListSection,
   InvolvedHeroSection,
@@ -840,7 +841,7 @@ export function LayoutBlockRenderer({
     case 'project-grid':
       return wrapAdvanced(<ProjectGridSection data={data} />)
     case 'article-grid':
-      return wrapAdvanced(<ArticleGridSection data={data} />)
+      return wrapAdvanced(<ArticleGridServerSection data={data} />)
     case 'article-featured':
       return wrapAdvanced(<ArticleFeaturedSection data={data} />)
     case 'jobs-list':
