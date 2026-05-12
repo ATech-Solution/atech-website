@@ -1113,6 +1113,47 @@ export const Blocks: CollectionConfig = {
             ],
           },
 
+          // ── PORTFOLIO HERO (portfolio-hero) fields ───────────────────────
+          {
+            name: 'portfolioHeroBadge',
+            type: 'text',
+            label: 'Badge Text',
+            defaultValue: 'Our Work',
+            admin: { condition: (data) => data.blockType === 'portfolio-hero' },
+          },
+          {
+            name: 'portfolioHeroHeading',
+            type: 'text',
+            label: 'Heading',
+            localized: true,
+            defaultValue: 'Our Portfolio',
+            admin: { condition: (data) => data.blockType === 'portfolio-hero' },
+          },
+          {
+            name: 'portfolioHeroSubheading',
+            type: 'textarea',
+            label: 'Subheading',
+            localized: true,
+            defaultValue: 'Explore our collection of successful projects across industries. From startups to enterprises, we deliver exceptional digital solutions that drive results.',
+            admin: { condition: (data) => data.blockType === 'portfolio-hero' },
+          },
+          {
+            type: 'row',
+            admin: { condition: (data) => data.blockType === 'portfolio-hero' },
+            fields: [
+              { name: 'portfolioHeroCtaPrimaryLabel', type: 'text', label: 'Primary CTA Label', defaultValue: 'View Projects' },
+              { name: 'portfolioHeroCtaPrimaryUrl',   type: 'text', label: 'Primary CTA URL',   defaultValue: '#projects' },
+            ],
+          },
+          {
+            type: 'row',
+            admin: { condition: (data) => data.blockType === 'portfolio-hero' },
+            fields: [
+              { name: 'portfolioHeroCtaSecondaryLabel', type: 'text', label: 'Secondary CTA Label', defaultValue: 'Start Your Project' },
+              { name: 'portfolioHeroCtaSecondaryUrl',   type: 'text', label: 'Secondary CTA URL',   defaultValue: '/contact' },
+            ],
+          },
+
           // ── ARTICLE FEATURED (article-featured) fields ───────────────────
           {
             name: 'featContentSource',

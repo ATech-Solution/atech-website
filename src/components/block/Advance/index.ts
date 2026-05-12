@@ -38,3 +38,4 @@ export { default as PortfolioDetailOverviewSection   } from './PortfolioDetailOv
 export { default as ArticleDetailHeroSection         } from './ArticleDetailHeroSection'
 export { default as ArticleDetailContentSection      } from './ArticleDetailContentSection'
 export { default as ArticleRelatedSection            } from './ArticleRelatedSection'
+export { default as PortfolioHeroSection             } from './PortfolioHeroSection'

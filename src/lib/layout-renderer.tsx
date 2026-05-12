@@ -45,6 +45,7 @@ import {
   ArticleDetailHeroSection,
   ArticleDetailContentSection,
   ArticleRelatedSection,
+  PortfolioHeroSection,
 } from '@/components/block'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -880,6 +881,10 @@ export function LayoutBlockRenderer({
       return wrapAdvanced(<FeaturedCaseStudySection data={data} />)
     case 'partnership':
       return wrapAdvanced(<PartnershipSection data={data} />)
+
+    // ── Portfolio Sections ───────────────────────────────────────────────────
+    case 'portfolio-hero':
+      return wrapAdvanced(<PortfolioHeroSection data={data} />)
 
     // ── Portfolio Detail Sections ────────────────────────────────────────────
     case 'portfolio-detail-top':
