@@ -9,7 +9,7 @@ export const Posts: CollectionConfig = {
     defaultColumns: ['title', 'status', 'publishedAt', 'updatedAt'],
     livePreview: {
       url: ({ data }) =>
-        `${process.env.PAYLOAD_PUBLIC_SERVER_URL ?? process.env.NEXT_PUBLIC_DOMAIN ?? 'http://localhost:3000'}/posts/${data?.slug ?? ''}`,
+        `${process.env.PAYLOAD_PUBLIC_SERVER_URL ?? process.env.NEXT_PUBLIC_DOMAIN ?? 'http://localhost:3000'}/article/${data?.slug ?? ''}`,
     },
   },
   access: {
@@ -68,7 +68,7 @@ export const Posts: CollectionConfig = {
         },
         custom: {
           watchField: 'title',
-          urlPrefix: '/posts/',
+          urlPrefix: '/article/',
         },
       },
     },

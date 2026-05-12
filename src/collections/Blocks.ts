@@ -55,8 +55,9 @@ const CONTENT_SECTION_TYPES = [
   { label: 'Article — Hero',     value: 'article-hero' },
   { label: 'Article — Featured', value: 'article-featured' },
   { label: 'Article — Grid',     value: 'article-grid' },
-  { label: 'Portfolio — Hero',   value: 'portfolio-hero' },
-  { label: 'Portfolio — Grid',   value: 'project-grid' },
+  { label: 'Portfolio — Hero',       value: 'portfolio-hero'       },
+  { label: 'Portfolio — Statistics', value: 'portfolio-statistics' },
+  { label: 'Portfolio — Grid',       value: 'project-grid'         },
 ]
 
 const GET_INVOLVED_SECTION_TYPES = [
@@ -1151,6 +1152,18 @@ export const Blocks: CollectionConfig = {
             fields: [
               { name: 'portfolioHeroCtaSecondaryLabel', type: 'text', label: 'Secondary CTA Label', defaultValue: 'Start Your Project' },
               { name: 'portfolioHeroCtaSecondaryUrl',   type: 'text', label: 'Secondary CTA URL',   defaultValue: '/contact' },
+            ],
+          },
+
+          // ── PORTFOLIO STATISTICS (portfolio-statistics) fields ──────────────
+          {
+            name: 'portfolioStats',
+            type: 'array',
+            label: 'Statistics',
+            admin: { condition: (data) => data.blockType === 'portfolio-statistics' },
+            fields: [
+              { name: 'statValue', type: 'text', label: 'Value (e.g. "150+")' },
+              { name: 'statLabel', type: 'text', label: 'Label',              localized: true },
             ],
           },
 

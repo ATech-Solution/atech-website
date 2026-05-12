@@ -39,3 +39,4 @@ export { default as ArticleDetailHeroSection         } from './ArticleDetailHero
 export { default as ArticleDetailContentSection      } from './ArticleDetailContentSection'
 export { default as ArticleRelatedSection            } from './ArticleRelatedSection'
 export { default as PortfolioHeroSection             } from './PortfolioHeroSection'
+export { default as PortfolioStatisticsSection       } from './PortfolioStatisticsSection'
