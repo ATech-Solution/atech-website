@@ -231,6 +231,20 @@ jobs:
             pm2 status
           ENDSSH
 
+      - name: Health check UAT
+        run: |
+          echo "Waiting for app to start..."
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Origin: ${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" \
+            "${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}/api/users/me" || echo "000")
+          echo "Health check status: $STATUS"
+          if [ "$STATUS" = "000" ]; then
+            echo "::error::Health check failed — app unreachable. Check pm2 logs."
+            exit 1
+          fi
+          echo "App is up (HTTP $STATUS)"
+
   # ── 2b. Deploy to Production (main branch) ────────────────
   deploy-prod:
     name: Deploy to Production

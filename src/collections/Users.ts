@@ -4,7 +4,7 @@ export const Users: CollectionConfig = {
   slug: 'users',
   auth: {
     useAPIKey: true,
-    tokenExpiration: 7200,
+    tokenExpiration: 28800, // 8 hours
     // Only require email verification when an SMTP transport is configured.
     // Without it the verification email is never sent, locking users out.
     ...(process.env.AWS_SES_SMTP_USER ? { verify: {
@@ -171,6 +171,7 @@ export const Users: CollectionConfig = {
       label: 'Role',
       defaultValue: 'editor',
       required: true,
+      saveToJWT: true,
       options: [
         { label: 'Admin',  value: 'admin' },
         { label: 'Editor', value: 'editor' },

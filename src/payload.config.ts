@@ -36,10 +36,40 @@ function envUrl(key: string): string {
   return process.env[`${key}${suffix}`] || process.env[key] || ''
 }
 
-const siteUrl = envUrl('NEXT_PUBLIC_SITE_URL') || 'http://localhost:3000'
-const payloadServerUrl = envUrl('PAYLOAD_PUBLIC_SERVER_URL') || siteUrl
+// Normalize a URL to a bare origin: strip trailing slashes, add https if no protocol.
+// Payload's CSRF check does an exact string match against the browser's Origin header,
+// so 'https://uat.atech.software' and 'https://uat.atech.software/' are different.
+function normalizeOrigin(url: string): string {
+  if (!url) return ''
+  const trimmed = url.replace(/\/+$/, '')                      // strip trailing slashes
+  if (!/^https?:\/\//i.test(trimmed)) return `https://${trimmed}` // add https if missing
+  return trimmed
+}
+
+const rawSiteUrl    = envUrl('NEXT_PUBLIC_SITE_URL')       || 'http://localhost:3000'
+const rawServerUrl  = envUrl('PAYLOAD_PUBLIC_SERVER_URL')  || rawSiteUrl
+const siteUrl       = normalizeOrigin(rawSiteUrl)
+const payloadServerUrl = normalizeOrigin(rawServerUrl)
+
+// Include both https and http variants so a misconfigured secret (wrong protocol)
+// doesn't lock out the admin panel. The cookie extractor checks Origin header against
+// this list — any mismatch silently drops req.user, causing 403 "not allowed".
+function originVariants(url: string): string[] {
+  if (!url) return []
+  const n = normalizeOrigin(url)
+  return Array.from(new Set([
+    n,
+    n.replace(/^https:\/\//i, 'http://'),
+    n.replace(/^http:\/\//i,  'https://'),
+  ]))
+}
+
 const localDevUrls = ['http://localhost:3000', 'http://127.0.0.1:3000']
-const allowedOrigins = Array.from(new Set([payloadServerUrl, siteUrl, ...localDevUrls]))
+const allowedOrigins = Array.from(new Set([
+  ...originVariants(payloadServerUrl),
+  ...originVariants(siteUrl),
+  ...localDevUrls,
+]))
 
 // Resilient email adapter — send failures are logged but never thrown,
 // so auth operations (forgot-password, user create+verify) never return "Something went wrong"
