@@ -26,6 +26,12 @@ const BLOCK_ICONS: Record<string, string> = {
   'locations': '📍',
   'featured-case-study': '🏆',
   'partnership': '🤝',
+  'portfolio-detail-top': '📋',
+  'portfolio-featured-image': '🖼',
+  'portfolio-detail-overview': '📑',
+  'article-detail-hero': '📰',
+  'article-detail-content': '📄',
+  'article-related': '🔗',
 }
 
 const BLOCK_LABELS: Record<string, string> = {
@@ -50,6 +56,12 @@ const BLOCK_LABELS: Record<string, string> = {
   'contact-hero': 'Contact Hero', 'contact-stats': 'Contact Stats', 'locations': 'Locations',
   'featured-case-study': 'Featured Case Study',
   'partnership': 'Partnership',
+  'portfolio-detail-top': 'Portfolio — Top',
+  'portfolio-featured-image': 'Portfolio — Image',
+  'portfolio-detail-overview': 'Portfolio — Overview',
+  'article-detail-hero': 'Article — Hero',
+  'article-detail-content': 'Article — Content',
+  'article-related': 'Article — Related',
 }
 
 export function BlockPicker({ onAdd }: BlockPickerProps) {

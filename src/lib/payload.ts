@@ -52,6 +52,52 @@ export const getSettings = unstable_cache(
   { tags: ['settings'] },
 )
 
+/** Fetch a single portfolio item by slug, with categories and featuredImage populated */
+export async function getPortfolioItem(slug: string) {
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'portfolio',
+    where: { slug: { equals: slug }, status: { equals: 'published' } },
+    depth: 2,
+    limit: 1,
+  })
+  return result.docs[0] ?? null
+}
+
+/** Fetch the Page marked as the portfolio detail template */
+export async function getPortfolioTemplatePage() {
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'pages',
+    where: { portfolioDetailTemplate: { equals: true } },
+    limit: 1,
+  })
+  return result.docs[0] ?? null
+}
+
+/** Fetch a single post (article) by slug, with categories and featuredImage populated */
+export async function getPostItem(slug: string) {
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'posts',
+    where: { slug: { equals: slug }, status: { equals: 'published' } },
+    depth: 2,
+    limit: 1,
+  })
+  return result.docs[0] ?? null
+}
+
+/** Fetch the Page marked as the article detail template */
+export async function getArticleTemplatePage() {
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'pages',
+    where: { articleDetailTemplate: { equals: true } },
+    limit: 1,
+  })
+  return result.docs[0] ?? null
+}
+
 /**
  * Batch-fetch block templates by ID.
  * Returns a map of { [id]: blockDoc } for merging with layoutBuilder overrides.

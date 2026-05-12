@@ -25,6 +25,7 @@ import {
   ArticleGridSection,
   ArticleGridServerSection,
   ArticleFeaturedSection,
+  ArticleFeaturedServerSection,
   JobsListSection,
   InvolvedHeroSection,
   QuoteFormSection,
@@ -38,6 +39,12 @@ import {
   FeaturedCaseStudySection,
   PartnershipSection,
   WebDevHeroSection,
+  PortfolioDetailTopSection,
+  PortfolioFeaturedImageSection,
+  PortfolioDetailOverviewSection,
+  ArticleDetailHeroSection,
+  ArticleDetailContentSection,
+  ArticleRelatedSection,
 } from '@/components/block'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -182,9 +189,13 @@ export function buildInlineStyle(data: any): React.CSSProperties {
 export function LayoutBlockRenderer({
   node,
   templates,
+  portfolioItem,
+  articleItem,
 }: {
   node: any
   templates: Record<string, any>
+  portfolioItem?: any
+  articleItem?: any
 }): React.ReactNode {
   const data        = mergeLayoutBlock(node, templates)
   const inlineStyle = buildInlineStyle(data)
@@ -216,7 +227,7 @@ export function LayoutBlockRenderer({
       return (
         <div id={id} className={`lb-container ${className ?? ''} ${hideClasses}`} style={wrapStyle}>
           {node.children?.map((child: any) => (
-            <LayoutBlockRenderer key={child.id} node={child} templates={templates} />
+            <LayoutBlockRenderer key={child.id} node={child} templates={templates} portfolioItem={portfolioItem} articleItem={articleItem} />
           ))}
         </div>
       )
@@ -230,7 +241,7 @@ export function LayoutBlockRenderer({
           style={{ ...wrapStyle, display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 24 }}
         >
           {node.children?.map((child: any) => (
-            <LayoutBlockRenderer key={child.id} node={child} templates={templates} />
+            <LayoutBlockRenderer key={child.id} node={child} templates={templates} portfolioItem={portfolioItem} articleItem={articleItem} />
           ))}
         </div>
       )
@@ -844,7 +855,7 @@ export function LayoutBlockRenderer({
     case 'article-grid':
       return wrapAdvanced(<ArticleGridServerSection data={data} />)
     case 'article-featured':
-      return wrapAdvanced(<ArticleFeaturedSection data={data} />)
+      return wrapAdvanced(<ArticleFeaturedServerSection data={data} />)
     case 'jobs-list':
       return wrapAdvanced(<JobsListSection data={data} />)
     case 'involved-hero':
@@ -870,6 +881,22 @@ export function LayoutBlockRenderer({
     case 'partnership':
       return wrapAdvanced(<PartnershipSection data={data} />)
 
+    // ── Portfolio Detail Sections ────────────────────────────────────────────
+    case 'portfolio-detail-top':
+      return wrapAdvanced(<PortfolioDetailTopSection data={data} portfolioItem={portfolioItem} />)
+    case 'portfolio-featured-image':
+      return wrapAdvanced(<PortfolioFeaturedImageSection data={data} portfolioItem={portfolioItem} />)
+    case 'portfolio-detail-overview':
+      return wrapAdvanced(<PortfolioDetailOverviewSection data={data} portfolioItem={portfolioItem} />)
+
+    // ── Article Detail Sections ──────────────────────────────────────────────
+    case 'article-detail-hero':
+      return wrapAdvanced(<ArticleDetailHeroSection data={data} articleItem={articleItem} />)
+    case 'article-detail-content':
+      return wrapAdvanced(<ArticleDetailContentSection data={data} articleItem={articleItem} />)
+    case 'article-related':
+      return wrapAdvanced(<ArticleRelatedSection data={data} articleItem={articleItem} />)
+
     // ── Service Page Sections ────────────────────────────────────────────────
     case 'web-dev-hero':
       return wrapAdvanced(<WebDevHeroSection data={data} />)
@@ -884,7 +911,7 @@ export function LayoutBlockRenderer({
           {data.title    && <h3>{data.title}</h3>}
           {data.subtitle && <p>{data.subtitle}</p>}
           {node.children?.map((child: any) => (
-            <LayoutBlockRenderer key={child.id} node={child} templates={templates} />
+            <LayoutBlockRenderer key={child.id} node={child} templates={templates} portfolioItem={portfolioItem} articleItem={articleItem} />
           ))}
         </div>
       )

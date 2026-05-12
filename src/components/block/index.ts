@@ -21,6 +21,7 @@ export {
   ArticleGridSection,
   ArticleGridServerSection,
   ArticleFeaturedSection,
+  ArticleFeaturedServerSection,
   JobsListSection,
   InvolvedHeroSection,
   QuoteFormSection,
@@ -33,6 +34,12 @@ export {
   LocationsSection,
   FeaturedCaseStudySection,
   PartnershipSection,
+  PortfolioDetailTopSection,
+  PortfolioFeaturedImageSection,
+  PortfolioDetailOverviewSection,
+  ArticleDetailHeroSection,
+  ArticleDetailContentSection,
+  ArticleRelatedSection,
 } from './Advance'
 
 // ── Service Page Sections ────────────────────────────────────────────────────

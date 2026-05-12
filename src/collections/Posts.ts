@@ -114,18 +114,6 @@ export const Posts: CollectionConfig = {
             },
           ],
         },
-        {
-          label: 'Relations',
-          fields: [
-            {
-              name: 'relatedPosts',
-              type: 'relationship',
-              relationTo: 'posts',
-              hasMany: true,
-              label: 'Related Posts',
-            },
-          ],
-        },
       ],
     },
   ],

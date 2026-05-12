@@ -320,6 +320,28 @@ export const Pages: CollectionConfig = {
       },
       options: getPageTemplateOptions(),
     },
+    // ── Sidebar: Portfolio Detail Template ──────────────────────────────────
+    {
+      name: 'portfolioDetailTemplate',
+      type: 'checkbox',
+      label: 'Use as Portfolio Detail Template',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'When checked, this page\'s Layout Builder becomes the template for all portfolio detail pages (/portfolio/<slug>).',
+      },
+    },
+    // ── Sidebar: Article Detail Template ────────────────────────────────────
+    {
+      name: 'articleDetailTemplate',
+      type: 'checkbox',
+      label: 'Use as Article Detail Template',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'When checked, this page\'s Layout Builder becomes the template for all article detail pages (/article/<slug>).',
+      },
+    },
   ],
   hooks: {
     beforeChange: [

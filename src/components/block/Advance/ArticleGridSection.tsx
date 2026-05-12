@@ -63,7 +63,7 @@ export async function fetchCollectionPosts(data: ArticleGridData): Promise<Artic
       articleTitle:    post.title ?? '',
       articleDesc:     post.excerpt ?? '',
       articleCta:      'Read More',
-      articleUrl:      `/posts/${post.slug}`,
+      articleUrl:      `/article/${post.slug}`,
       articleImage:    post.featuredImage?.url
         ? { url: post.featuredImage.url, alt: post.featuredImage.alt ?? post.title ?? '' }
         : null,

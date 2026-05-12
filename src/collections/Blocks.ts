@@ -77,6 +77,18 @@ const WHO_WE_SERVE_SECTION_TYPES = [
   { label: 'Who We Serve — Why Us',     value: 'who-we-serve-why' },
 ]
 
+const PORTFOLIO_SECTION_TYPES = [
+  { label: 'Portfolio — Detail Top',      value: 'portfolio-detail-top'      },
+  { label: 'Portfolio — Featured Image',  value: 'portfolio-featured-image'  },
+  { label: 'Portfolio — Detail Overview', value: 'portfolio-detail-overview' },
+]
+
+const ARTICLE_SECTION_TYPES = [
+  { label: 'Article — Detail Hero',    value: 'article-detail-hero'    },
+  { label: 'Article — Detail Content', value: 'article-detail-content' },
+  { label: 'Article — Related',        value: 'article-related'        },
+]
+
 const GENERAL_BLOCK_TYPES = [
   { label: 'Tabs',                 value: 'tabs' },
   { label: 'Accordion',            value: 'accordion' },
@@ -183,6 +195,16 @@ export const Blocks: CollectionConfig = {
               value: '__who_we_serve_header__',
             },
             ...WHO_WE_SERVE_SECTION_TYPES,
+            {
+              label: '── Portfolio Detail ──',
+              value: '__portfolio_detail_header__',
+            },
+            ...PORTFOLIO_SECTION_TYPES,
+            {
+              label: '── Article Detail ──',
+              value: '__article_detail_header__',
+            },
+            ...ARTICLE_SECTION_TYPES,
           ],
         },
         {
@@ -201,6 +223,8 @@ export const Blocks: CollectionConfig = {
             { label: 'Content Sections',   value: 'content-sections' },
             { label: 'Get Involved',       value: 'get-involved-sections' },
             { label: 'Who We Serve',       value: 'who-we-serve-sections' },
+            { label: 'Portfolio Sections', value: 'portfolio-sections' },
+            { label: 'Article Sections',   value: 'article-sections'   },
           ],
         },
       ],
@@ -241,7 +265,7 @@ export const Blocks: CollectionConfig = {
               label: 'Image',
               admin: {
                 condition: (data) =>
-                  ['image', 'image-box', 'icon-box', 'hero'].includes(data.blockType),
+                  ['image', 'image-box', 'icon-box', 'hero', 'portfolio-featured-image'].includes(data.blockType),
               },
             },
             {
@@ -389,7 +413,7 @@ export const Blocks: CollectionConfig = {
             type: 'text',
             label: 'Badge Text',
             defaultValue: h.hero.badge,
-            admin: { condition: (data) => ['home-hero', 'about-hero', 'web-dev-hero'].includes(data.blockType) },
+            admin: { condition: (data) => ['home-hero', 'about-hero', 'web-dev-hero', 'article-detail-hero'].includes(data.blockType) },
           },
           {
             name: 'heading',
@@ -397,7 +421,7 @@ export const Blocks: CollectionConfig = {
             label: 'Heading',
             localized: true,
             defaultValue: h.hero.heading,
-            admin: { condition: (data) => [...HOME_SECTION_TYPES.map(t => t.value), 'web-dev-hero', 'service-cards', 'cta-banner'].includes(data.blockType) },
+            admin: { condition: (data) => [...HOME_SECTION_TYPES.map(t => t.value), 'web-dev-hero', 'service-cards', 'cta-banner', 'article-related'].includes(data.blockType) },
           },
           {
             name: 'body',
@@ -839,7 +863,7 @@ export const Blocks: CollectionConfig = {
             name: 'breadcrumbItems',
             type: 'array',
             label: 'Breadcrumb',
-            admin: { condition: (data) => data.blockType === 'web-dev-hero' },
+            admin: { condition: (data) => ['web-dev-hero', 'article-detail-hero'].includes(data.blockType) },
             fields: [
               { name: 'breadcrumbLabel', type: 'text', label: 'Label', required: true },
               { name: 'breadcrumbUrl',   type: 'text', label: 'URL (leave empty for current page)' },
@@ -962,6 +986,154 @@ export const Blocks: CollectionConfig = {
               },
               { name: 'projectUrl', type: 'text', label: 'Project URL' },
             ],
+          },
+
+          // ── PORTFOLIO DETAIL TOP (portfolio-detail-top) fields ───────────
+          {
+            name: 'backLabel',
+            type: 'text',
+            label: 'Back Link Label',
+            admin: {
+              placeholder: 'Back to Portfolio',
+              condition: (data) => data.blockType === 'portfolio-detail-top',
+            },
+          },
+          {
+            name: 'backUrl',
+            type: 'text',
+            label: 'Back Link URL',
+            admin: {
+              placeholder: '/portfolio',
+              condition: (data) => data.blockType === 'portfolio-detail-top',
+            },
+          },
+          {
+            name: 'tags',
+            type: 'array',
+            label: 'Category Tags',
+            admin: { condition: (data) => data.blockType === 'portfolio-detail-top' },
+            fields: [
+              { name: 'tagLabel', type: 'text', label: 'Tag Label', required: true },
+            ],
+          },
+          {
+            name: 'pdTitle',
+            type: 'text',
+            label: 'Project Title',
+            localized: true,
+            admin: { condition: (data) => data.blockType === 'portfolio-detail-top' },
+          },
+          {
+            name: 'pdDescription',
+            type: 'textarea',
+            label: 'Project Description',
+            localized: true,
+            admin: { condition: (data) => data.blockType === 'portfolio-detail-top' },
+          },
+          {
+            name: 'pdClient',
+            type: 'text',
+            label: 'Client',
+            admin: { condition: (data) => data.blockType === 'portfolio-detail-top' },
+          },
+          {
+            name: 'pdDuration',
+            type: 'text',
+            label: 'Duration',
+            admin: {
+              placeholder: 'e.g. 6 Months',
+              condition: (data) => data.blockType === 'portfolio-detail-top',
+            },
+          },
+          {
+            name: 'pdYear',
+            type: 'text',
+            label: 'Year',
+            admin: {
+              placeholder: 'e.g. 2025',
+              condition: (data) => data.blockType === 'portfolio-detail-top',
+            },
+          },
+          {
+            name: 'pdTeamSize',
+            type: 'text',
+            label: 'Team Size',
+            admin: {
+              placeholder: 'e.g. 12 Members',
+              condition: (data) => data.blockType === 'portfolio-detail-top',
+            },
+          },
+
+          // ── PORTFOLIO FEATURED IMAGE (portfolio-featured-image) fields ───
+          {
+            name: 'pdCaption',
+            type: 'text',
+            label: 'Image Caption / Alt Text',
+            admin: { condition: (data) => data.blockType === 'portfolio-featured-image' },
+          },
+
+          // ── PORTFOLIO DETAIL OVERVIEW (portfolio-detail-overview) fields ─
+          {
+            name: 'pdSectionTitle',
+            type: 'text',
+            label: 'Section Title',
+            localized: true,
+            admin: {
+              placeholder: 'Project Overview',
+              condition: (data) => data.blockType === 'portfolio-detail-overview',
+            },
+          },
+          {
+            name: 'pdContent',
+            type: 'textarea',
+            label: 'Overview Content',
+            localized: true,
+            admin: {
+              description: 'Separate paragraphs with a blank line.',
+              condition: (data) => data.blockType === 'portfolio-detail-overview',
+            },
+          },
+          {
+            name: 'pdMetricsTitle',
+            type: 'text',
+            label: 'Metrics Sidebar Title',
+            admin: {
+              placeholder: 'Key Metrics',
+              condition: (data) => data.blockType === 'portfolio-detail-overview',
+            },
+          },
+          {
+            name: 'pdMetrics',
+            type: 'array',
+            label: 'Key Metrics',
+            admin: { condition: (data) => data.blockType === 'portfolio-detail-overview' },
+            fields: [
+              { name: 'pdMetricValue', type: 'text', label: 'Value (e.g. "500K+")' },
+              { name: 'pdMetricLabel', type: 'text', label: 'Label (e.g. "Active Users")' },
+            ],
+          },
+
+          // ── ARTICLE FEATURED (article-featured) fields ───────────────────
+          {
+            name: 'featContentSource',
+            type: 'select',
+            label: 'Content Source',
+            defaultValue: 'manual',
+            options: [
+              { label: 'Posts Collection', value: 'collection' },
+              { label: 'Manual',           value: 'manual'     },
+            ],
+            admin: { condition: (data) => data.blockType === 'article-featured' },
+          },
+          {
+            name: 'featPostSlug',
+            type: 'text',
+            label: 'Post Slug',
+            admin: {
+              description: 'Slug of the post to feature (e.g. "my-first-post").',
+              condition: (data) =>
+                data.blockType === 'article-featured' && data.featContentSource === 'collection',
+            },
           },
           ],
         },
