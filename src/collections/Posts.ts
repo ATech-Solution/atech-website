@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, PayloadRequest } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { settingsAccess } from '@/lib/access'
 
@@ -26,6 +26,27 @@ export const Posts: CollectionConfig = {
   versions: {
     maxPerDoc: 20,
   },
+  // ── Custom endpoints ───────────────────────────────────────────────────────
+  endpoints: [
+    // Payload v3 dropped /:id/versions — admin UI still calls it in some builds.
+    // Proxy to /versions?where[parent][equals]=:id so it returns the correct data.
+    {
+      method: 'get',
+      path: '/:id/versions',
+      handler: async (req: PayloadRequest) => {
+        const id = req.routeParams?.id as string
+        const searchParams = new URL(req.url).searchParams
+        searchParams.set('where[parent][equals]', id)
+        const versionsUrl = new URL(
+          `/api/posts/versions?${searchParams.toString()}`,
+          req.payload.config.serverURL || 'http://localhost:3000',
+        )
+        return fetch(versionsUrl.toString(), {
+          headers: { Authorization: req.headers.get('Authorization') ?? '' },
+        })
+      },
+    },
+  ],
   fields: [
     {
       name: 'title',
