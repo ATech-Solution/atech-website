@@ -25,6 +25,7 @@ export const ADVANCE_BLOCK_TYPES = [
   'portfolio-hero', 'portfolio-statistics', 'portfolio-main',
   'portfolio-detail-top', 'portfolio-featured-image', 'portfolio-detail-overview',
   'article-detail-hero', 'article-detail-content', 'article-related',
+  'faq-main',
 ] as const
 
 export type BasicBlockType   = typeof BASIC_BLOCK_TYPES[number]
@@ -221,6 +222,13 @@ export interface BlockOverrides {
     leadershipHeading?: string
     leadershipSubheading?: string
     teamMembers?: Array<{ memberAvatar?: MediaRef | null; memberName?: string; memberRole?: string; memberBio?: string }>
+
+    // ── FAQ Section / FAQ Main ────────────────────────────────────────────
+    faqContentSource?: 'collection' | 'manual'
+    faqCategorySlug?: string
+    faqLimit?: number
+    faqBackLabel?: string
+    faqBackUrl?: string
 
     // ── About FAQ ─────────────────────────────────────────────────────────
     faqHeading?: string

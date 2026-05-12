@@ -19,6 +19,9 @@ import {
   MissionVisionSection,
   TeamSection,
   FAQSection,
+  FAQSectionServerSection,
+  FAQMainSection,
+  FAQMainServerSection,
   PageHeroSection,
   ProjectGridSection,
   ProjectGridServerSection,
@@ -850,7 +853,13 @@ export function LayoutBlockRenderer({
     case 'team-section':
       return wrapAdvanced(<TeamSection data={data} />)
     case 'faq-section':
-      return wrapAdvanced(<FAQSection data={data} />)
+      return wrapAdvanced(
+        (data as any).faqContentSource === 'collection'
+          ? <FAQSectionServerSection data={data} />
+          : <FAQSection data={data} />
+      )
+    case 'faq-main':
+      return wrapAdvanced(<FAQMainServerSection data={data} />)
 
     case 'page-hero':
       return wrapAdvanced(<PageHeroSection data={data} />)

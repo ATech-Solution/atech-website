@@ -59,6 +59,7 @@ const CONTENT_SECTION_TYPES = [
   { label: 'Portfolio — Statistics', value: 'portfolio-statistics' },
   { label: 'Portfolio — Main Grid',  value: 'portfolio-main'       },
   { label: 'Portfolio — Grid',       value: 'project-grid'         },
+  { label: 'FAQ — Main',             value: 'faq-main'             },
 ]
 
 const GET_INVOLVED_SECTION_TYPES = [
@@ -828,26 +829,87 @@ export const Blocks: CollectionConfig = {
             ],
           },
 
-          // ── ABOUT FAQ fields ─────────────────────────────────────────────
+          // ── FAQ fields (about-faq, faq-section, faq-main) ─────────────────
+          {
+            name: 'faqContentSource',
+            type: 'select',
+            label: 'Content Source',
+            defaultValue: 'manual',
+            options: [
+              { label: 'FAQ Collection (CMS)', value: 'collection' },
+              { label: 'Manual Items',         value: 'manual'     },
+            ],
+            admin: {
+              condition: (data) => ['faq-section', 'faq-main'].includes(data.blockType),
+            },
+          },
+          {
+            name: 'faqCategorySlug',
+            type: 'text',
+            label: 'Filter by Category Slug',
+            admin: {
+              description: 'Optional: load only FAQs from this category slug (faq-section only).',
+              condition: (data) =>
+                data.blockType === 'faq-section' && data.faqContentSource === 'collection',
+            },
+          },
+          {
+            name: 'faqLimit',
+            type: 'number',
+            label: 'Items Limit',
+            defaultValue: 20,
+            admin: {
+              description: 'Max FAQ items to load from the collection.',
+              condition: (data) =>
+                ['faq-section', 'faq-main'].includes(data.blockType) &&
+                data.faqContentSource === 'collection',
+            },
+          },
+          {
+            name: 'faqBackLabel',
+            type: 'text',
+            label: 'Back Link Label',
+            admin: {
+              placeholder: 'Back to about us',
+              condition: (data) => data.blockType === 'faq-main',
+            },
+          },
+          {
+            name: 'faqBackUrl',
+            type: 'text',
+            label: 'Back Link URL',
+            admin: {
+              placeholder: '/about',
+              condition: (data) => data.blockType === 'faq-main',
+            },
+          },
           {
             name: 'faqHeading',
             type: 'text',
             label: 'Heading',
             localized: true,
-            admin: { condition: (data) => data.blockType === 'about-faq' },
+            admin: {
+              condition: (data) => ['about-faq', 'faq-section'].includes(data.blockType),
+            },
           },
           {
             name: 'faqSubheading',
             type: 'textarea',
             label: 'Subheading',
             localized: true,
-            admin: { condition: (data) => data.blockType === 'about-faq' },
+            admin: {
+              condition: (data) => ['about-faq', 'faq-section'].includes(data.blockType),
+            },
           },
           {
             name: 'faqItems',
             type: 'array',
-            label: 'FAQ Items',
-            admin: { condition: (data) => data.blockType === 'about-faq' },
+            label: 'FAQ Items (Manual Mode)',
+            admin: {
+              condition: (data) =>
+                ['about-faq', 'faq-section', 'faq-main'].includes(data.blockType) &&
+                (data.blockType === 'about-faq' || data.faqContentSource !== 'collection'),
+            },
             fields: [
               { name: 'question', type: 'text',     label: 'Question', localized: true },
               { name: 'answer',   type: 'textarea', label: 'Answer',   localized: true },
