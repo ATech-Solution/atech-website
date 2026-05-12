@@ -4,6 +4,11 @@ name: Build & Deploy
 #  Trigger
 #  dev  branch → build → deploy to UAT  (uat.atech.software)
 #  main branch → build → deploy to PROD (site TBD)
+#
+#  workflow_dispatch (manual):
+#   migrate_data=true  → copy committed data/payload.db to server
+#                        (replaces server DB — old DB is backed up)
+#   migrate_data=false → normal deploy, server DB is preserved
 # ─────────────────────────────────────────────────────────────
 on:
   push:
@@ -11,6 +16,18 @@ on:
       - main
       - dev
   workflow_dispatch:
+    inputs:
+      migrate_data:
+        description: >
+          Copy committed data/payload.db to server.
+          WARNING: replaces live server data — old DB is timestamped-backed-up first.
+          Also syncs media/ if present in the repo.
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 jobs:
 
@@ -49,8 +66,6 @@ jobs:
 
       - name: Copy public assets into standalone
         run: |
-          # npm run build already copies .next/static → standalone/.next/static
-          # (doing it again would nest it as static/static — don't repeat it)
           cp -r public/. .next/standalone/public/
 
       - name: Create deployment archive
@@ -98,6 +113,7 @@ jobs:
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
             set -e
             DEPLOY_PATH="${{ secrets.DEPLOY_PATH }}"
+            MIGRATE_DATA="${{ github.event.inputs.migrate_data || 'false' }}"
             cd "$DEPLOY_PATH"
 
             echo "==> Ensuring persistent dirs exist..."
@@ -127,18 +143,52 @@ jobs:
             fi
 
             echo "==> Symlinking persistent media into standalone/public..."
-            # Remove the empty media/ baked from the build zip, replace with a
-            # symlink to the persistent directory that survives every redeploy.
             rm -rf "$DEPLOY_PATH/standalone/public/media"
             mkdir -p "$DEPLOY_PATH/standalone/public"
             ln -sfn "$DEPLOY_PATH/media" "$DEPLOY_PATH/standalone/public/media"
 
+            # ── DB: save server DB before git reset overwrites it ───────────
+            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+            SERVER_DB="$DEPLOY_PATH/data/payload.db"
+            SAVED_DB="/tmp/server-payload-${TIMESTAMP}.db"
+            if [ -f "$SERVER_DB" ]; then
+              cp "$SERVER_DB" "$SAVED_DB"
+              echo "==> Server DB saved to $SAVED_DB"
+            else
+              echo "==> No existing server DB found (fresh deploy)"
+            fi
+
             echo "==> Pulling latest code for migrations..."
             git fetch https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ATech-Solution/atech-website.git dev
             git reset --hard FETCH_HEAD
+            # NOTE: git reset --hard restores data/payload.db to the committed
+            # version. Below we either keep it (migrate) or restore the server DB.
 
             echo "==> Installing dependencies..."
             npm install --ignore-scripts
+
+            # ── DB: decide which database to use ────────────────────────────
+            if [ "$MIGRATE_DATA" = "true" ]; then
+              echo "==> DATA MIGRATION: using committed dev DB (replacing server data)"
+              if [ -f "$SAVED_DB" ]; then
+                BACKUP="$DEPLOY_PATH/data/payload.db.server-backup.${TIMESTAMP}"
+                cp "$SAVED_DB" "$BACKUP"
+                echo "==> Old server DB preserved at $BACKUP"
+              fi
+              echo "==> Dev DB from git is now active at $SERVER_DB"
+            else
+              echo "==> Normal deploy: restoring persistent server DB..."
+              if [ -f "$SAVED_DB" ]; then
+                cp "$SAVED_DB" "$SERVER_DB"
+                echo "==> Server DB restored from $SAVED_DB"
+              else
+                echo "==> Starting with fresh DB (no prior server DB existed)"
+              fi
+              rm -f "$SAVED_DB"
+            fi
+
+            # ── Prune old server-backup files (keep last 5) ─────────────────
+            ls -t "$DEPLOY_PATH/data/payload.db.server-backup."* 2>/dev/null | tail -n +6 | xargs rm -f || true
 
             echo "==> Running database migrations..."
             set +e
@@ -212,6 +262,7 @@ jobs:
           ssh ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} << 'ENDSSH'
             set -e
             DEPLOY_PATH="${{ secrets.PROD_DEPLOY_PATH }}"
+            MIGRATE_DATA="${{ github.event.inputs.migrate_data || 'false' }}"
             cd "$DEPLOY_PATH"
 
             echo "==> Ensuring persistent dirs exist..."
@@ -245,12 +296,46 @@ jobs:
             mkdir -p "$DEPLOY_PATH/standalone/public"
             ln -sfn "$DEPLOY_PATH/media" "$DEPLOY_PATH/standalone/public/media"
 
+            # ── DB: save server DB before git reset overwrites it ───────────
+            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+            SERVER_DB="$DEPLOY_PATH/data/payload.db"
+            SAVED_DB="/tmp/server-payload-${TIMESTAMP}.db"
+            if [ -f "$SERVER_DB" ]; then
+              cp "$SERVER_DB" "$SAVED_DB"
+              echo "==> Server DB saved to $SAVED_DB"
+            else
+              echo "==> No existing server DB found (fresh deploy)"
+            fi
+
             echo "==> Pulling latest code for migrations..."
             git fetch https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ATech-Solution/atech-website.git main
             git reset --hard FETCH_HEAD
 
             echo "==> Installing dependencies..."
             npm install --ignore-scripts
+
+            # ── DB: decide which database to use ────────────────────────────
+            if [ "$MIGRATE_DATA" = "true" ]; then
+              echo "==> DATA MIGRATION: using committed dev DB (replacing server data)"
+              if [ -f "$SAVED_DB" ]; then
+                BACKUP="$DEPLOY_PATH/data/payload.db.server-backup.${TIMESTAMP}"
+                cp "$SAVED_DB" "$BACKUP"
+                echo "==> Old server DB preserved at $BACKUP"
+              fi
+              echo "==> Dev DB from git is now active at $SERVER_DB"
+            else
+              echo "==> Normal deploy: restoring persistent server DB..."
+              if [ -f "$SAVED_DB" ]; then
+                cp "$SAVED_DB" "$SERVER_DB"
+                echo "==> Server DB restored from $SAVED_DB"
+              else
+                echo "==> Starting with fresh DB (no prior server DB existed)"
+              fi
+              rm -f "$SAVED_DB"
+            fi
+
+            # ── Prune old server-backup files (keep last 5) ─────────────────
+            ls -t "$DEPLOY_PATH/data/payload.db.server-backup."* 2>/dev/null | tail -n +6 | xargs rm -f || true
 
             echo "==> Running database migrations..."
             set +e
@@ -277,6 +362,13 @@ jobs:
             NEXT_PUBLIC_DOMAIN_PROD="${{ secrets.PROD_SITE_URL }}" \
             PAYLOAD_PUBLIC_SERVER_URL="${{ secrets.PROD_SITE_URL }}" \
             PAYLOAD_PUBLIC_SERVER_URL_PROD="${{ secrets.PROD_SITE_URL }}" \
+            AWS_SES_SMTP_HOST="${{ secrets.AWS_SES_SMTP_HOST }}" \
+            AWS_SES_SMTP_PORT="${{ secrets.AWS_SES_SMTP_PORT }}" \
+            AWS_SES_SMTP_USER="${{ secrets.AWS_SES_SMTP_USER }}" \
+            AWS_SES_SMTP_PASSWORD="${{ secrets.AWS_SES_SMTP_PASSWORD }}" \
+            EMAIL_FROM="${{ secrets.EMAIL_FROM }}" \
+            EMAIL_FROM_NAME="${{ secrets.EMAIL_FROM_NAME }}" \
+            ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}" \
             pm2 start "$DEPLOY_PATH/standalone/server.js" \
               --name "atech-website-prod" \
               --cwd "$DEPLOY_PATH/standalone"
