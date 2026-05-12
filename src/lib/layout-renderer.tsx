@@ -47,6 +47,8 @@ import {
   ArticleRelatedSection,
   PortfolioHeroSection,
   PortfolioStatisticsSection,
+  PortfolioMainSection,
+  PortfolioMainServerSection,
 } from '@/components/block'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -888,6 +890,8 @@ export function LayoutBlockRenderer({
       return wrapAdvanced(<PortfolioHeroSection data={data} />)
     case 'portfolio-statistics':
       return wrapAdvanced(<PortfolioStatisticsSection data={data} />)
+    case 'portfolio-main':
+      return wrapAdvanced(<PortfolioMainServerSection data={data} />)
 
     // ── Portfolio Detail Sections ────────────────────────────────────────────
     case 'portfolio-detail-top':

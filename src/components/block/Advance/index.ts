@@ -40,3 +40,5 @@ export { default as ArticleDetailContentSection      } from './ArticleDetailCont
 export { default as ArticleRelatedSection            } from './ArticleRelatedSection'
 export { default as PortfolioHeroSection             } from './PortfolioHeroSection'
 export { default as PortfolioStatisticsSection       } from './PortfolioStatisticsSection'
+export { default as PortfolioMainSection             } from './PortfolioMainSection'
+export { PortfolioMainServerSection                  } from './PortfolioMainSection'

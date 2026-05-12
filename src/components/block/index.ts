@@ -42,6 +42,8 @@ export {
   ArticleRelatedSection,
   PortfolioHeroSection,
   PortfolioStatisticsSection,
+  PortfolioMainSection,
+  PortfolioMainServerSection,
 } from './Advance'
 
 // ── Service Page Sections ────────────────────────────────────────────────────

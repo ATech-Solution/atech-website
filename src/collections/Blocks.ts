@@ -57,6 +57,7 @@ const CONTENT_SECTION_TYPES = [
   { label: 'Article — Grid',     value: 'article-grid' },
   { label: 'Portfolio — Hero',       value: 'portfolio-hero'       },
   { label: 'Portfolio — Statistics', value: 'portfolio-statistics' },
+  { label: 'Portfolio — Main Grid',  value: 'portfolio-main'       },
   { label: 'Portfolio — Grid',       value: 'project-grid'         },
 ]
 
@@ -901,7 +902,7 @@ export const Blocks: CollectionConfig = {
               { label: 'Yes', value: 'yes' },
               { label: 'No',  value: 'no'  },
             ],
-            admin: { condition: (data) => data.blockType === 'project-grid' },
+            admin: { condition: (data) => data.blockType === 'project-grid' || data.blockType === 'portfolio-main' },
           },
           {
             name: 'projectContentSource',
@@ -912,7 +913,7 @@ export const Blocks: CollectionConfig = {
               { label: 'Portfolio Collection (CMS)', value: 'collection' },
               { label: 'Manual Items',               value: 'manual'     },
             ],
-            admin: { condition: (data) => data.blockType === 'project-grid' },
+            admin: { condition: (data) => data.blockType === 'project-grid' || data.blockType === 'portfolio-main' },
           },
           {
             name: 'projectLimit',
@@ -921,7 +922,7 @@ export const Blocks: CollectionConfig = {
             defaultValue: 9,
             admin: {
               description: 'Max portfolio items to load from the collection.',
-              condition: (data) => data.blockType === 'project-grid' && data.projectContentSource === 'collection',
+              condition: (data) => (data.blockType === 'project-grid' || data.blockType === 'portfolio-main') && data.projectContentSource === 'collection',
             },
           },
           {
@@ -930,7 +931,7 @@ export const Blocks: CollectionConfig = {
             label: 'Filter by Category Slug',
             admin: {
               description: 'Optional: show only items from this portfolio-category slug.',
-              condition: (data) => data.blockType === 'project-grid' && data.projectContentSource === 'collection',
+              condition: (data) => (data.blockType === 'project-grid' || data.blockType === 'portfolio-main') && data.projectContentSource === 'collection',
             },
           },
           {
@@ -943,7 +944,7 @@ export const Blocks: CollectionConfig = {
               { label: 'Oldest First', value: 'publishedAt_asc'  },
             ],
             admin: {
-              condition: (data) => data.blockType === 'project-grid' && data.projectContentSource === 'collection',
+              condition: (data) => (data.blockType === 'project-grid' || data.blockType === 'portfolio-main') && data.projectContentSource === 'collection',
             },
           },
           // Localized fields AFTER non-localized
@@ -952,14 +953,14 @@ export const Blocks: CollectionConfig = {
             type: 'text',
             label: 'Heading',
             localized: true,
-            admin: { condition: (data) => data.blockType === 'project-grid' },
+            admin: { condition: (data) => data.blockType === 'project-grid' || data.blockType === 'portfolio-main' },
           },
           {
             name: 'projectSubheading',
             type: 'textarea',
             label: 'Subheading',
             localized: true,
-            admin: { condition: (data) => data.blockType === 'project-grid' },
+            admin: { condition: (data) => data.blockType === 'project-grid' || data.blockType === 'portfolio-main' },
           },
           {
             name: 'projectItems',

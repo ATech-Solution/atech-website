@@ -22,7 +22,7 @@ export const ADVANCE_BLOCK_TYPES = [
   'contact-hero', 'contact-stats', 'locations',
   'featured-case-study',
   'partnership',
-  'portfolio-hero', 'portfolio-statistics',
+  'portfolio-hero', 'portfolio-statistics', 'portfolio-main',
   'portfolio-detail-top', 'portfolio-featured-image', 'portfolio-detail-overview',
   'article-detail-hero', 'article-detail-content', 'article-related',
 ] as const
