@@ -446,6 +446,26 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
         },
       }
 
+    case 'faq-main':
+      return {
+        content: {
+          faqContentSource: 'collection' as const,
+          faqLimit: 100,
+          faqBackLabel: 'Back',
+          faqBackUrl: undefined,
+        },
+      }
+
+    case 'breadcrumb':
+      return {
+        content: {
+          breadcrumbs: [
+            { bcLabel: 'Home', bcHref: '/' },
+            { bcLabel: 'Page', bcHref: null },
+          ],
+        },
+      }
+
     case 'partnership':
       return {
         content: {

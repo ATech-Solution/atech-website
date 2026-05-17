@@ -36,6 +36,8 @@ import {
   LocationsSection,
   FeaturedCaseStudySection,
   PartnershipSection,
+  FAQMainSection,
+  BreadcrumbSection,
 } from '@/components/block'
 
 // ── CSS custom property injection ─────────────────────────────────────────────
@@ -199,6 +201,10 @@ export function resolvePreviewComponent(
       return withStyle(<FeaturedCaseStudySection data={data as any} />, blockStyle)
     case 'partnership':
       return withStyle(<PartnershipSection data={data as any} />, blockStyle)
+    case 'faq-main':
+      return withStyle(<FAQMainSection data={data as any} />, blockStyle)
+    case 'breadcrumb':
+      return withStyle(<BreadcrumbSection data={data as any} />, blockStyle)
 
     // ── Basic blocks — inline previews ────────────────────────────────────────
     case 'heading':

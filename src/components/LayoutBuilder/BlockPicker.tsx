@@ -36,6 +36,7 @@ const BLOCK_ICONS: Record<string, string> = {
   'article-detail-content': '📄',
   'article-related': '🔗',
   'faq-main': '❓',
+  'breadcrumb': '›',
 }
 
 const BLOCK_LABELS: Record<string, string> = {
@@ -70,6 +71,7 @@ const BLOCK_LABELS: Record<string, string> = {
   'article-detail-content': 'Article — Content',
   'article-related': 'Article — Related',
   'faq-main': 'FAQ — Main',
+  'breadcrumb': 'Breadcrumb',
 }
 
 export function BlockPicker({ onAdd }: BlockPickerProps) {

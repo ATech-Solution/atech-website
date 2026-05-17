@@ -26,6 +26,7 @@ export const ADVANCE_BLOCK_TYPES = [
   'portfolio-detail-top', 'portfolio-featured-image', 'portfolio-detail-overview',
   'article-detail-hero', 'article-detail-content', 'article-related',
   'faq-main',
+  'breadcrumb',
 ] as const
 
 export type BasicBlockType   = typeof BASIC_BLOCK_TYPES[number]

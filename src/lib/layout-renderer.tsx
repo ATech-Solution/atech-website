@@ -52,6 +52,7 @@ import {
   PortfolioStatisticsSection,
   PortfolioMainSection,
   PortfolioMainServerSection,
+  BreadcrumbSection,
 } from '@/components/block'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -921,6 +922,9 @@ export function LayoutBlockRenderer({
     // ── Service Page Sections ────────────────────────────────────────────────
     case 'web-dev-hero':
       return wrapAdvanced(<WebDevHeroSection data={data} />)
+
+    case 'breadcrumb':
+      return wrapAdvanced(<BreadcrumbSection data={data} />)
 
     default:
       return (

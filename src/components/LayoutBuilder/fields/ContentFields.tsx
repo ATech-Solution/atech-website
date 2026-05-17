@@ -1802,6 +1802,84 @@ function LocationsFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =>
   )
 }
 
+function FAQMainFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const source  = ov.faqContentSource ?? 'collection'
+  const items: any[] = ov.faqItems ?? []
+  return (
+    <>
+      <Field label="Content Source">
+        <select
+          className="lb-input"
+          value={source}
+          onChange={(e) => set('faqContentSource', e.target.value)}
+        >
+          <option value="collection">CMS Collection</option>
+          <option value="manual">Manual Items</option>
+        </select>
+      </Field>
+
+      {source === 'collection' && (
+        <Field label="Limit">
+          <input
+            className="lb-input"
+            type="number"
+            min={1}
+            max={500}
+            value={ov.faqLimit ?? 100}
+            onChange={(e) => set('faqLimit', Number(e.target.value))}
+          />
+        </Field>
+      )}
+
+      {source === 'manual' && (
+        <Field label="FAQ Items">
+          <div className="lb-items">
+            {items.map((f: any, i: number) => (
+              <div key={i} className="lb-item">
+                <div className="lb-item__header">
+                  <span>FAQ {i + 1}</span>
+                  <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); set('faqItems', a) }}>✕</button>
+                </div>
+                <input className="lb-input" placeholder="Question" value={f.question ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], question: e.target.value }; set('faqItems', a) }} />
+                <textarea className="lb-input lb-input--textarea" rows={3} placeholder="Answer" value={f.answer ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], answer: e.target.value }; set('faqItems', a) }} />
+              </div>
+            ))}
+            <button className="lb-items__add" onClick={() => set('faqItems', [...items, { question: '', answer: '' }])}>+ Add FAQ</button>
+          </div>
+        </Field>
+      )}
+
+      <Field label="Back Button Label">
+        <input className="lb-input" value={ov.faqBackLabel ?? ''} onChange={(e) => set('faqBackLabel', e.target.value)} placeholder="Back" />
+      </Field>
+      <LinkField label="Back Button URL" value={ov.faqBackUrl ?? ''} onChange={(v) => set('faqBackUrl', v || null)} placeholder="/faq" />
+    </>
+  )
+}
+
+function BreadcrumbFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const breadcrumbs: any[] = ov.breadcrumbs ?? []
+  return (
+    <Field label="Breadcrumbs">
+      <div className="lb-items">
+        {breadcrumbs.map((b: any, i: number) => (
+          <div key={i} className="lb-item">
+            <div className="lb-item__header">
+              <span>Crumb {i + 1}</span>
+              <button className="lb-item__remove" onClick={() => { const a = [...breadcrumbs]; a.splice(i, 1); set('breadcrumbs', a) }}>✕</button>
+            </div>
+            <Row>
+              <input className="lb-input" placeholder="Label" value={b.bcLabel ?? ''} onChange={(e) => { const a = [...breadcrumbs]; a[i] = { ...a[i], bcLabel: e.target.value }; set('breadcrumbs', a) }} />
+              <LinkField label="URL (blank = current page)" value={b.bcHref ?? ''} onChange={(v) => { const a = [...breadcrumbs]; a[i] = { ...a[i], bcHref: v || null }; set('breadcrumbs', a) }} placeholder="/" />
+            </Row>
+          </div>
+        ))}
+        <button className="lb-items__add" onClick={() => set('breadcrumbs', [...breadcrumbs, { bcLabel: '', bcHref: '/' }])}>+ Add Crumb</button>
+      </div>
+    </Field>
+  )
+}
+
 // ── Main ContentFields ────────────────────────────────────────────────────────
 export function ContentFields({ blockType, overrides = {}, onChange }: ContentFieldsProps) {
   const ov  = overrides as any
@@ -1845,6 +1923,8 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'locations'             && <LocationsFields           ov={ov} set={set} />}
         {blockType === 'featured-case-study'   && <FeaturedCaseStudyFields   ov={ov} set={set} />}
         {blockType === 'partnership'            && <PartnershipFields         ov={ov} set={set} />}
+        {blockType === 'faq-main'              && <FAQMainFields             ov={ov} set={set} />}
+        {blockType === 'breadcrumb'             && <BreadcrumbFields          ov={ov} set={set} />}
       </div>
     )
   }

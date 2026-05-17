@@ -4,21 +4,21 @@ import React, { useState, useMemo } from 'react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface FAQCategory {
+export interface FAQCategory {
   id: string
   name: string
   title: string
   slug: string
 }
 
-interface FAQEntry {
+export interface FAQEntry {
   id?: string
   categorySlug: string
   question: string
   answer?: string
 }
 
-interface FAQMainData {
+export interface FAQMainData {
   faqContentSource?: 'collection' | 'manual'
   faqCategorySlug?: string
   faqLimit?: number
@@ -36,7 +36,7 @@ interface FAQMainClientProps {
   backUrl?: string
 }
 
-function FAQMainClient({ categories, faqs, backLabel, backUrl }: FAQMainClientProps) {
+export function FAQMainClient({ categories, faqs, backLabel, backUrl }: FAQMainClientProps) {
   const firstSlug = categories[0]?.slug ?? ''
   const [activeSlug, setActiveSlug] = useState(firstSlug)
   const [search, setSearch] = useState('')
@@ -278,68 +278,3 @@ export default function FAQMainSection({ data }: { data: FAQMainData }) {
   )
 }
 
-// ─── Async server export (layout renderer — fetches from CMS) ─────────────────
-
-async function fetchFAQData(data: FAQMainData): Promise<{ categories: FAQCategory[]; faqs: FAQEntry[] }> {
-  const baseUrl = process.env.NEXT_PUBLIC_DOMAIN ?? 'http://localhost:3000'
-
-  try {
-    const [catsRes, faqsRes] = await Promise.all([
-      fetch(`${baseUrl}/api/faq-categories?limit=100&sort=createdAt`, { next: { revalidate: 60 } }),
-      fetch(`${baseUrl}/api/faqs?limit=${data.faqLimit ?? 100}&sort=order&depth=1`, { next: { revalidate: 60 } }),
-    ])
-
-    const [catsData, faqsData] = await Promise.all([catsRes.json(), faqsRes.json()])
-
-    const categories: FAQCategory[] = (catsData.docs ?? []).map((c: any) => ({
-      id: String(c.id),
-      name: c.name ?? '',
-      title: c.title ?? c.name ?? '',
-      slug: c.slug ?? '',
-    }))
-
-    const faqs: FAQEntry[] = (faqsData.docs ?? []).map((f: any) => ({
-      id: String(f.id),
-      categorySlug: f.category?.slug ?? '',
-      question: f.question ?? '',
-      answer: f.answer ?? '',
-    }))
-
-    return { categories, faqs }
-  } catch {
-    return { categories: [], faqs: [] }
-  }
-}
-
-export async function FAQMainServerSection({ data }: { data: FAQMainData }) {
-  const isCollection = (data.faqContentSource ?? 'manual') === 'collection'
-
-  let categories: FAQCategory[] = []
-  let faqs: FAQEntry[] = []
-
-  if (isCollection) {
-    const result = await fetchFAQData(data)
-    categories = result.categories
-    faqs = result.faqs
-  } else {
-    // Manual mode — build a flat list without sidebar
-    faqs = (data.faqItems ?? []).map((it, i) => ({
-      id: String(i),
-      categorySlug: 'manual',
-      question: it.question ?? '',
-      answer: it.answer,
-    }))
-    if (faqs.length > 0) {
-      categories = [{ id: 'manual', name: 'General', title: 'FAQs', slug: 'manual' }]
-    }
-  }
-
-  return (
-    <FAQMainClient
-      categories={categories}
-      faqs={faqs}
-      backLabel={data.faqBackLabel}
-      backUrl={data.faqBackUrl}
-    />
-  )
-}
