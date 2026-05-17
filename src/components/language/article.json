@@ -13,7 +13,7 @@
       "title": "The Future of AI in Enterprise Software Development",
       "description": "Explore how artificial intelligence and machine learning are revolutionizing enterprise software development, from automated code generation to intelligent testing frameworks and predictive analytics.",
       "ctaLabel": "Read Full Article",
-      "ctaUrl": "/article-detail"
+      "ctaUrl": "/static/article-detail"
     },
     "articles": {
       "sectionLabel": "Latest Articles",
@@ -24,7 +24,7 @@
           "title": "Building Scalable Microservices Architecture",
           "description": "Learn best practices for designing and implementing microservices architecture that scales with your business growth and handles millions of requests.",
           "ctaLabel": "Read More",
-          "ctaUrl": "/article-detail"
+          "ctaUrl": "/static/article-detail"
         },
         {
           "category": "Mobile Apps",
@@ -32,7 +32,7 @@
           "title": "Cross-Platform Development: React Native vs Flutter",
           "description": "A comprehensive comparison of the two leading cross-platform frameworks, helping you choose the right technology stack for your next project.",
           "ctaLabel": "Read More",
-          "ctaUrl": "/article-detail"
+          "ctaUrl": "/static/article-detail"
         },
         {
           "category": "Cloud Solutions",
@@ -40,7 +40,7 @@
           "title": "AWS vs Azure vs Google Cloud: 2025 Comparison",
           "description": "An in-depth analysis of the three major cloud providers, comparing features, pricing, and performance to help you make an informed decision.",
           "ctaLabel": "Read More",
-          "ctaUrl": "/article-detail"
+          "ctaUrl": "/static/article-detail"
         },
         {
           "category": "Cybersecurity",
@@ -48,7 +48,7 @@
           "title": "Zero Trust Security Model Implementation Guide",
           "description": "Discover how to implement a zero trust security architecture in your organization to protect against modern cyber threats and data breaches.",
           "ctaLabel": "Read More",
-          "ctaUrl": "/article-detail"
+          "ctaUrl": "/static/article-detail"
         },
         {
           "category": "DevOps",
@@ -56,7 +56,7 @@
           "title": "CI/CD Pipeline Best Practices for 2025",
           "description": "Master the art of continuous integration and deployment with modern tools and strategies that accelerate software delivery without compromising quality.",
           "ctaLabel": "Read More",
-          "ctaUrl": "/article-detail"
+          "ctaUrl": "/static/article-detail"
         },
         {
           "category": "Case Studies",
@@ -64,7 +64,7 @@
           "title": "How We Reduced Server Costs by 60% for a FinTech Client",
           "description": "A detailed case study showing how we optimized infrastructure and implemented cost-saving strategies for a major financial technology company.",
           "ctaLabel": "Read More",
-          "ctaUrl": "/article-detail"
+          "ctaUrl": "/static/article-detail"
         },
         {
           "category": "AI & Machine Learning",
@@ -72,7 +72,7 @@
           "title": "Natural Language Processing in Customer Service",
           "description": "Explore how NLP and conversational AI are transforming customer support, reducing response times, and improving customer satisfaction.",
           "ctaLabel": "Read More",
-          "ctaUrl": "/article-detail"
+          "ctaUrl": "/static/article-detail"
         },
         {
           "category": "Web Development",
@@ -80,7 +80,7 @@
           "title": "Progressive Web Apps: The Future of Web Development",
           "description": "Discover why progressive web apps are becoming the preferred approach for delivering fast, reliable, and engaging web experiences across all devices.",
           "ctaLabel": "Read More",
-          "ctaUrl": "/article-detail"
+          "ctaUrl": "/static/article-detail"
         }
       ]
     },

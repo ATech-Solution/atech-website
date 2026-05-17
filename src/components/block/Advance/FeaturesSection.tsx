@@ -91,48 +91,62 @@ export default function FeaturesSection({ data }: { data: FeaturesSectionData })
   const pillars  = data.pillars ?? []
   const isLight  = data.featuresTheme === 'light'
   const cols     = data.featuresColumns ?? 3
+  const gridCols = `grid-cols-1 ${cols === 2 ? 'md:grid-cols-2' : cols >= 4 ? 'md:grid-cols-4' : 'md:grid-cols-3'}`
 
-  const sectionStyle = isLight
-    ? { background: 'var(--color-bg, #ffffff)' }
-    : { background: 'var(--color-bg, #292929)', borderTop: '1px solid var(--color-border, #383838)' }
+  // ── Light theme ──────────────────────────────────────────────────────────
+  if (isLight) {
+    return (
+      <section className="py-24 px-6 md:px-10" style={{ background: '#ffffff' }}>
+        <div className="mx-auto" style={{ maxWidth: '1280px' }}>
+          {(data.heading || data.description) && (
+            <div className="flex flex-col gap-6 items-center w-full mb-16">
+              {data.heading && (
+                <h2 className="text-center w-full" style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '2.25rem', fontWeight: 400, color: '#171717', lineHeight: '40px' }}>
+                  {data.heading}
+                </h2>
+              )}
+              {data.description && (
+                <p className="text-center leading-[28px]" style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.125rem', color: '#525252', maxWidth: '768px', marginLeft: 'auto', marginRight: 'auto' }}>
+                  {data.description}
+                </p>
+              )}
+            </div>
+          )}
+          {pillars.length > 0 && (
+            <div className={`grid ${gridCols} gap-8`}>
+              {pillars.map((pillar, i) => <PillarCardLight key={i} pillar={pillar} />)}
+            </div>
+          )}
+        </div>
+      </section>
+    )
+  }
 
-  const headingColor = isLight ? 'var(--color-text, #171717)' : 'var(--color-text, #fafafa)'
-  const descColor    = isLight ? 'var(--color-muted, #525252)' : 'var(--color-muted, #525252)'
-  const gridCols     = `grid-cols-1 ${cols === 2 ? 'md:grid-cols-2' : cols >= 4 ? 'md:grid-cols-4' : 'md:grid-cols-3'}`
-
+  // ── Dark theme — outer #41403f frame + inner #292929 card (Figma 1:26467) ─
   return (
-    <section className="py-24" style={{ ...sectionStyle, paddingTop: 'var(--section-padding-y, 96px)', paddingBottom: 'var(--section-padding-y, 96px)' }}>
-      <div className="mx-auto px-6 md:px-10" style={{ maxWidth: 'var(--content-max-width, 1280px)' }}>
-        {(data.heading || data.description) && (
-          <div className="flex flex-col gap-6 items-center w-full mb-16">
-            {data.heading && (
-              <h2
-                className="text-center w-full"
-                style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '2.25rem', fontWeight: 400, color: headingColor, lineHeight: '40px' }}
-              >
-                {data.heading}
-              </h2>
-            )}
-            {data.description && (
-              <p
-                className="text-center leading-[28px]"
-                style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: isLight ? '1.125rem' : '1.25rem', color: isLight ? descColor : '#fafafa', maxWidth: '768px', marginLeft: 'auto', marginRight: 'auto' }}
-              >
-                {data.description}
-              </p>
-            )}
-          </div>
-        )}
-
-        {pillars.length > 0 && (
-          <div className={`grid ${gridCols} gap-8`}>
-            {pillars.map((pillar, i) => (
-              isLight
-                ? <PillarCardLight key={i} pillar={pillar} />
-                : <PillarCard key={i} pillar={pillar} />
-            ))}
-          </div>
-        )}
+    <section className="py-24 px-5 md:px-20" style={{ background: '#41403f' }}>
+      <div className="p-10 md:p-20" style={{ background: '#292929' }}>
+        <div className="mx-auto flex flex-col gap-16 px-6" style={{ maxWidth: '1280px' }}>
+          {(data.heading || data.description) && (
+            <div className="flex flex-col gap-6 items-center w-full">
+              {data.heading && (
+                <h2 className="text-center w-full" style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '2.25rem', fontWeight: 400, color: '#fafafa', lineHeight: '40px' }}>
+                  {data.heading}
+                </h2>
+              )}
+              {data.description && (
+                <p className="text-center leading-[28px]" style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.25rem', color: '#fafafa', maxWidth: '768px', marginLeft: 'auto', marginRight: 'auto' }}>
+                  {data.description}
+                </p>
+              )}
+            </div>
+          )}
+          {pillars.length > 0 && (
+            <div className={`grid ${gridCols} gap-8`}>
+              {pillars.map((pillar, i) => <PillarCard key={i} pillar={pillar} />)}
+            </div>
+          )}
+        </div>
       </div>
     </section>
   )

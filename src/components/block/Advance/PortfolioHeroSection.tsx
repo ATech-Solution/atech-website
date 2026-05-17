@@ -23,7 +23,7 @@ export default function PortfolioHeroSection({ data }: PortfolioHeroSectionProps
     portfolioHeroCtaPrimaryLabel   = 'View Projects',
     portfolioHeroCtaPrimaryUrl     = '#projects',
     portfolioHeroCtaSecondaryLabel = 'Start Your Project',
-    portfolioHeroCtaSecondaryUrl   = '/contact',
+    portfolioHeroCtaSecondaryUrl   = '/static/contact',
   } = data
 
   return (

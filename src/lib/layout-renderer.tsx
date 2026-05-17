@@ -8,6 +8,7 @@ import {
   FeaturesSection,
   ServicesSection,
   TestimonialsSection,
+  TestimonialsSectionServerSection,
   ContactSection,
   CTABannerSection,
   ProcessStepsSection,
@@ -832,7 +833,11 @@ export function LayoutBlockRenderer({
     case 'services':
       return wrapAdvanced(<ServicesSection data={data} />)
     case 'testimonials':
-      return wrapAdvanced(<TestimonialsSection data={data} />)
+      return wrapAdvanced(
+        (data as any).testimonialsContentSource === 'collection'
+          ? <TestimonialsSectionServerSection data={data} />
+          : <TestimonialsSection data={data} />
+      )
     case 'contact':
       return wrapAdvanced(<ContactSection data={data} />)
     case 'card-grid':
@@ -861,6 +866,13 @@ export function LayoutBlockRenderer({
       )
     case 'faq-main':
       return wrapAdvanced(<FAQMainServerSection data={data} />)
+
+    case 'home-testimonials':
+      return wrapAdvanced(
+        (data as any).testimonialsContentSource === 'collection'
+          ? <TestimonialsSectionServerSection data={data} />
+          : <TestimonialsSection data={data} />
+      )
 
     case 'page-hero':
       return wrapAdvanced(<PageHeroSection data={data} />)

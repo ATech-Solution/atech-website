@@ -585,6 +585,36 @@ export const Blocks: CollectionConfig = {
 
           // ── HOME TESTIMONIALS fields ─────────────────────────────────────
           {
+            name: 'testimonialsContentSource',
+            type: 'select',
+            label: 'Content Source',
+            defaultValue: 'manual',
+            options: [
+              { label: 'Testimonials Collection (CMS)', value: 'collection' },
+              { label: 'Manual Items',                  value: 'manual'     },
+            ],
+            admin: { condition: (data) => data.blockType === 'home-testimonials' },
+          },
+          {
+            name: 'testimonialsLimit',
+            type: 'number',
+            label: 'Items Limit',
+            defaultValue: 9,
+            admin: {
+              description: 'Max testimonials to load from the collection.',
+              condition: (data) =>
+                data.blockType === 'home-testimonials' &&
+                data.testimonialsContentSource === 'collection',
+            },
+          },
+          {
+            name: 'enableCarousel',
+            type: 'checkbox',
+            label: 'Enable Slide Carousel',
+            defaultValue: false,
+            admin: { condition: (data) => data.blockType === 'home-testimonials' },
+          },
+          {
             name: 'testimonialItems',
             type: 'array',
             label: 'Testimonials',
@@ -595,7 +625,11 @@ export const Blocks: CollectionConfig = {
               quote:         t.quote,
               rating:        t.rating,
             })),
-            admin: { condition: (data) => data.blockType === 'home-testimonials' },
+            admin: {
+              condition: (data) =>
+                data.blockType === 'home-testimonials' &&
+                (data.testimonialsContentSource ?? 'manual') !== 'collection',
+            },
             fields: [
               { name: 'clientName',    type: 'text',     label: 'Name' },
               { name: 'clientRole',    type: 'text',     label: 'Role' },
@@ -1067,7 +1101,7 @@ export const Blocks: CollectionConfig = {
             type: 'text',
             label: 'Back Link URL',
             admin: {
-              placeholder: '/portfolio',
+              placeholder: '/static/portfolio',
               condition: (data) => data.blockType === 'portfolio-detail-top',
             },
           },
@@ -1214,7 +1248,7 @@ export const Blocks: CollectionConfig = {
             admin: { condition: (data) => data.blockType === 'portfolio-hero' },
             fields: [
               { name: 'portfolioHeroCtaSecondaryLabel', type: 'text', label: 'Secondary CTA Label', defaultValue: 'Start Your Project' },
-              { name: 'portfolioHeroCtaSecondaryUrl',   type: 'text', label: 'Secondary CTA URL',   defaultValue: '/contact' },
+              { name: 'portfolioHeroCtaSecondaryUrl',   type: 'text', label: 'Secondary CTA URL',   defaultValue: '/static/contact' },
             ],
           },
 

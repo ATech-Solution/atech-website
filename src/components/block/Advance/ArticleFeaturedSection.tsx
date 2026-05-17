@@ -193,9 +193,13 @@ export default function ArticleFeaturedSection({ data }: { data: ArticleFeatured
 // ── Server export: async — fetches post from collection when source='collection' ─
 
 export async function ArticleFeaturedServerSection({ data }: { data: ArticleFeaturedData }) {
-  let post: FeaturedPost | null = null
-  if ((data.featContentSource ?? 'manual') === 'collection' && data.featPostSlug) {
-    post = await fetchFeaturedPost(data.featPostSlug)
+  try {
+    let post: FeaturedPost | null = null
+    if ((data.featContentSource ?? 'manual') === 'collection' && data.featPostSlug) {
+      post = await fetchFeaturedPost(data.featPostSlug)
+    }
+    return <FeaturedArticleLayout data={data} post={post} />
+  } catch {
+    return <FeaturedArticleLayout data={data} />
   }
-  return <FeaturedArticleLayout data={data} post={post} />
 }

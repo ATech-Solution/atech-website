@@ -7,7 +7,7 @@
       "subheading": "Explore our collection of impactful projects delivered across industries, showcasing our expertise in building scalable, innovative digital solutions.",
       "cta": {
         "primary": { "label": "View Projects", "url": "#projects" },
-        "secondary": { "label": "Start Your Project", "url": "/contact" }
+        "secondary": { "label": "Start Your Project", "url": "/static/contact" }
       },
       "stats": [
         { "value": "150+", "label": "Projects Completed" },
@@ -27,7 +27,7 @@
           "title": "PayFlow Banking",
           "description": "Next-generation mobile banking platform with AI-powered insights and seamless transactions.",
           "ctaLabel": "View Case Study",
-          "ctaUrl": "/portfolio-detail"
+          "ctaUrl": "/static/portfolio-detail"
         },
         {
           "tag": "E-commerce",
@@ -35,7 +35,7 @@
           "title": "Urban Fashion Hub",
           "description": "Multi-vendor marketplace connecting fashion brands with global customers.",
           "ctaLabel": "View Case Study",
-          "ctaUrl": "/portfolio-detail"
+          "ctaUrl": "/static/portfolio-detail"
         },
         {
           "tag": "HealthTech",
@@ -43,7 +43,7 @@
           "title": "MedConnect Platform",
           "description": "Telemedicine platform enabling seamless patient-doctor consultations and health monitoring.",
           "ctaLabel": "View Case Study",
-          "ctaUrl": "/portfolio-detail"
+          "ctaUrl": "/static/portfolio-detail"
         },
         {
           "tag": "EdTech",
@@ -51,7 +51,7 @@
           "title": "LearnPath LMS",
           "description": "Interactive learning management system with real-time progress tracking and adaptive content.",
           "ctaLabel": "View Case Study",
-          "ctaUrl": "/portfolio-detail"
+          "ctaUrl": "/static/portfolio-detail"
         },
         {
           "tag": "SaaS",
@@ -59,7 +59,7 @@
           "title": "WorkFlow Pro",
           "description": "Enterprise workflow automation platform that streamlines operations and boosts team productivity.",
           "ctaLabel": "View Case Study",
-          "ctaUrl": "/portfolio-detail"
+          "ctaUrl": "/static/portfolio-detail"
         },
         {
           "tag": "Logistics",
@@ -67,14 +67,14 @@
           "title": "DeliverEase",
           "description": "Real-time last-mile delivery tracking platform connecting merchants, couriers, and customers.",
           "ctaLabel": "View Case Study",
-          "ctaUrl": "/portfolio-detail"
+          "ctaUrl": "/static/portfolio-detail"
         }
       ]
     },
     "cta": {
       "heading": "Ready to Build Your Next Success Story?",
       "subheading": "Join 150+ companies who have transformed their business with our technology solutions.",
-      "button": { "label": "Start Your Project", "url": "/contact" },
+      "button": { "label": "Start Your Project", "url": "/static/contact" },
       "stats": [
         { "value": "150+", "label": "Projects Delivered" },
         { "value": "98%",  "label": "Client Satisfaction" },

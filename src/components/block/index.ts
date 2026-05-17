@@ -4,6 +4,7 @@ export {
   FeaturesSection,
   ServicesSection,
   TestimonialsSection,
+  TestimonialsSectionServerSection,
   ContactSection,
   CTABannerSection,
   ProcessStepsSection,

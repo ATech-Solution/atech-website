@@ -502,7 +502,7 @@ export const Theme: GlobalConfig = {
                       name: 'customSolutionCtaUrl',
                       type: 'text',
                       label: 'CTA URL',
-                      defaultValue: '/contact',
+                      defaultValue: '/static/contact',
                     },
                   ],
                 },

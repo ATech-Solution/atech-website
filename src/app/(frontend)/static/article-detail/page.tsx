@@ -17,7 +17,7 @@ const CHEVRON = 'https://www.figma.com/api/mcp/asset/9379aa07-e73a-43dc-8529-4af
 const cta = {
   heading:    'Ready to Leverage AI in Your Project?',
   subheading: 'Let us help you integrate cutting-edge AI solutions into your software development workflow.',
-  button:     { label: 'Start Your Project', url: '/contact' },
+  button:     { label: 'Start Your Project', url: '/static/contact' },
   stats: [
     { value: '150+', label: 'Projects Delivered' },
     { value: '98%',  label: 'Client Satisfaction' },
@@ -37,19 +37,19 @@ const relatedArticles = [
     category: 'Cloud',
     date:     'March 12, 2025',
     title:    'Building Scalable Cloud Architecture for Enterprise Applications',
-    url:      '/article-detail',
+    url:      '/static/article-detail',
   },
   {
     category: 'Security',
     date:     'March 8, 2025',
     title:    'Cybersecurity Trends to Watch in 2025',
-    url:      '/article-detail',
+    url:      '/static/article-detail',
   },
   {
     category: 'Web Dev',
     date:     'March 5, 2025',
     title:    'Next.js 15: What\'s New and Why It Matters',
-    url:      '/article-detail',
+    url:      '/static/article-detail',
   },
 ]
 
@@ -87,10 +87,10 @@ function ArticleDetailStatic() {
           <Link href="/"        className="text-sm hover:text-[#171717] transition-colors" style={{ color: '#525252', fontFamily: 'var(--font-work-sans, sans-serif)' }}>Home</Link>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={CHEVRON} alt="" style={{ width: '7.5px', height: '12px' }} />
-          <Link href="/insight"  className="text-sm hover:text-[#171717] transition-colors" style={{ color: '#525252', fontFamily: 'var(--font-work-sans, sans-serif)' }}>Insights</Link>
+          <Link href="/static/insight"  className="text-sm hover:text-[#171717] transition-colors" style={{ color: '#525252', fontFamily: 'var(--font-work-sans, sans-serif)' }}>Insights</Link>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={CHEVRON} alt="" style={{ width: '7.5px', height: '12px' }} />
-          <Link href="/article" className="text-sm hover:text-[#171717] transition-colors" style={{ color: '#525252', fontFamily: 'var(--font-work-sans, sans-serif)' }}>Our Articles</Link>
+          <Link href="/static/article" className="text-sm hover:text-[#171717] transition-colors" style={{ color: '#525252', fontFamily: 'var(--font-work-sans, sans-serif)' }}>Our Articles</Link>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={CHEVRON} alt="" style={{ width: '7.5px', height: '12px' }} />
           <span className="text-sm" style={{ color: '#171717', fontFamily: 'var(--font-work-sans, sans-serif)' }}>The Future of AI in Software Development</span>

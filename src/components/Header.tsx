@@ -12,7 +12,7 @@ export default async function Header({ theme }: HeaderProps = {}) {
     menuItems: [],
     logo: null,
     ctaLabel: 'Get a Quote',
-    ctaUrl: '/contact',
+    ctaUrl: '/static/contact',
   }))
 
   const defaultNav: NavItem[] = [
@@ -26,7 +26,7 @@ export default async function Header({ theme }: HeaderProps = {}) {
     (nav.menuItems as any[])?.length ? (nav.menuItems as NavItem[]) : defaultNav
 
   const ctaLabel = (theme as any)?.navCtaLabel ?? (nav as any).ctaLabel ?? 'Get a Quote'
-  const ctaUrl   = (theme as any)?.navCtaUrl   ?? (nav as any).ctaUrl   ?? '/contact'
+  const ctaUrl   = (theme as any)?.navCtaUrl   ?? (nav as any).ctaUrl   ?? '/static/contact'
   const siteName = (theme as any)?.siteName ?? ''
   const logo     = (theme as any)?.logo ?? ''
 

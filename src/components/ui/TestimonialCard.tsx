@@ -1,14 +1,20 @@
-// Reusable testimonial card: avatar initials + name/role + quote + star rating.
-// Used by: TestimonialsBlock
+'use client'
 
-import { StarFilledIcon } from '@/components/icons/Icons'
+// Reusable testimonial card — Figma node 1:26605
+// Structure: [Avatar + Name/Byline] → [Quote] → [Stars]
+// Card: white bg, #e5e5e5 border, 12px radius, 33px padding, 16px gap
+
+import { useState } from 'react'
+
+// Figma star icon (imgSvg18) — used for ratings row
+const STAR_ICON = 'https://www.figma.com/api/mcp/asset/5bf4a52b-a694-42f9-9707-b7f575615006'
 
 interface TestimonialCardProps {
-  name: string
-  role?: string
+  name:     string
+  role?:    string
   company?: string
-  quote: string
-  rating?: number
+  quote:    string
+  rating?:  number
 }
 
 export default function TestimonialCard({
@@ -18,44 +24,68 @@ export default function TestimonialCard({
   quote,
   rating = 5,
 }: TestimonialCardProps) {
+  const [starErr, setStarErr] = useState(false)
+  // Figma: "[job title], Emperor Financial Group"
   const byline = [role, company].filter(Boolean).join(', ')
 
   return (
     <div
-      className="flex flex-col rounded-2xl p-8"
+      className="flex flex-col"
       style={{
-        background: '#ffffff',
-        border: '1px solid #e5e5e5',
+        background:   '#ffffff',
+        border:       '1px solid #e5e5e5',
+        borderRadius: '12px',
+        padding:      '33px',
+        gap:          '16px',
       }}
     >
-      {/* Avatar + name row */}
-      <div className="flex items-center gap-4 mb-6">
+      {/* ── Row 1: Avatar + Name/Byline ──────────────────────────────────── */}
+      <div className="flex items-center gap-4">
+        {/* Avatar — 48px circle, gold gradient, white initial letter */}
         <div
-          className="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center text-sm font-bold"
           style={{
-            background: 'linear-gradient(135deg, #ffd369, #ffb347)',
-            color: '#171717',
-            fontFamily: 'var(--font-work-sans, sans-serif)',
+            width:           48,
+            height:          48,
+            borderRadius:    '9999px',
+            flexShrink:      0,
+            background:      'linear-gradient(135deg,#ffd369,#ffb347)',
+            display:         'flex',
+            alignItems:      'center',
+            justifyContent:  'center',
+            color:           '#171717',
+            fontWeight:      700,
+            fontSize:        '16px',
+            fontFamily:      'var(--font-work-sans,sans-serif)',
           }}
         >
-          {name.charAt(0)}
+          {name.charAt(0).toUpperCase()}
         </div>
-        <div>
+
+        {/* Name + byline */}
+        <div className="flex flex-col">
+          {/* Figma: text-[#171717] text-[16px] font-normal leading-[24px] */}
           <p
-            className="text-sm font-semibold leading-tight mb-0.5"
             style={{
-              color: '#171717',
+              color:      '#171717',
+              fontSize:   '16px',
+              fontWeight: 400,
+              lineHeight: '24px',
               fontFamily: 'var(--font-work-sans, sans-serif)',
+              margin:     0,
             }}
           >
             {name}
           </p>
           {byline && (
+            /* Figma: text-[#525252] text-[14px] font-normal leading-[20px] */
             <p
-              className="text-xs"
               style={{
-                color: '#525252',
+                color:      '#525252',
+                fontSize:   '14px',
+                fontWeight: 400,
+                lineHeight: '20px',
                 fontFamily: 'var(--font-work-sans, sans-serif)',
+                margin:     0,
               }}
             >
               {byline}
@@ -64,22 +94,40 @@ export default function TestimonialCard({
         </div>
       </div>
 
-      {/* Quote */}
+      {/* ── Row 2: Quote — Figma: #525252, 16px, leading-[24px], pt-[8px] ── */}
       <p
-        className="text-sm leading-relaxed flex-1 mb-6"
         style={{
-          color: '#525252',
+          color:      '#525252',
+          fontSize:   '16px',
+          fontWeight: 400,
+          lineHeight: '24px',
           fontFamily: 'var(--font-work-sans, sans-serif)',
+          flex:       1,
+          paddingTop: '8px',
+          margin:     0,
         }}
       >
         &ldquo;{quote}&rdquo;
       </p>
 
-      {/* Stars */}
-      <div className="flex gap-1" style={{ color: '#f59e0b' }}>
-        {Array.from({ length: rating }).map((_, i) => (
-          <StarFilledIcon key={i} size={16} />
-        ))}
+      {/* ── Row 3: Stars — Figma h-[16px] w-[18px] per star icon ─────────── */}
+      <div className="flex items-center gap-1">
+        {Array.from({ length: rating }).map((_, i) =>
+          !starErr ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={i}
+              src={STAR_ICON}
+              alt=""
+              width={18}
+              height={16}
+              style={{ objectFit: 'contain' }}
+              onError={() => setStarErr(true)}
+            />
+          ) : (
+            <span key={i} style={{ color: '#f59e0b', fontSize: '16px', lineHeight: 1 }}>★</span>
+          )
+        )}
       </div>
     </div>
   )

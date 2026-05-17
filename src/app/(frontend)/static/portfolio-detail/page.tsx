@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const cta = {
   heading:    'Ready to Build Your Success Story?',
   subheading: 'Let us create a solution that transforms your business.',
-  button:     { label: 'Start Your Project', url: '/contact' },
+  button:     { label: 'Start Your Project', url: '/static/contact' },
   stats: [
     { value: '150+', label: 'Projects Delivered' },
     { value: '98%',  label: 'Client Satisfaction' },
@@ -62,7 +62,7 @@ function PortfolioDetailStatic() {
         <div className="mx-auto flex items-center gap-2" style={{ maxWidth: '1280px' }}>
           <Link href="/" className="text-sm hover:text-[#171717] transition-colors" style={{ color: '#737373', fontFamily: 'var(--font-work-sans, sans-serif)' }}>Home</Link>
           <span style={{ color: '#d4d4d4', fontSize: '0.75rem' }}>›</span>
-          <Link href="/portfolio" className="text-sm hover:text-[#171717] transition-colors" style={{ color: '#737373', fontFamily: 'var(--font-work-sans, sans-serif)' }}>Portfolio</Link>
+          <Link href="/static/portfolio" className="text-sm hover:text-[#171717] transition-colors" style={{ color: '#737373', fontFamily: 'var(--font-work-sans, sans-serif)' }}>Portfolio</Link>
           <span style={{ color: '#d4d4d4', fontSize: '0.75rem' }}>›</span>
           <span className="text-sm" style={{ color: '#171717', fontFamily: 'var(--font-work-sans, sans-serif)' }}>Case Study</span>
         </div>

@@ -558,7 +558,7 @@ function HomeServicesFields({ ov, set }: { ov: any; set: (k: string, v: unknown)
       <CtaGroup
         groupLabel="Custom Solution CTA"
         label={ov.customSolutionCtaLabel ?? ''} labelPlaceholder="Chat with us"
-        url={ov.customSolutionCtaUrl ?? ''} urlPlaceholder="/contact"
+        url={ov.customSolutionCtaUrl ?? ''} urlPlaceholder="/static/contact"
         iconValue={ov.customSolutionCtaIcon?.url ?? ''} iconPos={ov.customSolutionCtaIconPos ?? 'right'}
         onLabelChange={(v) => set('customSolutionCtaLabel', v)}
         onUrlChange={(v) => set('customSolutionCtaUrl', v)}
@@ -572,6 +572,9 @@ function HomeServicesFields({ ov, set }: { ov: any; set: (k: string, v: unknown)
 // ── Home Testimonials fields ──────────────────────────────────────────────────
 function HomeTestimonialsFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   const items: any[] = ov.testimonialItems ?? []
+  const contentSource: string = ov.testimonialsContentSource ?? 'manual'
+  const isCollection = contentSource === 'collection'
+
   return (
     <>
       <Field label="Heading">
@@ -581,31 +584,78 @@ function HomeTestimonialsFields({ ov, set }: { ov: any; set: (k: string, v: unkn
         <textarea className="lb-input lb-input--textarea" rows={2} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="What our clients say…" />
       </Field>
 
-      <Field label="Testimonials">
-        <div className="lb-items">
-          {items.map((t: any, i: number) => (
-            <div key={i} className="lb-item">
-              <div className="lb-item__header">
-                <span>Testimonial {i + 1}</span>
-                <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); set('testimonialItems', a) }}>✕</button>
-              </div>
-              <Row>
-                <input className="lb-input" placeholder="Name" value={t.clientName ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], clientName: e.target.value }; set('testimonialItems', a) }} />
-                <input className="lb-input" placeholder="Role" value={t.clientRole ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], clientRole: e.target.value }; set('testimonialItems', a) }} />
-              </Row>
-              <input className="lb-input" placeholder="Company" value={t.clientCompany ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], clientCompany: e.target.value }; set('testimonialItems', a) }} />
-              <textarea className="lb-input lb-input--textarea" rows={3} placeholder="Quote" value={t.quote ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], quote: e.target.value }; set('testimonialItems', a) }} />
-              <Row>
-                <Field label="Rating (1–5)">
-                  <input className="lb-input" type="number" min={1} max={5} value={t.rating ?? 5} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], rating: Number(e.target.value) }; set('testimonialItems', a) }} />
-                </Field>
-                <MediaField label="Avatar" value={t.avatar?.url ?? ''} onChange={(ref) => { const a = [...items]; a[i] = { ...a[i], avatar: ref }; set('testimonialItems', a) }} />
-              </Row>
-            </div>
-          ))}
-          <button className="lb-items__add" onClick={() => set('testimonialItems', [...items, { rating: 5 }])}>+ Add Testimonial</button>
-        </div>
+      {/* Content Source */}
+      <Field label="Content Source">
+        <select
+          className="lb-input"
+          value={contentSource}
+          onChange={(e) => set('testimonialsContentSource', e.target.value)}
+        >
+          <option value="manual">Manual Items</option>
+          <option value="collection">Testimonials Collection (CMS)</option>
+        </select>
       </Field>
+
+      {/* Collection mode: limit */}
+      {isCollection && (
+        <Field label="Items Limit">
+          <input
+            className="lb-input"
+            type="number"
+            min={1}
+            max={50}
+            value={ov.testimonialsLimit ?? 9}
+            onChange={(e) => set('testimonialsLimit', Number(e.target.value))}
+          />
+        </Field>
+      )}
+
+      {/* Carousel toggle */}
+      <Field label="Enable Slide Carousel">
+        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+          <input
+            type="checkbox"
+            checked={ov.enableCarousel ?? false}
+            onChange={(e) => set('enableCarousel', e.target.checked)}
+          />
+          <span style={{ fontSize: '13px' }}>Show as sliding carousel</span>
+        </label>
+      </Field>
+
+      {/* Manual items — hidden in collection mode */}
+      {!isCollection && (
+        <Field label="Testimonials">
+          <div className="lb-items">
+            {items.map((t: any, i: number) => (
+              <div key={i} className="lb-item">
+                <div className="lb-item__header">
+                  <span>Testimonial {i + 1}</span>
+                  <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); set('testimonialItems', a) }}>✕</button>
+                </div>
+                <Row>
+                  <input className="lb-input" placeholder="Name" value={t.clientName ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], clientName: e.target.value }; set('testimonialItems', a) }} />
+                  <input className="lb-input" placeholder="Role" value={t.clientRole ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], clientRole: e.target.value }; set('testimonialItems', a) }} />
+                </Row>
+                <input className="lb-input" placeholder="Company" value={t.clientCompany ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], clientCompany: e.target.value }; set('testimonialItems', a) }} />
+                <textarea className="lb-input lb-input--textarea" rows={3} placeholder="Quote" value={t.quote ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], quote: e.target.value }; set('testimonialItems', a) }} />
+                <Row>
+                  <Field label="Rating (1–5)">
+                    <input className="lb-input" type="number" min={1} max={5} value={t.rating ?? 5} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], rating: Number(e.target.value) }; set('testimonialItems', a) }} />
+                  </Field>
+                  <MediaField label="Avatar" value={t.avatar?.url ?? ''} onChange={(ref) => { const a = [...items]; a[i] = { ...a[i], avatar: ref }; set('testimonialItems', a) }} />
+                </Row>
+              </div>
+            ))}
+            <button className="lb-items__add" onClick={() => set('testimonialItems', [...items, { rating: 5 }])}>+ Add Testimonial</button>
+          </div>
+        </Field>
+      )}
+
+      {isCollection && (
+        <p style={{ fontSize: '12px', color: '#737373', margin: 0, padding: '8px 0' }}>
+          Testimonials will be pulled from the CMS Testimonials collection. Manage entries in the admin panel.
+        </p>
+      )}
     </>
   )
 }
@@ -854,7 +904,7 @@ function ServiceHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
       <CtaGroup
         groupLabel="Primary CTA"
         label={ov.ctaPrimaryLabel ?? ''} labelPlaceholder="Start Your Project"
-        url={ov.ctaPrimaryUrl ?? ''} urlPlaceholder="/contact"
+        url={ov.ctaPrimaryUrl ?? ''} urlPlaceholder="/static/contact"
         iconValue={ov.ctaPrimaryIcon?.url ?? ''} iconPos={ov.ctaPrimaryIconPos ?? 'right'}
         onLabelChange={(v) => set('ctaPrimaryLabel', v)}
         onUrlChange={(v) => set('ctaPrimaryUrl', v)}
@@ -1020,7 +1070,7 @@ function CTABannerFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =>
       <CtaGroup
         groupLabel="Button"
         label={ov.buttonLabel ?? ''} labelPlaceholder="Get Started"
-        url={ov.buttonUrl ?? ''} urlPlaceholder="/contact"
+        url={ov.buttonUrl ?? ''} urlPlaceholder="/static/contact"
         iconValue={ov.buttonIcon?.url ?? ''} iconPos={ov.buttonIconPos ?? 'right'}
         onLabelChange={(v) => set('buttonLabel', v)}
         onUrlChange={(v) => set('buttonUrl', v)}
@@ -1078,7 +1128,7 @@ function PageHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => 
       <CtaGroup
         groupLabel="Secondary CTA"
         label={ov.ctaSecondaryLabel ?? ''} labelPlaceholder="Contact Us"
-        url={ov.ctaSecondaryUrl ?? ''} urlPlaceholder="/contact"
+        url={ov.ctaSecondaryUrl ?? ''} urlPlaceholder="/static/contact"
         iconValue={ov.ctaSecondaryIcon?.url ?? ''} iconPos={ov.ctaSecondaryIconPos ?? 'right'}
         onLabelChange={(v) => set('ctaSecondaryLabel', v)}
         onUrlChange={(v) => set('ctaSecondaryUrl', v)}
@@ -1387,7 +1437,7 @@ function ArticleFeaturedFields({ ov, set }: { ov: any; set: (k: string, v: unkno
         <Field label="CTA Label">
           <input className="lb-input" value={ov.featCtaLabel ?? ''} onChange={(e) => set('featCtaLabel', e.target.value)} placeholder="Read Full Article" />
         </Field>
-        <LinkField label="CTA URL" value={ov.featCtaUrl ?? ''} onChange={(v) => set('featCtaUrl', v)} placeholder="/article-detail" />
+        <LinkField label="CTA URL" value={ov.featCtaUrl ?? ''} onChange={(v) => set('featCtaUrl', v)} placeholder="/static/article-detail" />
       </Row>
     </>
   )
@@ -1733,7 +1783,7 @@ function FeaturedCaseStudyFields({ ov, set }: { ov: any; set: (k: string, v: unk
         <Field label="CTA Label">
           <input className="lb-input" value={ov.ctaPrimaryLabel ?? ''} onChange={(e) => set('ctaPrimaryLabel', e.target.value)} placeholder="View Case Study" />
         </Field>
-        <LinkField label="CTA URL" value={ov.ctaPrimaryUrl ?? ''} onChange={(v) => set('ctaPrimaryUrl', v)} placeholder="/portfolio-detail" />
+        <LinkField label="CTA URL" value={ov.ctaPrimaryUrl ?? ''} onChange={(v) => set('ctaPrimaryUrl', v)} placeholder="/static/portfolio-detail" />
       </Row>
       <MediaField label="Client Logo" value={ov.clientLogo?.url ?? ''} onChange={(ref) => set('clientLogo', ref)} />
       <MediaField label="Case Study Image" value={ov.caseImage?.url ?? ''} onChange={(ref) => set('caseImage', ref)} />
@@ -1852,7 +1902,7 @@ function FAQMainFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => v
       <Field label="Back Button Label">
         <input className="lb-input" value={ov.faqBackLabel ?? ''} onChange={(e) => set('faqBackLabel', e.target.value)} placeholder="Back" />
       </Field>
-      <LinkField label="Back Button URL" value={ov.faqBackUrl ?? ''} onChange={(v) => set('faqBackUrl', v || null)} placeholder="/faq" />
+      <LinkField label="Back Button URL" value={ov.faqBackUrl ?? ''} onChange={(v) => set('faqBackUrl', v || null)} placeholder="/static/faq" />
     </>
   )
 }

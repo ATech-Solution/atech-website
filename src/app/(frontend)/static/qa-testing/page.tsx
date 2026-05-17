@@ -9,6 +9,7 @@ import {
   QAHeroBlock,
   QAServicesBlock,
   QAProcessBlock,
+  QACaseStudyBlock,
   QACTABlock,
   ContactBlock,
 } from '@/components/Blocks'
@@ -21,15 +22,16 @@ export const metadata: Metadata = {
 }
 
 export default function QATestingPage() {
-  const { hero, services, process, cta, contact } = content['qa-testing']
+  const { hero, services, process, caseStudy, cta, contact } = content['qa-testing']
 
   return (
     <div style={{ background: '#ffffff' }}>
-      <QAHeroBlock     data={hero}     />
-      <QAServicesBlock data={services} />
-      <QAProcessBlock  data={process}  />
-      <QACTABlock      data={cta}      />
-      <ContactBlock    data={contact}  />
+      <QAHeroBlock        data={hero}        />
+      <QAServicesBlock    data={services}    />
+      <QAProcessBlock     data={process}     />
+      <QACaseStudyBlock   data={caseStudy}   />
+      <QACTABlock         data={cta}         />
+      <ContactBlock       data={contact}     />
     </div>
   )
 }

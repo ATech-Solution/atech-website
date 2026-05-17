@@ -139,7 +139,7 @@ export const Navigation: GlobalConfig = {
       name: 'ctaUrl',
       type: 'text',
       label: 'Header CTA Button URL',
-      defaultValue: '/contact',
+      defaultValue: '/static/contact',
     },
     // ── Footer ───────────────────────────────────────────────────────────────
     {

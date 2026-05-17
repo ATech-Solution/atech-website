@@ -62,17 +62,21 @@ export default function PortfolioMainSection({ data }: { data: PortfolioMainData
 // ── Server component: fetches collection data ─────────────────────────────────
 
 export async function PortfolioMainServerSection({ data }: { data: PortfolioMainData }) {
-  const items =
-    (data.projectContentSource ?? 'collection') === 'collection'
-      ? await fetchItems(data)
-      : []
+  try {
+    const items =
+      (data.projectContentSource ?? 'collection') === 'collection'
+        ? await fetchItems(data)
+        : []
 
-  return (
-    <ProjectGridFilter
-      heading={data.projectHeading ?? 'Featured Projects'}
-      subheading={data.projectSubheading ?? 'A curated selection of our most impactful work across various industries and technologies.'}
-      items={items}
-      showCategoryFilter={(data.showCategoryFilter ?? 'yes') !== 'no'}
-    />
-  )
+    return (
+      <ProjectGridFilter
+        heading={data.projectHeading ?? 'Featured Projects'}
+        subheading={data.projectSubheading ?? 'A curated selection of our most impactful work across various industries and technologies.'}
+        items={items}
+        showCategoryFilter={(data.showCategoryFilter ?? 'yes') !== 'no'}
+      />
+    )
+  } catch {
+    return null
+  }
 }

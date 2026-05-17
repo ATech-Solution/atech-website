@@ -1,60 +1,54 @@
 // Hero section — Figma node 1:26409
-// Left: badge + heading + body + CTAs + stats bar
+// Left: heading + body + CTAs + stats bar
 // Right: hero photo + 2 floating badge cards
 
 import Link from 'next/link'
-import { ArrowIcon } from '@/components/icons/Icons'
 
 // ─── Figma asset URLs ─────────────────────────────────────────────────────────
-const DEPLOY_ICON = 'https://www.figma.com/api/mcp/asset/1ef93adc-bc6e-4a2f-b217-5ae6bd8e6851'
-const LAUNCH_ICON = 'https://www.figma.com/api/mcp/asset/bb51a93a-b966-4f73-a933-32af9f8e3ae4'
-const ARROW_ICON  = 'https://www.figma.com/api/mcp/asset/ccb53898-8bf1-4359-9707-4689784a071c'
+const DEPLOY_ICON = 'https://www.figma.com/api/mcp/asset/2183c7c2-a848-40e8-967a-114121241f24'
+const LAUNCH_ICON = 'https://www.figma.com/api/mcp/asset/c6de1bca-e571-4303-a60d-25baa93e6827'
+const ARROW_ICON  = 'https://www.figma.com/api/mcp/asset/df9193d1-129f-44fc-ae2c-a637e8f60c50'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Stat         { value: string; label: string }
 interface FloatingCard { text: string; position: string }
 interface HeroData {
-  badge: string
-  heading: string
-  body: string
+  badge?:      string
+  heading:     string
+  headingSub?: string
+  body:        string
   cta: {
     primary:   { label: string; url: string }
     secondary: { label: string; url: string }
   }
-  stats: Stat[]
-  image: { src: string; alt: string }
+  stats:        Stat[]
+  image:        { src: string; alt: string }
   floatingCards: FloatingCard[]
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function StatItem({ value, label, hasBorder }: Stat & { hasBorder: boolean }) {
+function StatItem({ value, label }: Stat) {
   return (
-    <div
-      className="flex-1"
-      style={
-        hasBorder
-          ? { paddingLeft: '1.5rem', borderLeft: '1px solid #e5e5e5' }
-          : {}
-      }
-    >
+    <div className="flex-1 flex flex-col gap-1">
       <p
-        className="leading-none mb-1"
         style={{
           fontFamily: 'var(--font-work-sans, sans-serif)',
           fontSize: '1.875rem',
-          fontWeight: 700,
+          fontWeight: 400,
+          lineHeight: '2.25rem',
           color: '#ffd369',
         }}
       >
         {value}
       </p>
       <p
-        className="text-xs tracking-wider uppercase"
         style={{
           color: '#ffd369',
           fontFamily: 'var(--font-work-sans, sans-serif)',
-          opacity: 0.85,
+          fontSize: '0.75rem',
+          letterSpacing: '0.6px',
+          textTransform: 'uppercase',
         }}
       >
         {label}
@@ -68,18 +62,18 @@ function FloatingBadgeCard({
   iconSrc,
   className,
 }: {
-  text: string
-  iconSrc: string
+  text:     string
+  iconSrc:  string
   className?: string
 }) {
   return (
     <div
-      className={`absolute flex items-center gap-3 rounded-xl px-4 py-3 z-10 ${className ?? ''}`}
+      className={`absolute flex items-center gap-4 rounded-xl px-4 py-3 z-10 ${className ?? ''}`}
       style={{
-        background: '#ffffff',
-        border: '1px solid #e5e5e5',
-        boxShadow: '0px 10px 15px -3px rgba(0,0,0,0.1), 0px 4px 6px -4px rgba(0,0,0,0.1)',
-        minWidth: '180px',
+        background:  '#ffffff',
+        border:      '1px solid #e5e5e5',
+        boxShadow:   '0px 10px 15px -3px rgba(0,0,0,0.1), 0px 4px 6px -4px rgba(0,0,0,0.1)',
+        minWidth:    '198px',
       }}
     >
       <div
@@ -90,10 +84,11 @@ function FloatingBadgeCard({
         <img src={iconSrc} alt="" className="w-4 h-4 object-contain" />
       </div>
       <p
-        className="text-sm font-medium leading-tight"
+        className="text-sm leading-tight"
         style={{
-          color: '#171717',
+          color:      '#171717',
           fontFamily: 'var(--font-work-sans, sans-serif)',
+          fontWeight: 400,
         }}
       >
         {text}
@@ -104,90 +99,109 @@ function FloatingBadgeCard({
 
 // ─── HeroBlock ────────────────────────────────────────────────────────────────
 export default function HeroBlock({ data }: { data: HeroData }) {
-  const { badge, heading, body, cta, stats, image, floatingCards } = data
+  const { badge, heading, headingSub, body, cta, stats, image, floatingCards } = data
 
   const deployCard = floatingCards.find((c) => c.position === 'top-right')
   const launchCard = floatingCards.find((c) => c.position === 'bottom-left')
 
+  const showBadge = badge && badge.trim().length > 0
+
   return (
     <section
       className="relative overflow-hidden"
-      style={{ background: 'var(--color-bg, #292929)' }}
+      style={{ background: '#292929' }}
     >
-      {/* Subtle radial gradient background */}
+      {/* Subtle radial gradient — matches Figma gradient overlay */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage:
-            "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0) 100%)",
+            'radial-gradient(ellipse 100% 100% at 50% 50%, rgba(0,0,0,0.03) 1.77%, rgba(0,0,0,0) 1.77%)',
         }}
       />
 
       <div
-        className="relative mx-auto px-6 md:px-10 py-20 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-12 items-center"
-        style={{ maxWidth: '1280px' }}
+        className="relative mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+        style={{ maxWidth: '1280px', paddingTop: '80px', paddingBottom: '80px' }}
       >
         {/* ── Left column ────────────────────────────────────────────────── */}
-        <div className="flex flex-col">
-          {/* Badge */}
-          <div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 self-start"
-            style={{
-              background: '#ffffff',
-              border: '1px solid #e5e5e5',
-            }}
-          >
-            <span
-              className="w-2 h-2 rounded-full flex-shrink-0"
-              style={{ background: '#171717' }}
-            />
-            <span
-              className="text-xs font-normal tracking-widest uppercase"
+        <div className="flex flex-col gap-[50px]">
+          <div className="flex flex-col gap-[50px]">
+            {/* Badge — only shown when non-empty */}
+            {showBadge && (
+              <div
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full self-start"
+                style={{
+                  background: '#ffffff',
+                  border:     '1px solid #e5e5e5',
+                }}
+              >
+                <span
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ background: '#171717' }}
+                />
+                <span
+                  className="text-xs font-normal tracking-widest uppercase"
+                  style={{
+                    color:      '#171717',
+                    fontFamily: 'var(--font-work-sans, sans-serif)',
+                  }}
+                >
+                  {badge}
+                </span>
+              </div>
+            )}
+
+            {/* Heading — bold main line + regular sub line (Figma: 64px bold + 48px regular) */}
+            <div className="flex flex-col" style={{ height: '104px', justifyContent: 'center' }}>
+              <p style={{ fontFamily: 'var(--font-work-sans, sans-serif)', lineHeight: '60px', fontSize: 0 }}>
+                <span
+                  style={{
+                    fontSize:   'clamp(2.5rem, 4.5vw, 4rem)',
+                    fontWeight: 700,
+                    color:      '#ffffff',
+                    display:    'inline',
+                  }}
+                >
+                  {heading}{' '}
+                </span>
+                {headingSub && (
+                  <span
+                    style={{
+                      fontSize:   'clamp(1.75rem, 3.5vw, 3rem)',
+                      fontWeight: 400,
+                      color:      '#ffffff',
+                      display:    'inline',
+                    }}
+                  >
+                    {headingSub}
+                  </span>
+                )}
+              </p>
+            </div>
+
+            {/* Body */}
+            <p
               style={{
-                color: '#171717',
                 fontFamily: 'var(--font-work-sans, sans-serif)',
+                fontSize:   '1.125rem',
+                lineHeight: '1.625rem',
+                color:      '#ffffff',
+                maxWidth:   '565px',
               }}
             >
-              {badge}
-            </span>
+              {body}
+            </p>
           </div>
 
-          {/* Heading */}
-          <h1
-            className="leading-tight mb-6"
-            style={{
-              fontFamily: 'var(--font-work-sans, sans-serif)',
-              fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
-              fontWeight: 700,
-              color: 'var(--color-text, #fafafa)',
-              letterSpacing: '-0.02em',
-              lineHeight: 1.1,
-            }}
-          >
-            {heading}
-          </h1>
-
-          {/* Body */}
-          <p
-            className="leading-relaxed mb-10 max-w-lg"
-            style={{
-              fontFamily: 'var(--font-work-sans, sans-serif)',
-              fontSize: '1.125rem',
-              color: '#525252',
-              lineHeight: '1.625',
-            }}
-          >
-            {body}
-          </p>
-
-          {/* CTAs */}
-          <div className="flex flex-wrap gap-4 mb-14">
+          {/* CTAs — Figma: white primary, dark secondary */}
+          <div className="flex flex-wrap gap-4">
             <Link
               href={cta.primary.url}
-              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-md text-base font-normal transition-opacity duration-200 hover:opacity-90"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-md text-base font-normal transition-opacity hover:opacity-90"
               style={{
                 background: '#ffffff',
-                color: '#000000',
+                color:      '#000000',
                 fontFamily: 'var(--font-work-sans, sans-serif)',
               }}
             >
@@ -197,11 +211,11 @@ export default function HeroBlock({ data }: { data: HeroData }) {
             </Link>
             <Link
               href={cta.secondary.url}
-              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-md text-base font-normal transition-opacity duration-200 hover:opacity-80"
+              className="inline-flex items-center px-8 py-4 rounded-md text-base font-normal transition-opacity hover:opacity-80"
               style={{
                 background: '#41403f',
-                color: '#ffffff',
-                border: '1px solid #e5e5e5',
+                color:      '#ffffff',
+                border:     '1px solid #e5e5e5',
                 fontFamily: 'var(--font-work-sans, sans-serif)',
               }}
             >
@@ -209,43 +223,45 @@ export default function HeroBlock({ data }: { data: HeroData }) {
             </Link>
           </div>
 
-          {/* Stats */}
+          {/* Stats bar — Figma: yellow (#ffcd37) border-top, 3-col grid */}
           <div
-            className="flex items-start pt-8 gap-0"
-            style={{ borderTop: '1px solid #e5e5e5' }}
+            className="grid grid-cols-3 gap-6 pt-8"
+            style={{ borderTop: '1px solid #ffcd37' }}
           >
             {stats.map((stat, i) => (
-              <StatItem key={i} {...stat} hasBorder={i > 0} />
+              <StatItem key={i} {...stat} />
             ))}
           </div>
         </div>
 
         {/* ── Right column — hero image + floating cards ──────────────────── */}
-        <div className="relative w-full hidden lg:block" style={{ height: '580px' }}>
+        <div
+          className="relative w-full hidden lg:block"
+          style={{ height: '580px' }}
+        >
           {/* Hero photo */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={image.src}
             alt={image.alt}
             className="absolute inset-0 w-full h-full object-cover"
-            style={{ borderRadius: '0px' }}
           />
 
-          {/* Floating card — Deployment Successful (top-right) */}
+          {/* Floating card — Deployment Successful (top-right, Figma: right-0, top-[76.5px]) */}
           {deployCard && (
             <FloatingBadgeCard
               text={deployCard.text}
               iconSrc={DEPLOY_ICON}
-              className="top-[174px] -right-3"
+              className="-right-0 top-[76px]"
             />
           )}
 
-          {/* Floating card — Launch Ready (bottom-left, overlapping) */}
+          {/* Floating card — Launch Ready (bottom-left, Figma: right-[427px], top-[396px]) */}
           {launchCard && (
             <FloatingBadgeCard
               text={launchCard.text}
               iconSrc={LAUNCH_ICON}
-              className="bottom-[144px] left-[-24px]"
+              className="bottom-[144px] -left-6"
             />
           )}
         </div>

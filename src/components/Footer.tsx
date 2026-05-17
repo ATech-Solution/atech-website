@@ -11,7 +11,7 @@ interface FooterProps {
 const QUICK_LINKS = [
   { label: 'About Us',       href: '/about'   },
   { label: 'Services',       href: '/services'},
-  { label: 'Contact',        href: '/contact' },
+  { label: 'Contact',        href: '/static/contact' },
   // { label: 'Privacy Policy', href: '/privacy-policy' },
 ]
 
@@ -163,7 +163,7 @@ export default async function Footer({ theme, settings }: FooterProps = {}) {
               Ready to transform your business with technology?
             </p>
             <Link
-              href="/contact"
+              href="/static/contact"
               style={{
                 display: 'inline-flex', alignItems: 'center',
                 padding: '12px 24px', borderRadius: 8,

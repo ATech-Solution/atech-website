@@ -322,9 +322,6 @@ export default async function DynamicPage({
 }) {
   const { slug } = await params
 
-  // Redirect 'home' to root to avoid duplicate content
-  if (slug === 'home') notFound()
-
   const page = await getPage(slug)
 
   if (!page || page.status !== 'published') notFound()

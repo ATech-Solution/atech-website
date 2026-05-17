@@ -1,7 +1,6 @@
 // CTA Banner Section — Layout Builder variant (Advance)
 // Used by: cta-banner block type
 
-import type React from 'react'
 import Link from 'next/link'
 
 function ArrowRight() {
@@ -34,26 +33,21 @@ export default function CTABannerSection({ data }: { data: CTABannerSectionData 
 
   return (
     <section
-      className="py-24 px-6 md:px-10"
-      style={{
-        background: 'var(--color-bg, #171717)',
-        paddingTop: 'var(--section-padding-y, 96px)',
-        paddingBottom: 'var(--section-padding-y, 96px)',
-      }}
+      className="py-20 px-6"
+      style={{ background: '#171717' }}
     >
       <div
-        className="mx-auto flex flex-col items-center text-center"
-        style={{ maxWidth: 'var(--content-max-width, 896px)' }}
+        className="mx-auto flex flex-col items-center text-center gap-4 px-6"
+        style={{ maxWidth: '896px' }}
       >
         {data.heading && (
           <h2
-            className="mb-6"
             style={{
               fontFamily: 'var(--font-work-sans, sans-serif)',
-              fontSize:   'var(--heading-font-size, clamp(1.75rem, 3vw, 2.25rem))',
-              fontWeight: 'var(--heading-font-weight, 400)' as React.CSSProperties['fontWeight'],
-              color:      'var(--color-text, #ffffff)',
-              lineHeight: 'var(--heading-line-height, 40px)',
+              fontSize:   'clamp(1.75rem, 3vw, 2.25rem)',
+              fontWeight: 400,
+              color:      '#ffffff',
+              lineHeight: '40px',
             }}
           >
             {data.heading}
@@ -62,12 +56,12 @@ export default function CTABannerSection({ data }: { data: CTABannerSectionData 
 
         {data.subtitle && (
           <p
-            className="mb-10 max-w-2xl"
             style={{
               fontFamily: 'var(--font-work-sans, sans-serif)',
-              fontSize:   'var(--body-font-size, 1.125rem)',
-              color:      'var(--color-muted, #a3a3a3)',
-              lineHeight: '1.75',
+              fontSize:   '1.125rem',
+              color:      '#d4d4d4',
+              lineHeight: '28px',
+              maxWidth:   '672px',
             }}
           >
             {data.subtitle}
@@ -75,44 +69,50 @@ export default function CTABannerSection({ data }: { data: CTABannerSectionData 
         )}
 
         {data.buttonLabel && data.buttonUrl && (
-          <Link
-            href={data.buttonUrl}
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-md text-sm font-normal mb-16 transition-opacity duration-200 hover:opacity-90"
-            style={{
-              background: 'var(--cta-primary-bg, #ffffff)',
-              color: 'var(--cta-primary-text, #171717)',
-              fontFamily: 'var(--font-work-sans, sans-serif)',
-              borderRadius: 'var(--button-radius, 6px)',
-            }}
-          >
-            {hasIcon && iconPos === 'left' && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={data.buttonIcon!.url} alt="" width={14} height={14} style={{ objectFit: 'contain' }} />
-            )}
-            {data.buttonLabel}
-            {hasIcon && iconPos === 'right' ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={data.buttonIcon!.url} alt="" width={14} height={14} style={{ objectFit: 'contain' }} />
-            ) : !hasIcon ? (
-              <ArrowRight />
-            ) : null}
-          </Link>
+          <div className="pt-4 pb-8 flex items-center justify-center w-full">
+            <Link
+              href={data.buttonUrl}
+              className="inline-flex items-center gap-2 transition-opacity duration-200 hover:opacity-90"
+              style={{
+                background:   '#ffffff',
+                color:        '#171717',
+                fontFamily:   'var(--font-work-sans, sans-serif)',
+                fontSize:     '1rem',
+                fontWeight:   400,
+                lineHeight:   '24px',
+                padding:      '16px 32px',
+                borderRadius: '6px',
+              }}
+            >
+              {hasIcon && iconPos === 'left' && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={data.buttonIcon!.url} alt="" width={14} height={14} style={{ objectFit: 'contain' }} />
+              )}
+              {data.buttonLabel}
+              {hasIcon && iconPos === 'right' ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={data.buttonIcon!.url} alt="" width={14} height={14} style={{ objectFit: 'contain' }} />
+              ) : !hasIcon ? (
+                <ArrowRight />
+              ) : null}
+            </Link>
+          </div>
         )}
 
         {stats.length > 0 && (
           <div
-            className="grid grid-cols-1 sm:grid-cols-3 gap-8 w-full pt-10"
-            style={{ borderTop: 'var(--stats-border, 1px solid #ffcd37)' }}
+            className="flex flex-wrap items-start justify-center gap-8 w-full"
+            style={{ borderTop: '1px solid #ffcd37', paddingTop: '33px' }}
           >
             {stats.map((stat, idx) => (
               <div key={idx} className="flex flex-col items-center gap-1">
                 <span
                   style={{
                     fontFamily: 'var(--font-work-sans, sans-serif)',
-                    fontSize:   '1.875rem',
+                    fontSize:   '1.5rem',
                     fontWeight: 400,
-                    color:      'var(--stat-value-color, #ffcd37)',
-                    lineHeight: '36px',
+                    color:      '#ffd369',
+                    lineHeight: '32px',
                   }}
                 >
                   {stat.statValue}
@@ -122,7 +122,7 @@ export default function CTABannerSection({ data }: { data: CTABannerSectionData 
                   style={{
                     fontFamily: 'var(--font-work-sans, sans-serif)',
                     fontSize:   '0.75rem',
-                    color:      'var(--stat-label-color, #ffffff)',
+                    color:      '#ffffff',
                     lineHeight: '16px',
                   }}
                 >

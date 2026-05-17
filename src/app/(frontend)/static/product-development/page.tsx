@@ -90,7 +90,7 @@ export default function ProductDevelopmentPage() {
           </p>
 
           <Link
-            href="/contact"
+            href="/static/contact"
             className="inline-flex items-center gap-2 px-8 py-4 rounded-md text-sm font-normal transition-opacity duration-200 hover:opacity-80"
             style={{
               background: '#171717',

@@ -92,7 +92,7 @@ function ResetPasswordForm() {
             <p>This reset link is missing or invalid. Request a new one below.</p>
           </div>
           <div className="rp-foot">
-            <Link href="/forgot-password">Request a new reset link →</Link>
+            <Link href="/static/forgot-password">Request a new reset link →</Link>
           </div>
         </>
       )}

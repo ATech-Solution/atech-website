@@ -11,8 +11,8 @@
       "heading": "Custom Web Development\nSolutions for Modern\nBusinesses",
       "body": "Build powerful, scalable web applications that drive business growth. Our expert developers create responsive, user-friendly websites and web platforms tailored to your specific needs and objectives.",
       "cta": {
-        "primary":   { "label": "Start Your Project", "url": "/contact"   },
-        "secondary": { "label": "View Portfolio",      "url": "/portfolio" }
+        "primary":   { "label": "Start Your Project", "url": "/static/contact"   },
+        "secondary": { "label": "View Portfolio",      "url": "/static/portfolio" }
       },
       "image": {
         "src": "https://www.figma.com/api/mcp/asset/d4646c55-9958-49ea-ac32-d8a5eb9a9278",

@@ -4,7 +4,7 @@
 import SectionHeader from '@/components/ui/SectionHeader'
 
 // ─── Figma asset URL ──────────────────────────────────────────────────────────
-const CHECK_ICON = 'https://www.figma.com/api/mcp/asset/8f659115-eb8d-4d20-b529-8028c9dfe9ad'
+const CHECK_ICON = 'https://www.figma.com/api/mcp/asset/ea069ccf-6fd5-48b0-bb38-76c3d596787b'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface ServiceItem {

@@ -20,6 +20,8 @@ import * as migration_20260512_150000 from './20260512_150000';
 import * as migration_20260512_151704 from './20260512_151704';
 import * as migration_20260512_152757 from './20260512_152757';
 import * as migration_20260513_101316 from './20260513_101316';
+import * as migration_20260517_032348_testimonials_collection from './20260517_032348_testimonials_collection';
+import * as migration_20260517_044131 from './20260517_044131';
 
 export const migrations = [
   {
@@ -130,6 +132,16 @@ export const migrations = [
   {
     up: migration_20260513_101316.up,
     down: migration_20260513_101316.down,
-    name: '20260513_101316'
+    name: '20260513_101316',
+  },
+  {
+    up: migration_20260517_032348_testimonials_collection.up,
+    down: migration_20260517_032348_testimonials_collection.down,
+    name: '20260517_032348_testimonials_collection',
+  },
+  {
+    up: migration_20260517_044131.up,
+    down: migration_20260517_044131.down,
+    name: '20260517_044131'
   },
 ];

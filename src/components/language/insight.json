@@ -20,7 +20,7 @@
           "title": "The Future of AI in Software Development",
           "description": "Explore how artificial intelligence is revolutionizing the way we build software applications and automate development processes.",
           "ctaLabel": "Read More",
-          "ctaUrl": "/article-detail"
+          "ctaUrl": "/static/article-detail"
         },
         {
           "category": "Cloud",
@@ -28,7 +28,7 @@
           "title": "Building Scalable Cloud Architecture",
           "description": "Learn best practices for designing cloud-native applications that can scale efficiently and handle millions of users.",
           "ctaLabel": "Read More",
-          "ctaUrl": "/article-detail"
+          "ctaUrl": "/static/article-detail"
         },
         {
           "category": "Security",
@@ -36,7 +36,7 @@
           "title": "Cybersecurity Trends to Watch in 2025",
           "description": "Stay protected with an overview of the most critical cybersecurity challenges and solutions shaping the industry.",
           "ctaLabel": "Read More",
-          "ctaUrl": "/article-detail"
+          "ctaUrl": "/static/article-detail"
         },
         {
           "category": "Mobile",
@@ -44,7 +44,7 @@
           "title": "React Native vs Flutter: 2025 Comparison",
           "description": "A comprehensive guide to choosing the right cross-platform framework for your next mobile application.",
           "ctaLabel": "Read More",
-          "ctaUrl": "/article-detail"
+          "ctaUrl": "/static/article-detail"
         },
         {
           "category": "DevOps",
@@ -52,7 +52,7 @@
           "title": "Implementing CI/CD for Faster Deployments",
           "description": "How modern DevOps practices and automation tools can dramatically reduce your time-to-production.",
           "ctaLabel": "Read More",
-          "ctaUrl": "/article-detail"
+          "ctaUrl": "/static/article-detail"
         },
         {
           "category": "Web Dev",
@@ -60,7 +60,7 @@
           "title": "Next.js 15: What's New and Why It Matters",
           "description": "A deep dive into the latest Next.js features and how they improve performance, DX, and SEO.",
           "ctaLabel": "Read More",
-          "ctaUrl": "/article-detail"
+          "ctaUrl": "/static/article-detail"
         }
       ]
     },

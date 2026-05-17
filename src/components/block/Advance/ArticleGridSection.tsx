@@ -231,10 +231,14 @@ export default function ArticleGridSection({ data }: { data: ArticleGridData }) 
 // ── Async server component for layout-renderer (supports collection mode) ─────
 
 export async function ArticleGridServerSection({ data }: { data: ArticleGridData }) {
-  const items =
-    (data.articleContentSource ?? 'manual') === 'collection'
-      ? await fetchCollectionPosts(data)
-      : (data.articleItems ?? [])
+  try {
+    const items =
+      (data.articleContentSource ?? 'manual') === 'collection'
+        ? await fetchCollectionPosts(data)
+        : (data.articleItems ?? [])
 
-  return <ArticleGridShell data={data} items={items} />
+    return <ArticleGridShell data={data} items={items} />
+  } catch {
+    return <ArticleGridShell data={data} items={[]} />
+  }
 }

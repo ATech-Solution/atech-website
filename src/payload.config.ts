@@ -22,6 +22,7 @@ import { Portfolio } from './collections/Portfolio'
 import { PortfolioCategories } from './collections/PortfolioCategories'
 import { FAQCategories } from './collections/FAQCategories'
 import { FAQs } from './collections/FAQs'
+import { Testimonials } from './collections/Testimonials'
 import { Users } from './collections/Users'
 import { Plugins } from './collections/Plugins'
 import { Blocks } from './collections/Blocks'
@@ -159,7 +160,7 @@ export default buildConfig({
   csrf: allowedOrigins,
 
   // ── Collections ────────────────────────────────────────────────────────────
-  collections: [Users, Pages, Posts, Categories, Portfolio, PortfolioCategories, FAQCategories, FAQs, Media, Plugins, Blocks],
+  collections: [Users, Pages, Posts, Categories, Portfolio, PortfolioCategories, FAQCategories, FAQs, Testimonials, Media, Plugins, Blocks],
 
   // ── Globals ────────────────────────────────────────────────────────────────
   globals: [Navigation, Settings, Theme],

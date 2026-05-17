@@ -7,8 +7,76 @@ export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
+    defaultColumns: ['title', 'slug', 'status', 'updatedAt', 'pageActions'],
+    livePreview: {
+      url: ({ data }) => {
+        const slug = data?.slug as string | undefined
+        const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+        return !slug || slug === 'home' ? base : `${base}/${slug}`
+      },
+    },
   },
+  endpoints: [
+    {
+      path: '/:id/duplicate',
+      method: 'post',
+      handler: async (req) => {
+        const params = req.routeParams as { id?: string }
+        const id = params?.id
+        if (!id) return Response.json({ error: 'Missing id' }, { status: 400 })
+        if (!req.user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+        const original = await req.payload.findByID({
+          collection: 'pages',
+          id,
+          depth: 0,
+          req,
+        })
+
+        // Strip Payload-managed and hierarchy fields; the rest is safe to copy
+        const {
+          id: _id,
+          createdAt: _c,
+          updatedAt: _u,
+          _status: _s,
+          publishedAt: _pub,
+          parent: _parent,
+          breadcrumbs: _bc,
+          ...docData
+        } = original as any
+
+        // Find a free slug: try "<slug>-copy", then "<slug>-copy-2", "-copy-3", ...
+        const baseSlug = `${docData.slug ?? 'page'}-copy`
+        let freeSlug = baseSlug
+        let attempt = 1
+        while (true) {
+          const existing = await req.payload.find({
+            collection: 'pages',
+            where: { slug: { equals: freeSlug } },
+            limit: 1,
+            depth: 0,
+            req,
+          })
+          if (existing.totalDocs === 0) break
+          attempt += 1
+          freeSlug = `${baseSlug}-${attempt}`
+        }
+
+        const duplicate = await req.payload.create({
+          collection: 'pages',
+          data: {
+            ...docData,
+            title: `${docData.title ?? 'Page'} (Copy)`,
+            slug: freeSlug,
+            status: 'draft',
+          },
+          req,
+        })
+
+        return Response.json(duplicate, { status: 201 })
+      },
+    },
+  ],
   access: {
     // Public visitors can read published pages; authenticated users are controlled by Settings
     read: async ({ req }) => {
@@ -64,6 +132,19 @@ export const Pages: CollectionConfig = {
               label: 'Excerpt',
               admin: {
                 description: 'Short description shown in search results and SEO.',
+              },
+            },
+            // ── Row actions (list view only — View URL + Duplicate) ────────────
+            {
+              name: 'pageActions',
+              type: 'ui',
+              label: 'Actions',
+              admin: {
+                disableBulkEdit: true,
+                components: {
+                  Cell: '@/components/admin/PageRowActions#PageRowActionsCell',
+                  Field: '@/components/admin/PageRowActions#PageRowActionsField',
+                },
               },
             },
             // Visual Layout Builder (primary, plugin-powered)

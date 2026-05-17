@@ -78,8 +78,11 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
     case 'testimonials':
       return {
         content: {
-          heading:          h.testimonials.heading,
-          subheading:       h.testimonials.subheading,
+          heading:                    h.testimonials.heading,
+          subheading:                 h.testimonials.subheading,
+          testimonialsContentSource:  'manual',
+          testimonialsLimit:          9,
+          enableCarousel:             false,
           testimonialItems: h.testimonials.items.map((t) => ({
             clientName:    t.name,
             clientRole:    t.role,

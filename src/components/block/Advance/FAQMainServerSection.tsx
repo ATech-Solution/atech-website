@@ -49,33 +49,37 @@ async function fetchFAQData(data: FAQMainData): Promise<{ categories: FAQCategor
 }
 
 export async function FAQMainServerSection({ data }: { data: FAQMainData }) {
-  const isCollection = (data.faqContentSource ?? 'collection') === 'collection'
+  try {
+    const isCollection = (data.faqContentSource ?? 'collection') === 'collection'
 
-  let categories: FAQCategory[] = []
-  let faqs: FAQEntry[] = []
+    let categories: FAQCategory[] = []
+    let faqs: FAQEntry[] = []
 
-  if (isCollection) {
-    const result = await fetchFAQData(data)
-    categories = result.categories
-    faqs = result.faqs
-  } else {
-    faqs = (data.faqItems ?? []).map((it, i) => ({
-      id: String(i),
-      categorySlug: 'manual',
-      question: it.question ?? '',
-      answer: it.answer,
-    }))
-    if (faqs.length > 0) {
-      categories = [{ id: 'manual', name: 'General', title: 'FAQs', slug: 'manual' }]
+    if (isCollection) {
+      const result = await fetchFAQData(data)
+      categories = result.categories
+      faqs = result.faqs
+    } else {
+      faqs = (data.faqItems ?? []).map((it, i) => ({
+        id: String(i),
+        categorySlug: 'manual',
+        question: it.question ?? '',
+        answer: it.answer,
+      }))
+      if (faqs.length > 0) {
+        categories = [{ id: 'manual', name: 'General', title: 'FAQs', slug: 'manual' }]
+      }
     }
-  }
 
-  return (
-    <FAQMainClient
-      categories={categories}
-      faqs={faqs}
-      backLabel={data.faqBackLabel}
-      backUrl={data.faqBackUrl}
-    />
-  )
+    return (
+      <FAQMainClient
+        categories={categories}
+        faqs={faqs}
+        backLabel={data.faqBackLabel}
+        backUrl={data.faqBackUrl}
+      />
+    )
+  } catch {
+    return null
+  }
 }

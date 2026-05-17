@@ -24,7 +24,7 @@ export default function PortfolioDetailTopSection({ data, portfolioItem }: Portf
 
   // Portfolio item takes priority; block CMS data is the fallback
   const backLabel     = data.backLabel    ?? 'Back to Portfolio'
-  const backUrl       = data.backUrl      ?? '/portfolio'
+  const backUrl       = data.backUrl      ?? '/static/portfolio'
   const title         = p?.title          ?? data.pdTitle        ?? ''
   const description   = p?.excerpt        ?? data.pdDescription  ?? ''
   const client        = p?.client         ?? data.pdClient       ?? ''

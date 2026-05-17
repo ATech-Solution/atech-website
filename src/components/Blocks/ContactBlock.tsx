@@ -98,15 +98,22 @@ export default function ContactBlock({ data }: { data: ContactData }) {
 
   return (
     <section
-      className="py-24"
+      className="py-20"
       style={{
-        background: 'var(--color-bg, #292929)',
-        borderTop:  '1px solid var(--color-border, #383838)',
+        background: '#292929',
+        borderTop:  '1px solid #383838',
       }}
     >
       <div className="mx-auto px-6 md:px-10" style={{ maxWidth: '1280px' }}>
         <div className="mb-16">
-          <SectionHeader heading={heading} subheading={subheading} align="center" />
+          <SectionHeader
+            heading={heading}
+            subheading={subheading}
+            align="center"
+            headingColor="#ffffff"
+            subheadingColor="#ffffff"
+            headingFontWeight={400}
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">

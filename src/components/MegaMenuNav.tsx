@@ -100,7 +100,7 @@ function ArrowRight() {
 
 function GridMegaPanel({ item }: { item: NavItem }) {
   const links    = (item.columns ?? []).flatMap((col) => col.links ?? [])
-  const ctaUrl   = item.featured?.url ?? '/contact'
+  const ctaUrl   = item.featured?.url ?? '/static/contact'
   const ctaLabel = item.featured?.cta ?? 'Get in touch'
 
   return (
@@ -250,7 +250,7 @@ function GridLinkItem({ link }: { link: MegaMenuLink }) {
 
 function CategoryGridMegaPanel({ item }: { item: NavItem }) {
   const columns  = item.columns ?? []
-  const ctaUrl   = item.featured?.url ?? '/contact'
+  const ctaUrl   = item.featured?.url ?? '/static/contact'
   const ctaLabel = item.featured?.cta ?? 'Get in touch'
 
   return (
@@ -566,7 +566,7 @@ function MobileDrawer({
           ))}
 
           <Link
-            href={ctaUrl ?? '/contact'}
+            href={ctaUrl ?? '/static/contact'}
             onClick={onClose}
             style={{
               marginTop: 20,
@@ -685,7 +685,7 @@ export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark'
 
       {/* Desktop CTA — black button matching Figma */}
       <Link
-        href={ctaUrl ?? '/contact'}
+        href={ctaUrl ?? '/static/contact'}
         className="hidden md:inline-flex items-center"
         style={{
           padding: '8px 20px',

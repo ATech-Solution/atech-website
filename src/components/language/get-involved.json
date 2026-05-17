@@ -77,7 +77,7 @@
     "cta": {
       "heading":    "Ready to Work With Us?",
       "subheading": "Let's discuss how ATech Solutions can help transform your business with innovative technology solutions.",
-      "button":     { "label": "Get Involved In Community", "url": "/get-involved-community" }
+      "button":     { "label": "Get Involved In Community", "url": "/static/get-involved-community" }
     }
   }
 }

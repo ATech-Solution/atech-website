@@ -83,17 +83,21 @@ export default function ProjectGridSection({ data }: { data: ProjectGridData }) 
 // ── Async server component for layout-renderer (supports collection mode) ─────
 
 export async function ProjectGridServerSection({ data }: { data: ProjectGridData }) {
-  const items =
-    (data.projectContentSource ?? 'manual') === 'collection'
-      ? await fetchPortfolioItems(data)
-      : normalizeManualItems(data.projectItems ?? [])
+  try {
+    const items =
+      (data.projectContentSource ?? 'manual') === 'collection'
+        ? await fetchPortfolioItems(data)
+        : normalizeManualItems(data.projectItems ?? [])
 
-  return (
-    <ProjectGridFilter
-      heading={data.projectHeading}
-      subheading={data.projectSubheading}
-      items={items}
-      showCategoryFilter={(data.showCategoryFilter ?? 'yes') !== 'no'}
-    />
-  )
+    return (
+      <ProjectGridFilter
+        heading={data.projectHeading}
+        subheading={data.projectSubheading}
+        items={items}
+        showCategoryFilter={(data.showCategoryFilter ?? 'yes') !== 'no'}
+      />
+    )
+  } catch {
+    return null
+  }
 }

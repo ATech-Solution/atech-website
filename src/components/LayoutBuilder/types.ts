@@ -149,6 +149,9 @@ export interface BlockOverrides {
     customSolutionCtaUrl?: string
 
     // ── Home Testimonials ────────────────────────────────────────────────
+    testimonialsContentSource?: 'collection' | 'manual'
+    testimonialsLimit?: number
+    enableCarousel?: boolean
     testimonialItems?: Array<{ clientName?: string; clientRole?: string; clientCompany?: string; quote?: string; rating?: number; avatar?: MediaRef | null }>
 
     // ── Service Cards ────────────────────────────────────────────────────
