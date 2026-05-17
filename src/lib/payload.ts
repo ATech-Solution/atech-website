@@ -16,6 +16,17 @@ export async function getPayloadClient() {
   return payloadInstance
 }
 
+/** Fetch the page marked as the site frontpage (isFrontpage: true) */
+export async function getFrontpage() {
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'pages',
+    where: { isFrontpage: { equals: true }, status: { equals: 'published' } },
+    limit: 1,
+  })
+  return result.docs[0] ?? null
+}
+
 /** Fetch a single page by its slug */
 export async function getPage(slug: string) {
   const payload = await getPayloadClient()

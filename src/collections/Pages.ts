@@ -10,9 +10,11 @@ export const Pages: CollectionConfig = {
     defaultColumns: ['title', 'slug', 'status', 'updatedAt', 'pageActions'],
     livePreview: {
       url: ({ data }) => {
-        const slug = data?.slug as string | undefined
-        const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-        return !slug || slug === 'home' ? base : `${base}/${slug}`
+        const slug        = data?.slug        as string  | undefined
+        const isFrontpage = data?.isFrontpage as boolean | undefined
+        const base        = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+        if (isFrontpage) return base
+        return slug ? `${base}/${slug}` : base
       },
     },
   },
@@ -400,6 +402,17 @@ export const Pages: CollectionConfig = {
         description: 'Frontend template that renders this page.',
       },
       options: getPageTemplateOptions(),
+    },
+    // ── Sidebar: Frontpage ───────────────────────────────────────────────────
+    {
+      name: 'isFrontpage',
+      type: 'checkbox',
+      label: 'Use as Frontpage',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'When checked, this page renders at the root URL (/). Only one page should be marked as Frontpage.',
+      },
     },
     // ── Sidebar: Portfolio Detail Template ──────────────────────────────────
     {
