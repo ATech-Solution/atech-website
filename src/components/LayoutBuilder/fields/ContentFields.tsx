@@ -16,6 +16,12 @@ const ITEMS_TYPES: BlockType[] = [
   'basic-gallery', 'counter', 'progress-bar', 'testimonial', 'social-icons',
 ]
 
+// Strip the origin from absolute URLs so only the pathname is stored — ensures
+// media refs work on any server (local, UAT, prod) without URL rewriting.
+function toRelativePath(url: string): string {
+  try { return new URL(url).pathname } catch { return url }
+}
+
 // ── Shared primitives ─────────────────────────────────────────────────────────
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -63,7 +69,7 @@ function MediaField({
     }
   }
 
-  const pick = (url: string) => { onChange({ url }); setOpen(false) }
+  const pick = (url: string) => { onChange({ url: toRelativePath(url) }); setOpen(false) }
 
   const handleUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return
@@ -78,7 +84,7 @@ function MediaField({
         if (!res.ok) throw new Error('Upload failed')
         const data = await res.json()
         const doc  = data.doc ?? data
-        if (doc?.url) uploaded.push({ id: doc.id, url: doc.url, alt: doc.alt ?? '', filename: doc.filename })
+        if (doc?.url) uploaded.push({ id: doc.id, url: toRelativePath(doc.url), alt: doc.alt ?? '', filename: doc.filename })
       } catch {
         setUploadError(`Failed to upload ${file.name}`)
       }
@@ -87,7 +93,7 @@ function MediaField({
       setMediaItems((prev) => [...uploaded, ...prev])
       // Auto-select the last uploaded item and close
       const last = uploaded[uploaded.length - 1]
-      onChange({ url: last.url, alt: last.alt })
+      onChange({ url: toRelativePath(last.url), alt: last.alt })
       setOpen(false)
     }
     setUploading(false)
