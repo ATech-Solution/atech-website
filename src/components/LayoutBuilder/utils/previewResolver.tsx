@@ -180,6 +180,14 @@ export function resolvePreviewComponent(
     case 'article-featured':
       return withStyle(<ArticleFeaturedSection data={data as any} />, blockStyle)
     case 'jobs-list':
+      if ((data as any).jobSource === 'collection') {
+        return withStyle(
+          <div style={{ background: '#171717', padding: '96px 40px', textAlign: 'center', color: '#737373', fontFamily: 'var(--font-work-sans,"Work Sans",sans-serif)', fontSize: '0.875rem' }}>
+            Collection mode — live jobs load on the published page
+          </div>,
+          blockStyle
+        )
+      }
       return withStyle(<JobsListSection data={data as any} />, blockStyle)
     case 'involved-hero':
       return withStyle(<InvolvedHeroSection data={data as any} />, blockStyle)

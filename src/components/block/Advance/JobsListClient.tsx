@@ -50,7 +50,17 @@ export function JobsListClient({ items }: Props) {
         />
       </div>
 
-      <div className="flex flex-col gap-4">
+      {/* Scrollable list — shows ~3 cards, scrolls beyond */}
+      <div
+        className="flex flex-col gap-4"
+        style={filtered.length > 3 ? {
+          maxHeight: '576px',
+          overflowY: 'auto',
+          paddingRight: '8px',
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'rgba(255,255,255,0.2) transparent',
+        } : undefined}
+      >
         {filtered.map((job, i) => (
           <div
             key={i}
