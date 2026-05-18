@@ -15,9 +15,6 @@ export const JobVacancies: CollectionConfig = {
     update: ({ req }) => req.user?.role === 'admin' || req.user?.role === 'editor',
     delete: ({ req }) => req.user?.role === 'admin',
   },
-  versions: {
-    drafts: true,
-  },
   fields: [
     // ── Title / Position ───────────────────────────────────────────────────
     {

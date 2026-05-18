@@ -27,7 +27,6 @@ export {
   ArticleFeaturedSection,
   ArticleFeaturedServerSection,
   JobsListSection,
-  JobsListServerSection,
   InvolvedHeroSection,
   QuoteFormSection,
   CultureValuesSection,

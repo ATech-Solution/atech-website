@@ -31,7 +31,6 @@ import {
   ArticleFeaturedSection,
   ArticleFeaturedServerSection,
   JobsListSection,
-  JobsListServerSection,
   InvolvedHeroSection,
   QuoteFormSection,
   CultureValuesSection,
@@ -59,6 +58,7 @@ import {
   FAQAboutServerSection,
   ArticleSubmitSection,
 } from '@/components/block'
+import { JobsListServerSection } from '@/components/block/Advance/JobsListServerSection'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
