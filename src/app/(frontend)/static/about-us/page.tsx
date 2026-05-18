@@ -9,6 +9,7 @@ import AboutMissionVisionBlock from '@/components/Blocks/AboutMissionVisionBlock
 import AboutLeadershipBlock    from '@/components/Blocks/AboutLeadershipBlock'
 import FAQAccordionBlock       from '@/components/Blocks/FAQAccordionBlock'
 import ContactBlock            from '@/components/Blocks/ContactBlock'
+import ScrollSpy               from '@/components/ScrollSpy'
 import content from '@/components/language/about-us.json'
 import { getPage, getBlockTemplates } from '@/lib/payload'
 import { collectBlockIds, LayoutBlockRenderer } from '@/lib/layout-renderer'
@@ -41,12 +42,13 @@ export default async function AboutUsPage() {
 
   return (
     <div style={{ background: '#ffffff' }}>
-      <AboutHeroBlock          data={hero}        />
-      <AboutCompanyBlock       data={company}     />
-      <AboutMissionVisionBlock data={mission}     />
-      <AboutLeadershipBlock    data={leadership}  />
-      <FAQAccordionBlock       data={faq}         />
-      <ContactBlock            data={contact}     />
+      <ScrollSpy />
+      <div id="hero"       className="section-anchor"><AboutHeroBlock          data={hero}       /></div>
+      <div id="company"    className="section-anchor"><AboutCompanyBlock       data={company}    /></div>
+      <div id="mission"    className="section-anchor"><AboutMissionVisionBlock data={mission}    /></div>
+      <div id="leadership" className="section-anchor"><AboutLeadershipBlock    data={leadership} /></div>
+      <div id="faq"        className="section-anchor"><FAQAccordionBlock       data={faq}        /></div>
+      <div id="contact"    className="section-anchor"><ContactBlock            data={contact}    /></div>
     </div>
   )
 }

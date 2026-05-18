@@ -1020,6 +1020,146 @@ function ArticleSubmitFields({ ov, set }: { ov: any; set: (k: string, v: unknown
   )
 }
 
+// ── Serve Model fields ────────────────────────────────────────────────────────
+function ServeModelFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const items: any[] = ov.serveModelItems ?? []
+  return (
+    <>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Flexible Engagement Models" />
+      </Field>
+      <Field label="Subheading">
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="Choose the partnership model…" />
+      </Field>
+
+      <Field label="Model Cards">
+        <div className="lb-items">
+          {items.map((item: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Card {i + 1}{item.modelFeatured ? ' ★' : ''}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); set('serveModelItems', a) }}>✕</button>
+              </div>
+              <Field label="Title">
+                <input className="lb-input" placeholder="Project-Based" value={item.modelTitle ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], modelTitle: e.target.value }; set('serveModelItems', a) }} />
+              </Field>
+              <Field label="Icon URL">
+                <input className="lb-input" placeholder="https://…/icon.svg" value={item.modelIconSrc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], modelIconSrc: e.target.value }; set('serveModelItems', a) }} />
+              </Field>
+              <Field label="Description">
+                <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Fixed scope and timeline…" value={item.modelDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], modelDesc: e.target.value }; set('serveModelItems', a) }} />
+              </Field>
+              <Field label="Features (one per line)">
+                <textarea className="lb-input lb-input--textarea" rows={4} placeholder={'Clear deliverables and milestones\nFixed budget and timeline\nIdeal for MVPs'} value={item.modelFeatures ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], modelFeatures: e.target.value }; set('serveModelItems', a) }} />
+              </Field>
+              <Row>
+                <Field label="Featured card?">
+                  <select className="lb-input lb-input--select" value={item.modelFeatured ? 'yes' : 'no'} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], modelFeatured: e.target.value === 'yes' }; set('serveModelItems', a) }}>
+                    <option value="no">No</option>
+                    <option value="yes">Yes — thick border + badge</option>
+                  </select>
+                </Field>
+                <Field label="Badge Label">
+                  <input className="lb-input" placeholder="Most Popular" value={item.modelBadgeLabel ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], modelBadgeLabel: e.target.value }; set('serveModelItems', a) }} />
+                </Field>
+              </Row>
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('serveModelItems', [...items, { modelTitle: '', modelDesc: '', modelFeatures: '', modelFeatured: false }])}>+ Add Card</button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
+// ── Serve Value fields ────────────────────────────────────────────────────────
+function ServeValueFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const items: any[] = ov.serveValueItems ?? []
+  return (
+    <>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Why Startups Choose ATech" />
+      </Field>
+      <Field label="Subheading">
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="We understand the unique challenges…" />
+      </Field>
+
+      <Field label="Value Items">
+        <div className="lb-items">
+          {items.map((item: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Item {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); set('serveValueItems', a) }}>✕</button>
+              </div>
+              <Field label="Icon URL">
+                <input className="lb-input" placeholder="https://…/icon.svg" value={item.valueIconSrc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], valueIconSrc: e.target.value }; set('serveValueItems', a) }} />
+              </Field>
+              <Field label="Title">
+                <input className="lb-input" placeholder="Fast MVP Development" value={item.valueTitle ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], valueTitle: e.target.value }; set('serveValueItems', a) }} />
+              </Field>
+              <Field label="Description">
+                <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Launch your product…" value={item.valueDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], valueDesc: e.target.value }; set('serveValueItems', a) }} />
+              </Field>
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('serveValueItems', [...items, { valueIconSrc: '', valueTitle: '', valueDesc: '' }])}>+ Add Item</button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
+// ── Serve Hero fields ─────────────────────────────────────────────────────────
+function ServeHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  return (
+    <>
+      <Field label="Heading">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Technology Partner for Ambitious Startups" />
+      </Field>
+      <Field label="Body Text">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.body ?? ''} onChange={(e) => set('body', e.target.value)} placeholder="From MVP to scale…" />
+      </Field>
+
+      <CtaGroup
+        groupLabel="Primary CTA"
+        label={ov.ctaPrimaryLabel ?? ''} labelPlaceholder="Get Started"
+        url={ov.ctaPrimaryUrl ?? ''} urlPlaceholder="/static/contact"
+        iconValue="" iconPos="right"
+        onLabelChange={(v) => set('ctaPrimaryLabel', v)}
+        onUrlChange={(v) => set('ctaPrimaryUrl', v)}
+        onIconChange={() => {}}
+        onIconPosChange={() => {}}
+      />
+      <CtaGroup
+        groupLabel="Secondary CTA"
+        label={ov.ctaSecondaryLabel ?? ''} labelPlaceholder="View Success Stories"
+        url={ov.ctaSecondaryUrl ?? ''} urlPlaceholder="/portfolio"
+        iconValue="" iconPos="right"
+        onLabelChange={(v) => set('ctaSecondaryLabel', v)}
+        onUrlChange={(v) => set('ctaSecondaryUrl', v)}
+        onIconChange={() => {}}
+        onIconPosChange={() => {}}
+      />
+
+      <MediaField label="Hero Image" value={ov.heroImage?.url ?? ''} onChange={(ref) => set('heroImage', ref)} />
+
+      <Field label="Stat Badge Value">
+        <input className="lb-input" value={ov.serveHeroStatValue ?? ''} onChange={(e) => set('serveHeroStatValue', e.target.value)} placeholder="50+ Startups Launched" />
+      </Field>
+      <Field label="Stat Badge Label">
+        <input className="lb-input" value={ov.serveHeroStatLabel ?? ''} onChange={(e) => set('serveHeroStatLabel', e.target.value)} placeholder="From Seed to Series B" />
+      </Field>
+      <Field label="Stat Badge Icon URL">
+        <input className="lb-input" value={ov.serveHeroStatIconSrc ?? ''} onChange={(e) => set('serveHeroStatIconSrc', e.target.value)} placeholder="https://…/icon.svg" />
+      </Field>
+      <Field label="Stat Badge Icon Background">
+        <input className="lb-input" value={ov.serveHeroStatIconBg ?? '#ffd369'} onChange={(e) => set('serveHeroStatIconBg', e.target.value)} placeholder="#ffd369" />
+      </Field>
+    </>
+  )
+}
+
 // ── Service Hero fields ───────────────────────────────────────────────────────
 function ServiceHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   const breadcrumbs: any[] = ov.breadcrumbs ?? []
@@ -1951,10 +2091,17 @@ function ContactStatsFields({ ov, set }: { ov: any; set: (k: string, v: unknown)
 
 // ── Locations fields ──────────────────────────────────────────────────────────
 function FeaturedCaseStudyFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const logos: any[] = ov.clientLogos ?? (ov.clientLogo?.url ? [ov.clientLogo] : [])
   return (
     <>
       <Field label="Section Label">
         <input className="lb-input" value={ov.sectionLabel ?? ''} onChange={(e) => set('sectionLabel', e.target.value)} placeholder="Featured Case Study" />
+      </Field>
+      <Field label="Section Background">
+        <select className="lb-input lb-input--select" value={ov.sectionBg ?? '#ffffff'} onChange={(e) => set('sectionBg', e.target.value)}>
+          <option value="#ffffff">White (#ffffff)</option>
+          <option value="#fafafa">Off-white (#fafafa)</option>
+        </select>
       </Field>
       <Field label="Case Title">
         <input className="lb-input" value={ov.caseTitle ?? ''} onChange={(e) => set('caseTitle', e.target.value)} placeholder="Client — Project Name" />
@@ -1962,25 +2109,43 @@ function FeaturedCaseStudyFields({ ov, set }: { ov: any; set: (k: string, v: unk
       <Field label="Description">
         <textarea className="lb-input lb-input--textarea" rows={4} value={ov.caseDesc ?? ''} onChange={(e) => set('caseDesc', e.target.value)} placeholder="Project description…" />
       </Field>
+      <Field label="Feature List (one per line, rendered with ✓)">
+        <textarea className="lb-input lb-input--textarea" rows={4} value={ov.caseFeatures ?? ''} onChange={(e) => set('caseFeatures', e.target.value)} placeholder={'End-to-End Automation from purchase to delivery.\nActs as a bridge between store, supplier, and logistics.'} />
+      </Field>
       <Row>
         <Field label="CTA Label">
           <input className="lb-input" value={ov.ctaPrimaryLabel ?? ''} onChange={(e) => set('ctaPrimaryLabel', e.target.value)} placeholder="View Case Study" />
         </Field>
         <LinkField label="CTA URL" value={ov.ctaPrimaryUrl ?? ''} onChange={(v) => set('ctaPrimaryUrl', v)} placeholder="/static/portfolio-detail" />
       </Row>
-      <MediaField label="Client Logo" value={ov.clientLogo?.url ?? ''} onChange={(ref) => set('clientLogo', ref)} />
+
+      <Field label="Client Logos">
+        <div className="lb-items">
+          {logos.map((logo: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Logo {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...logos]; a.splice(i, 1); set('clientLogos', a); set('clientLogo', null) }}>✕</button>
+              </div>
+              <MediaField label="Logo Image" value={logo.url ?? ''} onChange={(ref) => { const a = [...logos]; a[i] = ref; set('clientLogos', a); set('clientLogo', null) }} />
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => { const a = [...logos, { url: '', alt: '' }]; set('clientLogos', a); set('clientLogo', null) }}>+ Add Logo</button>
+        </div>
+      </Field>
+
       <MediaField label="Case Study Image" value={ov.caseImage?.url ?? ''} onChange={(ref) => set('caseImage', ref)} />
-      <Field label="Platform (floating badge)">
-        <input className="lb-input" value={ov.floatingPlatform ?? ''} onChange={(e) => set('floatingPlatform', e.target.value)} placeholder="Android & iOS" />
+      <Field label="Floating Badge — Value">
+        <input className="lb-input" value={ov.floatingPlatform ?? ''} onChange={(e) => set('floatingPlatform', e.target.value)} placeholder="Automation" />
       </Field>
-      <Field label="Platform Type">
-        <input className="lb-input" value={ov.floatingPlatformType ?? ''} onChange={(e) => set('floatingPlatformType', e.target.value)} placeholder="Mobile apps development" />
+      <Field label="Floating Badge — Subtitle">
+        <input className="lb-input" value={ov.floatingPlatformType ?? ''} onChange={(e) => set('floatingPlatformType', e.target.value)} placeholder="Streamlined Workflow" />
       </Field>
-      <Field label="Badge Icon URL (optional)">
+      <Field label="Floating Badge Icon URL (optional)">
         <input className="lb-input" value={ov.floatingIconSrc ?? ''} onChange={(e) => set('floatingIconSrc', e.target.value)} placeholder="https://…" />
       </Field>
       <Field label="Image Position">
-        <select className="lb-input" value={ov.imagePosition ?? 'right'} onChange={(e) => set('imagePosition', e.target.value)}>
+        <select className="lb-input lb-input--select" value={ov.imagePosition ?? 'right'} onChange={(e) => set('imagePosition', e.target.value)}>
           <option value="right">Right (text left, image right)</option>
           <option value="left">Left (image left, text right)</option>
         </select>
@@ -2179,6 +2344,9 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'breadcrumb'             && <BreadcrumbFields          ov={ov} set={set} />}
         {blockType === 'faq-about'             && <FAQAboutFields            ov={ov} set={set} />}
         {blockType === 'article-submit'        && <ArticleSubmitFields       ov={ov} set={set} />}
+        {blockType === 'serve-hero'            && <ServeHeroFields           ov={ov} set={set} />}
+        {blockType === 'serve-value'           && <ServeValueFields          ov={ov} set={set} />}
+        {blockType === 'serve-model'           && <ServeModelFields          ov={ov} set={set} />}
       </div>
     )
   }

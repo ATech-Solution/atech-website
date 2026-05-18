@@ -456,10 +456,12 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
       return {
         content: {
           sectionLabel:        'Featured Case Study',
-          caseTitle:           'Numiracle Group — MIFASHOW App',
-          caseDesc:            'MiFaShow was developed to solve the challenge of limited access to live events by building a mobile application that integrates ticket purchasing with real-time streaming. The app enables users to buy tickets and instantly watch concerts, stage plays, and business conferences through a seamless in-app experience.',
-          floatingPlatform:    'Android & iOS',
-          floatingPlatformType: 'Mobile apps development',
+          sectionBg:           '#ffffff',
+          caseTitle:           'HomAge: Revolutionizing Elderly Care Management',
+          caseDesc:            'HomAge is a project funded by the City University of Hong Kong that provides frail elders home-visiting healthcare services. ATech worked with HomAge\'s team of nurses and social workers shoulder-to-shoulder to design and develop an end-to-end system.',
+          caseFeatures:        'Real-time coordination of caregiver tasks and schedules.\nSecure portal for families to track health metrics and reports.\nCentralized record-keeping ensuring care continuity across shifts.',
+          floatingPlatform:    '40%',
+          floatingPlatformType: 'Efficiency Increase',
           ctaPrimaryLabel:     'View Case Study',
           ctaPrimaryUrl:       '#',
           imagePosition:       'right',
@@ -507,6 +509,63 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
           articleSubmitSubheading:     'Share your knowledge with our community.',
           articleSubmitCtaLabel:       'Submit Article',
           articleSubmitSuccessMessage: 'Thank you! Your article has been submitted for review.',
+        },
+      }
+
+    case 'serve-model':
+      return {
+        content: {
+          heading:    'Flexible Engagement Models',
+          subheading: "Choose the partnership model that best fits your startup's stage and needs.",
+          serveModelItems: [
+            {
+              modelTitle:    'Project-Based',
+              modelDesc:     'Fixed scope and timeline for MVP development and specific features.',
+              modelFeatures: 'Clear deliverables and milestones\nFixed budget and timeline\nIdeal for MVPs and prototypes',
+              modelFeatured: false,
+            },
+            {
+              modelTitle:      'Dedicated Team',
+              modelDesc:       'Your own dedicated development team working exclusively on your product.',
+              modelFeatures:   'Full-time dedicated developers\nFlexible team scaling\nLong-term partnership',
+              modelFeatured:   true,
+              modelBadgeLabel: 'Most Popular',
+            },
+            {
+              modelTitle:    'Staff Augmentation',
+              modelDesc:     'Extend your in-house team with skilled engineers on demand.',
+              modelFeatures: 'Seamless team integration\nOn-demand scaling\nRetain full control',
+              modelFeatured: false,
+            },
+          ],
+        },
+      }
+
+    case 'serve-value':
+      return {
+        content: {
+          heading:    'Why Startups Choose ATech',
+          subheading: 'We understand the unique challenges startups face and provide solutions designed for rapid growth and scalability.',
+          serveValueItems: [
+            { valueTitle: 'Fast MVP Development',   valueDesc: 'Launch your product in weeks, not months, with our agile development approach.' },
+            { valueTitle: 'Cost-Effective Solutions', valueDesc: 'Flexible pricing models and efficient development to maximize your runway.' },
+            { valueTitle: 'Scalable Architecture',   valueDesc: 'Build on solid foundations that grow seamlessly with your user base.' },
+            { valueTitle: 'Strategic Guidance',      valueDesc: 'Tech consultancy and strategic advice from experienced startup advisors.' },
+          ],
+        },
+      }
+
+    case 'serve-hero':
+      return {
+        content: {
+          heading:           'Technology Partner for Ambitious Startups',
+          body:              'From MVP to scale, we empower startups with agile development, strategic tech guidance, and flexible solutions that grow with your vision. Build faster, smarter, and more cost-effectively with ATech.',
+          ctaPrimaryLabel:   'Get Started',
+          ctaPrimaryUrl:     '/static/contact',
+          ctaSecondaryLabel: 'View Success Stories',
+          ctaSecondaryUrl:   '/portfolio',
+          serveHeroStatValue: '50+ Startups Launched',
+          serveHeroStatLabel: 'From Seed to Series B',
         },
       }
 

@@ -8,7 +8,9 @@ interface FeaturedCaseStudyData {
   sectionLabel?:         string
   caseTitle?:            string
   caseDesc?:             string
+  caseFeatures?:         string        // newline-separated checkmark feature list
   clientLogo?:           MediaRef | null
+  clientLogos?:          MediaRef[]    // multiple logos rendered side by side
   caseImage?:            MediaRef | null
   floatingPlatform?:     string
   floatingPlatformType?: string
@@ -16,6 +18,7 @@ interface FeaturedCaseStudyData {
   ctaPrimaryLabel?:      string
   ctaPrimaryUrl?:        string
   imagePosition?:        'left' | 'right'
+  sectionBg?:            string        // '#ffffff' | '#fafafa'
 }
 
 export default function FeaturedCaseStudySection({ data }: { data: FeaturedCaseStudyData }) {
@@ -23,7 +26,9 @@ export default function FeaturedCaseStudySection({ data }: { data: FeaturedCaseS
     sectionLabel      = 'Featured Case Study',
     caseTitle         = '',
     caseDesc          = '',
+    caseFeatures      = '',
     clientLogo        = null,
+    clientLogos       = [],
     caseImage         = null,
     floatingPlatform  = '',
     floatingPlatformType = '',
@@ -31,7 +36,17 @@ export default function FeaturedCaseStudySection({ data }: { data: FeaturedCaseS
     ctaPrimaryLabel   = '',
     ctaPrimaryUrl     = '#',
     imagePosition     = 'right',
+    sectionBg         = '#ffffff',
   } = data
+
+  const features = caseFeatures
+    ? caseFeatures.split('\n').map((f) => f.trim()).filter(Boolean)
+    : []
+
+  // Resolve logos: prefer clientLogos array, fall back to single clientLogo
+  const logos: MediaRef[] = clientLogos && clientLogos.length > 0
+    ? clientLogos
+    : clientLogo?.url ? [clientLogo] : []
 
   const isImageLeft = imagePosition === 'left'
 
@@ -86,6 +101,47 @@ export default function FeaturedCaseStudySection({ data }: { data: FeaturedCaseS
         </p>
       )}
 
+      {/* Checkmark feature list */}
+      {features.length > 0 && (
+        <ul
+          style={{
+            listStyle: 'none',
+            margin: 0,
+            padding: 0,
+            paddingTop: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+          }}
+        >
+          {features.map((feat, fi) => (
+            <li key={fi} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+              <span
+                style={{
+                  color: '#171717',
+                  fontSize: '12px',
+                  lineHeight: '24px',
+                  flexShrink: 0,
+                  marginTop: '1px',
+                }}
+              >
+                ✓
+              </span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-work-sans, sans-serif)',
+                  fontSize: '16px',
+                  color: '#525252',
+                  lineHeight: '24px',
+                }}
+              >
+                {feat}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+
       {ctaPrimaryLabel && ctaPrimaryUrl && (
         <Link
           href={ctaPrimaryUrl}
@@ -101,13 +157,27 @@ export default function FeaturedCaseStudySection({ data }: { data: FeaturedCaseS
         </Link>
       )}
 
-      {clientLogo?.url && (
-        /* eslint-disable-next-line @next/next/no-img-element */
-        <img
-          src={clientLogo.url}
-          alt={clientLogo.alt ?? 'Client logo'}
-          style={{ height: '79px', width: 'auto', objectFit: 'contain', objectPosition: 'left' }}
-        />
+      {/* Client logos — single or multiple side by side */}
+      {logos.length > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '26px',
+            paddingTop: '24px',
+            flexWrap: 'wrap',
+          }}
+        >
+          {logos.map((logo, li) => (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              key={li}
+              src={logo.url}
+              alt={logo.alt ?? 'Client logo'}
+              style={{ height: '79px', width: 'auto', maxWidth: '160px', objectFit: 'contain', objectPosition: 'left' }}
+            />
+          ))}
+        </div>
       )}
     </div>
   )
@@ -204,7 +274,7 @@ export default function FeaturedCaseStudySection({ data }: { data: FeaturedCaseS
   )
 
   return (
-    <section className="py-[100px] px-6 md:px-10" style={{ background: '#ffffff' }}>
+    <section className="py-[100px] px-6 md:px-10" style={{ background: sectionBg || '#ffffff' }}>
       <div
         className="mx-auto flex flex-col lg:flex-row items-center"
         style={{ maxWidth: '1200px', gap: '80px' }}

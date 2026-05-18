@@ -40,6 +40,9 @@ import {
   BreadcrumbSection,
   FAQAboutSection,
   ArticleSubmitSection,
+  ServeHeroSection,
+  ServeValueSection,
+  ServeModelSection,
 } from '@/components/block'
 
 // ── CSS custom property injection ─────────────────────────────────────────────
@@ -219,6 +222,12 @@ export function resolvePreviewComponent(
       return withStyle(<FAQAboutSection data={data as any} />, blockStyle)
     case 'article-submit':
       return withStyle(<ArticleSubmitSection data={data as any} />, blockStyle)
+    case 'serve-hero':
+      return withStyle(<ServeHeroSection data={data as any} />, blockStyle)
+    case 'serve-value':
+      return withStyle(<ServeValueSection data={data as any} />, blockStyle)
+    case 'serve-model':
+      return withStyle(<ServeModelSection data={data as any} />, blockStyle)
 
     // ── Basic blocks — inline previews ────────────────────────────────────────
     case 'heading':

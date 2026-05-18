@@ -31,6 +31,41 @@ const nextConfig: NextConfig = {
   output: 'standalone', // Critical for self-hosting
   transpilePackages: ['file-type'],
 
+  // ── Rewrites: clean URLs for static pages ──────────────────────────────────
+  // Maps /page-name → /static/page-name so CMS slugs and static pages
+  // can share the same clean URL space without conflicting.
+  async rewrites() {
+    const staticPages = [
+      'about-us',
+      'app-dev-service',
+      'contact',
+      'faq',
+      'forgot-password',
+      'get-involved',
+      'get-involved-community',
+      'hr-recruitment',
+      'insight',
+      'it-consulting',
+      'portfolio',
+      'product-development',
+      'qa-testing',
+      'reset-password',
+      'web-dev-service',
+      'who-we-serve',
+    ]
+    return [
+      // Simple pages
+      ...staticPages.map((slug) => ({
+        source: `/${slug}`,
+        destination: `/static/${slug}`,
+      })),
+      // Nested slugs (article/:slug, portfolio/:slug)
+      { source: '/article',          destination: '/static/article'          },
+      { source: '/article/:slug',    destination: '/static/article/:slug'    },
+      { source: '/portfolio/:slug',  destination: '/static/portfolio/:slug'  },
+    ]
+  },
+
   // ── Cache headers ────────────────────────────────────────────────────────────
   // HTML pages: never cache — ensures the browser always fetches fresh HTML with
   // current chunk hashes, preventing ChunkLoadError after a new deployment.

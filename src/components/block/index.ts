@@ -52,6 +52,9 @@ export {
   FAQAboutSection,
   FAQAboutServerSection,
   ArticleSubmitSection,
+  ServeHeroSection,
+  ServeValueSection,
+  ServeModelSection,
 } from './Advance'
 
 // ── Service Page Sections ────────────────────────────────────────────────────

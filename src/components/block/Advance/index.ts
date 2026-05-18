@@ -50,3 +50,6 @@ export { default as BreadcrumbSection                } from './BreadcrumbSection
 export { default as FAQAboutSection                  } from './FAQAboutSection'
 export { FAQAboutServerSection                        } from './FAQAboutServerSection'
 export { default as ArticleSubmitSection              } from './ArticleSubmitSection'
+export { default as ServeHeroSection                  } from './ServeHeroSection'
+export { default as ServeValueSection                 } from './ServeValueSection'
+export { default as ServeModelSection                 } from './ServeModelSection'

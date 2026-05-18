@@ -29,6 +29,9 @@ export const ADVANCE_BLOCK_TYPES = [
   'breadcrumb',
   'faq-about',
   'article-submit',
+  'serve-hero',
+  'serve-value',
+  'serve-model',
 ] as const
 
 export type BasicBlockType   = typeof BASIC_BLOCK_TYPES[number]
@@ -324,15 +327,37 @@ export interface BlockOverrides {
     // ── Featured Case Study ───────────────────────────────────────────────
     caseTitle?:              string
     caseDesc?:               string
+    caseFeatures?:           string
     clientLogo?:             MediaRef | null
+    clientLogos?:            MediaRef[]
     caseImage?:              MediaRef | null
     floatingPlatform?:       string
     floatingPlatformType?:   string
     floatingIconSrc?:        string
     imagePosition?:          'left' | 'right'
+    sectionBg?:              string
 
     // ── Partnership ───────────────────────────────────────────────────────────
     partnershipNote?: string
+
+    // ── Serve Hero ────────────────────────────────────────────────────────────
+    serveHeroStatIconSrc?: string
+    serveHeroStatIconBg?:  string
+    serveHeroStatValue?:   string
+    serveHeroStatLabel?:   string
+
+    // ── Serve Value ───────────────────────────────────────────────────────────
+    serveValueItems?: Array<{ valueIconSrc?: string; valueTitle?: string; valueDesc?: string }>
+
+    // ── Serve Model ───────────────────────────────────────────────────────────
+    serveModelItems?: Array<{
+      modelTitle?:      string
+      modelIconSrc?:    string
+      modelDesc?:       string
+      modelFeatures?:   string
+      modelFeatured?:   boolean
+      modelBadgeLabel?: string
+    }>
   }
   style?: Partial<Pick<BlockTemplate,
     'textAlign' | 'fontFamily' | 'fontSize' | 'fontWeight' | 'lineHeight' |

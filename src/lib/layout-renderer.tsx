@@ -57,6 +57,9 @@ import {
   FAQAboutSection,
   FAQAboutServerSection,
   ArticleSubmitSection,
+  ServeHeroSection,
+  ServeValueSection,
+  ServeModelSection,
 } from '@/components/block'
 import { JobsListServerSection } from '@/components/block/Advance/JobsListServerSection'
 
@@ -954,6 +957,12 @@ export function LayoutBlockRenderer({
 
     case 'article-submit':
       return wrapAdvanced(<ArticleSubmitSection data={data} />)
+    case 'serve-hero':
+      return wrapAdvanced(<ServeHeroSection data={data} />)
+    case 'serve-value':
+      return wrapAdvanced(<ServeValueSection data={data} />)
+    case 'serve-model':
+      return wrapAdvanced(<ServeModelSection data={data} />)
 
     default:
       return (

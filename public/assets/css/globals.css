@@ -265,6 +265,9 @@ ul { list-style: none; }
   .nav-list { gap: 1.25rem; }
 }
 
+/* ── Scroll anchor offset (accounts for 80px sticky header) ───────────────── */
+.section-anchor { scroll-margin-top: 96px; }
+
 /* ── Layout Builder responsive visibility ──────────────────────────────────── */
 @media (max-width: 767px) {
   .hide-mobile { display: none !important; }
