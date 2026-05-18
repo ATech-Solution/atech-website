@@ -112,13 +112,17 @@ export async function getArticleTemplatePage() {
 /** Fetch all active plugins (cached; bust with revalidateTag('plugins')) */
 export const getActivePlugins = unstable_cache(
   async () => {
-    const payload = await getPayloadClient()
-    const result = await payload.find({
-      collection: 'plugins',
-      where: { status: { equals: 'active' } },
-      limit: 100,
-    })
-    return result.docs
+    try {
+      const payload = await getPayloadClient()
+      const result = await payload.find({
+        collection: 'plugins',
+        where: { status: { equals: 'active' } },
+        limit: 100,
+      })
+      return result.docs
+    } catch {
+      return []
+    }
   },
   ['active-plugins'],
   { tags: ['plugins'] },
