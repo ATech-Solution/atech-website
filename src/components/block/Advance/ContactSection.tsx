@@ -1,6 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
+
+declare global {
+  interface Window {
+    grecaptcha?: {
+      render: (container: string | HTMLElement, params: Record<string, string>) => number
+      getResponse: (widgetId?: number) => string
+      reset: (widgetId?: number) => void
+      ready: (cb: () => void) => void
+    }
+  }
+}
 
 interface ContactSectionData {
   heading?:           string
@@ -97,7 +108,13 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
   const formHeading = data.formHeading ?? 'Send us a Message'
   const infoHeading = data.infoHeading ?? 'Contact Information'
 
+  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? ''
+  const captchaId = useId().replace(/:/g, '')
+  const captchaRef = useRef<HTMLDivElement>(null)
+  const widgetIdRef = useRef<number | null>(null)
+
   const [status, setStatus] = useState<FormStatus>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
   const [fields, setFields] = useState({
     firstName: '',
     lastName:  '',
@@ -105,6 +122,28 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
     phone:     '',
     message:   '',
   })
+
+  useEffect(() => {
+    if (!siteKey) return
+    if (document.querySelector('script[src*="recaptcha/api.js"]')) {
+      renderCaptcha(); return
+    }
+    const script = document.createElement('script')
+    script.src = 'https://www.google.com/recaptcha/api.js?render=explicit'
+    script.async = true
+    script.defer = true
+    script.onload = renderCaptcha
+    document.head.appendChild(script)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [siteKey])
+
+  function renderCaptcha() {
+    if (!siteKey || !captchaRef.current) return
+    window.grecaptcha?.ready(() => {
+      if (widgetIdRef.current !== null) return
+      widgetIdRef.current = window.grecaptcha!.render(captchaRef.current!, { sitekey: siteKey })
+    })
+  }
 
   const set = (key: keyof typeof fields) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -114,18 +153,31 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
     e.preventDefault()
     if (!fields.firstName || !fields.email || !fields.message) return
 
+    const recaptchaToken = siteKey
+      ? (window.grecaptcha?.getResponse(widgetIdRef.current ?? undefined) ?? '')
+      : 'dev-bypass'
+
+    if (siteKey && !recaptchaToken) {
+      setErrorMsg('Please complete the reCAPTCHA.')
+      setStatus('error')
+      return
+    }
+
     setStatus('loading')
+    setErrorMsg('')
     try {
       const res = await fetch('/api/contact', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(fields),
+        body:    JSON.stringify({ ...fields, recaptchaToken }),
       })
       if (!res.ok) throw new Error()
       setStatus('success')
       setFields({ firstName: '', lastName: '', email: '', phone: '', message: '' })
     } catch {
+      setErrorMsg('Something went wrong. Please try again or email us directly.')
       setStatus('error')
+      window.grecaptcha?.reset(widgetIdRef.current ?? undefined)
     }
   }
 
@@ -299,7 +351,11 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
                   style={{ ...inputStyle, resize: 'none' }}
                 />
 
-                {status === 'error' && (
+                {siteKey && (
+                  <div ref={captchaRef} id={`recaptcha-${captchaId}`} />
+                )}
+
+                {status === 'error' && errorMsg && (
                   <p
                     style={{
                       fontFamily: 'var(--font-work-sans, sans-serif)',
@@ -311,7 +367,7 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
                       border: '1px solid rgba(239,68,68,0.2)',
                     }}
                   >
-                    Something went wrong. Please try again or email us directly.
+                    {errorMsg}
                   </p>
                 )}
 

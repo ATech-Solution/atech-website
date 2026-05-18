@@ -76,7 +76,6 @@ export async function FAQMainServerSection({ data }: { data: FAQMainData }) {
         categories={categories}
         faqs={faqs}
         backLabel={data.faqBackLabel}
-        backUrl={data.faqBackUrl}
       />
     )
   } catch {

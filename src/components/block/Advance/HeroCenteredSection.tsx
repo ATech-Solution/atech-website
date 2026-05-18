@@ -1,5 +1,5 @@
 // Hero Centered Section — Layout Builder (Advance)
-// White bg, centered badge + large heading + subheading + optional video
+// White bg, centered badge + large heading + subheading + full-width video or image
 
 function toEmbedUrl(url: string): string | null {
   const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/]+)/)
@@ -17,51 +17,120 @@ interface HeroCenteredSectionProps {
     aboutHeroHeading?: string
     aboutHeroSubheading?: string
     aboutHeroVideoUrl?: string
+    aboutHeroMediaType?: 'video' | 'image'
+    aboutHeroImage?: { url: string; alt?: string } | null
   }
 }
 
 export default function HeroCenteredSection({ data }: HeroCenteredSectionProps) {
-  const { badge, badgeIcon, aboutHeroHeading, aboutHeroSubheading, aboutHeroVideoUrl } = data
+  const { badge, badgeIcon, aboutHeroHeading, aboutHeroSubheading, aboutHeroVideoUrl, aboutHeroMediaType, aboutHeroImage } = data
 
-  const embedUrl = aboutHeroVideoUrl ? toEmbedUrl(aboutHeroVideoUrl) : null
+  const mediaType = aboutHeroMediaType ?? 'video'
+  const embedUrl = mediaType === 'video' && aboutHeroVideoUrl ? toEmbedUrl(aboutHeroVideoUrl) : null
+  const showImage = mediaType === 'image' && aboutHeroImage?.url
 
   return (
-    <section className="px-6 md:px-10 pt-24 pb-12" style={{ background: '#ffffff' }}>
-      <div className="mx-auto flex flex-col items-center text-center gap-6" style={{ maxWidth: '896px' }}>
+    <section style={{ background: '#ffffff', padding: '80px 0' }}>
+      {/* Outer container — full 1280px, centers everything */}
+      <div
+        className="mx-auto flex flex-col items-center gap-6 px-8"
+        style={{ maxWidth: '1280px', width: '100%' }}
+      >
+        {/* Badge */}
         {(badge || badgeIcon) && (
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full self-center" style={{ background: '#f5f5f5', border: '1px solid #e5e5e5' }}>
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full self-center"
+            style={{ background: '#f5f5f5', border: '1px solid #e5e5e5' }}
+          >
             {badgeIcon?.url && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={badgeIcon.url} alt={badgeIcon.alt ?? ''} className="object-contain flex-shrink-0" style={{ width: '9px', height: '12px' }} />
+              <img
+                src={badgeIcon.url}
+                alt={badgeIcon.alt ?? ''}
+                className="object-contain flex-shrink-0"
+                style={{ width: '9px', height: '12px' }}
+              />
             )}
             {badge && (
-              <span className="text-xs font-normal tracking-[0.6px] uppercase" style={{ color: '#171717', fontFamily: 'var(--font-work-sans, sans-serif)' }}>
+              <span
+                className="text-xs font-normal tracking-[0.6px] uppercase"
+                style={{ color: '#171717', fontFamily: 'var(--font-work-sans, sans-serif)' }}
+              >
                 {badge}
               </span>
             )}
           </div>
         )}
 
+        {/* Heading — visually centered, no width cap needed */}
         {aboutHeroHeading && (
-          <h1 style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 3.75rem)', fontWeight: 400, color: '#000000', letterSpacing: '-1.2px', lineHeight: 1 }}>
+          <h1
+            className="text-center w-full"
+            style={{
+              fontFamily: 'var(--font-work-sans, sans-serif)',
+              fontSize: 'clamp(2.5rem, 5vw, 3.75rem)',
+              fontWeight: 400,
+              color: '#000000',
+              letterSpacing: '-1.2px',
+              lineHeight: 1,
+            }}
+          >
             {aboutHeroHeading}
           </h1>
         )}
 
+        {/* Subheading — capped at 896px to match Figma */}
         {aboutHeroSubheading && (
-          <p className="max-w-2xl" style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.25rem', color: '#525252', lineHeight: '28px' }}>
+          <p
+            className="text-center"
+            style={{
+              fontFamily: 'var(--font-work-sans, sans-serif)',
+              fontSize: '1.25rem',
+              color: '#525252',
+              lineHeight: '28px',
+              maxWidth: '896px',
+              width: '100%',
+            }}
+          >
             {aboutHeroSubheading}
           </p>
         )}
 
-        {embedUrl ? (
-          <div className="w-full mt-4 rounded-xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
-            <iframe src={embedUrl} title="Company Overview Video" allowFullScreen style={{ width: '100%', height: '100%', border: 'none' }} />
+        {/* Media — full container width (1280px) with rounded corners */}
+        {showImage ? (
+          <div className="w-full overflow-hidden" style={{ borderRadius: '12px' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={aboutHeroImage!.url}
+              alt={aboutHeroImage!.alt ?? ''}
+              style={{ width: '100%', height: '264px', display: 'block', objectFit: 'cover' }}
+            />
+          </div>
+        ) : embedUrl ? (
+          <div
+            className="w-full overflow-hidden"
+            style={{ borderRadius: '12px', aspectRatio: '16/9' }}
+          >
+            <iframe
+              src={embedUrl}
+              title="Company Overview Video"
+              allowFullScreen
+              style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+            />
           </div>
         ) : (
-          <div className="w-full mt-4 flex items-center justify-center rounded-xl" style={{ background: '#e5e5e5', height: '264px' }}>
-            <span style={{ color: '#737373', fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.125rem' }}>
-              Company Overview Video
+          <div
+            className="w-full flex items-center justify-center"
+            style={{ background: '#e5e5e5', height: '264px', borderRadius: '12px' }}
+          >
+            <span
+              style={{
+                color: '#737373',
+                fontFamily: 'var(--font-work-sans, sans-serif)',
+                fontSize: '1.125rem',
+              }}
+            >
+              {mediaType === 'image' ? 'Hero Image' : 'Company Overview Video'}
             </span>
           </div>
         )}

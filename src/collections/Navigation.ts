@@ -13,19 +13,6 @@ export const Navigation: GlobalConfig = {
     max: 3,
   },
   fields: [
-    {
-      name: 'siteTitle',
-      type: 'text',
-      required: true,
-      label: 'Site Title',
-      defaultValue: 'ATech',
-    },
-    {
-      name: 'logo',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Logo',
-    },
     // ── Main Menu Items ──────────────────────────────────────────────────────
     {
       name: 'menuItems',
@@ -141,13 +128,6 @@ export const Navigation: GlobalConfig = {
       label: 'Header CTA Button URL',
       defaultValue: '/static/contact',
     },
-    // ── Footer ───────────────────────────────────────────────────────────────
-    {
-      name: 'footerText',
-      type: 'text',
-      label: 'Footer Copyright Text',
-      defaultValue: '© 2026 ATech. All rights reserved.',
-    },
     // ── Footer Columns ────────────────────────────────────────────────────────
     {
       name: 'footerColumns',
@@ -164,6 +144,19 @@ export const Navigation: GlobalConfig = {
             { name: 'url',   type: 'text', required: true },
           ],
         },
+      ],
+    },
+    // ── Footer Copyright Menu ─────────────────────────────────────────────────
+    {
+      name: 'footerCopyrightMenu',
+      type: 'array',
+      label: 'Footer Copyright Menu',
+      admin: {
+        description: 'Links shown in the footer bottom bar (e.g. Privacy Policy, Terms of Service).',
+      },
+      fields: [
+        { name: 'label', type: 'text', required: true, label: 'Label' },
+        { name: 'url',   type: 'text', required: true, label: 'URL'   },
       ],
     },
   ],

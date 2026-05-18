@@ -301,6 +301,7 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
     case 'jobs-list':
       return {
         content: {
+          jobSource:  'manual' as const,
           heading:   inv.jobs.heading,
           subheading: inv.jobs.subheading,
           jobItems:  inv.jobs.openings.map((j) => ({
@@ -410,6 +411,7 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
     case 'contact-stats':
       return {
         content: {
+          contactStatsStyle: 'light' as const,
           heading:          cnt.stats.heading,
           subheading:       cnt.stats.subheading,
           contactStatCtas:  cnt.stats.cta.map((c) => ({
@@ -427,11 +429,26 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
     case 'locations':
       return {
         content: {
-          heading:     cnt.locations.heading,
-          officeItems: cnt.locations.offices.map((o) => ({
-            officeName:    o.name,
-            officeAddress: o.address,
-          })),
+          heading: cnt.locations.heading ?? 'Our Locations',
+          locationCards: [
+            {
+              cardOffices: [
+                { officeName: 'Hong Kong Head Office',            officeAddress: 'Room C, 22/F, King Palace Plaza, No.55 King Yip Street, Kwun Tong, KLN' },
+                { officeName: 'Hong Kong Science Park (HKSTP)',   officeAddress: 'Unit 962, 9/F, Building 19W, No. 19 Science Park West Avenue, Hong Kong Science Park, Pak Shek Kok, N.T.' },
+              ],
+            },
+            {
+              cardOffices: [
+                { officeName: 'China Branch Office',     officeAddress: '广州市南沙区黄阁镇市南公路黄阁段230号(自编三栋)105-13' },
+                { officeName: 'Indonesia Branch Office', officeAddress: 'Jl. Pluit Timur Raya No.17, RT.5/RW.6, Pluit, Kec. Penjaringan, Jkt Utara, Daerah Khusus Ibukota Jakarta 14450' },
+              ],
+            },
+            {
+              cardOffices: [
+                { officeName: 'Malaysia Branch Office', officeAddress: 'A-1-12 Vertical Business Suite No. 8, Jalan Kerinchi, Bangsar South, 59200, Kuala Lumpur' },
+              ],
+            },
+          ],
         },
       }
 
@@ -455,7 +472,6 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
           faqContentSource: 'collection' as const,
           faqLimit: 100,
           faqBackLabel: 'Back',
-          faqBackUrl: undefined,
         },
       }
 
@@ -466,6 +482,31 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
             { bcLabel: 'Home', bcHref: '/' },
             { bcLabel: 'Page', bcHref: null },
           ],
+        },
+      }
+
+    case 'faq-about':
+      return {
+        content: {
+          badge:             'FAQ',
+          faqContentSource:  'manual' as const,
+          faqCategorySlug:   '',
+          faqLimit:          20,
+          faqHeading:        au.faq.heading,
+          faqSubheading:     au.faq.subheading,
+          faqItems:          au.faq.items.map((f) => ({ faqQuestion: f.question, faqAnswer: f.answer })),
+          faqSeeMoreLabel:   'See more',
+          faqSeeMoreUrl:     undefined,
+        },
+      }
+
+    case 'article-submit':
+      return {
+        content: {
+          articleSubmitHeading:        'Submit an Article',
+          articleSubmitSubheading:     'Share your knowledge with our community.',
+          articleSubmitCtaLabel:       'Submit Article',
+          articleSubmitSuccessMessage: 'Thank you! Your article has been submitted for review.',
         },
       }
 

@@ -27,6 +27,7 @@ export {
   ArticleFeaturedSection,
   ArticleFeaturedServerSection,
   JobsListSection,
+  JobsListServerSection,
   InvolvedHeroSection,
   QuoteFormSection,
   CultureValuesSection,
@@ -49,6 +50,9 @@ export {
   PortfolioMainSection,
   PortfolioMainServerSection,
   BreadcrumbSection,
+  FAQAboutSection,
+  FAQAboutServerSection,
+  ArticleSubmitSection,
 } from './Advance'
 
 // ── Service Page Sections ────────────────────────────────────────────────────

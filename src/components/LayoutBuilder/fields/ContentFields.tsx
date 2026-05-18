@@ -696,6 +696,7 @@ function HomeContactFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
 
 // ── About Hero fields ─────────────────────────────────────────────────────────
 function AboutHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const mediaType: 'video' | 'image' = ov.aboutHeroMediaType ?? 'video'
   return (
     <>
       <Field label="Badge Text">
@@ -708,9 +709,39 @@ function AboutHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =>
       <Field label="Subheading">
         <textarea className="lb-input lb-input--textarea" rows={3} value={ov.aboutHeroSubheading ?? ''} onChange={(e) => set('aboutHeroSubheading', e.target.value)} placeholder="Supporting subheading…" />
       </Field>
-      <Field label="Video URL (optional)">
-        <input className="lb-input" value={ov.aboutHeroVideoUrl ?? ''} onChange={(e) => set('aboutHeroVideoUrl', e.target.value)} placeholder="https://youtube.com/…" />
+      <Field label="Media Type">
+        <div style={{ display: 'flex', gap: 8 }}>
+          {(['video', 'image'] as const).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => set('aboutHeroMediaType', t)}
+              style={{
+                flex: 1,
+                padding: '6px 0',
+                borderRadius: 4,
+                border: '1px solid',
+                borderColor: mediaType === t ? '#171717' : '#d4d4d4',
+                background: mediaType === t ? '#171717' : '#ffffff',
+                color: mediaType === t ? '#ffffff' : '#525252',
+                fontSize: 12,
+                fontWeight: 500,
+                cursor: 'pointer',
+                textTransform: 'capitalize',
+              }}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
       </Field>
+      {mediaType === 'video' ? (
+        <Field label="Video URL">
+          <input className="lb-input" value={ov.aboutHeroVideoUrl ?? ''} onChange={(e) => set('aboutHeroVideoUrl', e.target.value)} placeholder="https://youtube.com/…" />
+        </Field>
+      ) : (
+        <MediaField label="Hero Image" value={ov.aboutHeroImage?.url ?? ''} onChange={(ref) => set('aboutHeroImage', ref)} />
+      )}
     </>
   )
 }
@@ -803,6 +834,7 @@ function AboutMissionVisionFields({ ov, set }: { ov: any; set: (k: string, v: un
 // ── About Leadership fields ───────────────────────────────────────────────────
 function AboutLeadershipFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   const members: any[] = ov.teamMembers ?? []
+  const cols: 2 | 3 = ov.teamColumns ?? 3
   return (
     <>
       <Field label="Heading">
@@ -810,6 +842,31 @@ function AboutLeadershipFields({ ov, set }: { ov: any; set: (k: string, v: unkno
       </Field>
       <Field label="Subheading">
         <textarea className="lb-input lb-input--textarea" rows={2} value={ov.leadershipSubheading ?? ''} onChange={(e) => set('leadershipSubheading', e.target.value)} placeholder="The people behind ATech…" />
+      </Field>
+      <Field label="Columns">
+        <div style={{ display: 'flex', gap: 8 }}>
+          {([2, 3] as const).map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => set('teamColumns', n)}
+              style={{
+                flex: 1,
+                padding: '6px 0',
+                borderRadius: 4,
+                border: '1px solid',
+                borderColor: cols === n ? '#171717' : '#d4d4d4',
+                background: cols === n ? '#171717' : '#ffffff',
+                color: cols === n ? '#ffffff' : '#525252',
+                fontSize: 12,
+                fontWeight: 500,
+                cursor: 'pointer',
+              }}
+            >
+              {n} Col{n === 2 ? ' (centered)' : 's'}
+            </button>
+          ))}
+        </div>
       </Field>
 
       <Field label="Team Members">
@@ -861,6 +918,103 @@ function AboutFAQFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => 
           ))}
           <button className="lb-items__add" onClick={() => set('faqItems', [...items, {}])}>+ Add FAQ</button>
         </div>
+      </Field>
+    </>
+  )
+}
+
+// ── FAQ About fields (badge + source toggle + accordion, matches Figma FAQ-about design) ──
+function FAQAboutFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const source = (ov.faqContentSource ?? 'manual') as 'collection' | 'manual'
+  const items: any[] = ov.faqItems ?? []
+  return (
+    <>
+      <Field label="Badge Text">
+        <input className="lb-input" value={ov.badge ?? 'FAQ'} onChange={(e) => set('badge', e.target.value)} placeholder="FAQ" />
+      </Field>
+      <MediaField label="Badge Icon (optional)" value={ov.badgeIconUrl ?? ov.badgeIcon?.url ?? ''} onChange={(ref) => set('badgeIconUrl', ref?.url ?? '')} />
+      <Field label="Heading">
+        <input className="lb-input" value={ov.faqHeading ?? ''} onChange={(e) => set('faqHeading', e.target.value)} placeholder="Frequently Asked Questions" />
+      </Field>
+      <Field label="Subheading">
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.faqSubheading ?? ''} onChange={(e) => set('faqSubheading', e.target.value)} placeholder="Find answers to common questions…" />
+      </Field>
+
+      <Field label="Content Source">
+        <select
+          className="lb-input lb-select"
+          value={source}
+          onChange={(e) => set('faqContentSource', e.target.value)}
+        >
+          <option value="manual">Manual</option>
+          <option value="collection">Collection (CMS)</option>
+        </select>
+      </Field>
+
+      {source === 'collection' && (
+        <>
+          <Field label="Category Slug (optional)">
+            <input
+              className="lb-input"
+              value={ov.faqCategorySlug ?? ''}
+              onChange={(e) => set('faqCategorySlug', e.target.value || undefined)}
+              placeholder="e.g. general — leave blank for all"
+            />
+          </Field>
+          <Field label="Max Items">
+            <input
+              className="lb-input"
+              type="number"
+              min={1}
+              max={100}
+              value={ov.faqLimit ?? 20}
+              onChange={(e) => set('faqLimit', Number(e.target.value))}
+            />
+          </Field>
+        </>
+      )}
+
+      {source === 'manual' && (
+        <Field label="FAQ Items">
+          <div className="lb-items">
+            {items.map((f: any, i: number) => (
+              <div key={i} className="lb-item">
+                <div className="lb-item__header">
+                  <span>FAQ {i + 1}</span>
+                  <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); set('faqItems', a) }}>✕</button>
+                </div>
+                <input className="lb-input" placeholder="Question" value={f.faqQuestion ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], faqQuestion: e.target.value }; set('faqItems', a) }} />
+                <textarea className="lb-input lb-input--textarea" rows={3} placeholder="Answer" value={f.faqAnswer ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], faqAnswer: e.target.value }; set('faqItems', a) }} />
+              </div>
+            ))}
+            <button className="lb-items__add" onClick={() => set('faqItems', [...items, {}])}>+ Add FAQ</button>
+          </div>
+        </Field>
+      )}
+
+      <Field label="See More Label">
+        <input className="lb-input" value={ov.faqSeeMoreLabel ?? ''} onChange={(e) => set('faqSeeMoreLabel', e.target.value)} placeholder="See more" />
+      </Field>
+      <LinkField label="See More URL" value={ov.faqSeeMoreUrl ?? ''} onChange={(v) => set('faqSeeMoreUrl', v || undefined)} placeholder="/static/faq" />
+    </>
+  )
+}
+
+// ── Article Submit fields ─────────────────────────────────────────────────────
+function ArticleSubmitFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  return (
+    <>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.articleSubmitHeading ?? ''} onChange={(e) => set('articleSubmitHeading', e.target.value)} placeholder="Submit an Article" />
+      </Field>
+      <Field label="Subheading">
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.articleSubmitSubheading ?? ''} onChange={(e) => set('articleSubmitSubheading', e.target.value)} placeholder="Share your knowledge with our community." />
+      </Field>
+      <Field label="Button Label">
+        <input className="lb-input" value={ov.articleSubmitCtaLabel ?? ''} onChange={(e) => set('articleSubmitCtaLabel', e.target.value)} placeholder="Submit Article" />
+      </Field>
+      <Field label="Success Message">
+        <input className="lb-input" value={ov.articleSubmitSuccessMessage ?? ''} onChange={(e) => set('articleSubmitSuccessMessage', e.target.value)} placeholder="Thank you! Your article has been submitted for review." />
       </Field>
     </>
   )
@@ -1443,43 +1597,6 @@ function ArticleFeaturedFields({ ov, set }: { ov: any; set: (k: string, v: unkno
   )
 }
 
-// ── Jobs List fields ──────────────────────────────────────────────────────────
-function JobsListFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
-  const items: any[] = ov.jobItems ?? []
-  return (
-    <>
-      <Field label="Heading">
-        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Join Our Team" />
-      </Field>
-      <Field label="Subheading">
-        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="Build your career with us…" />
-      </Field>
-      <Field label="Job Openings">
-        <div className="lb-items">
-          {items.map((j: any, i: number) => (
-            <div key={i} className="lb-item">
-              <div className="lb-item__header">
-                <span>Job {i + 1}</span>
-                <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); set('jobItems', a) }}>✕</button>
-              </div>
-              <Row>
-                <input className="lb-input" placeholder="Title" value={j.jobTitle ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobTitle: e.target.value }; set('jobItems', a) }} />
-                <input className="lb-input" placeholder="Type (Full-time)" value={j.jobType ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobType: e.target.value }; set('jobItems', a) }} />
-              </Row>
-              <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={j.jobDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobDesc: e.target.value }; set('jobItems', a) }} />
-              <Row>
-                <input className="lb-input" placeholder="CTA Label" value={j.jobCta ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobCta: e.target.value }; set('jobItems', a) }} />
-                <LinkField label="CTA URL" value={j.jobUrl ?? ''} onChange={(v) => { const a = [...items]; a[i] = { ...a[i], jobUrl: v }; set('jobItems', a) }} />
-              </Row>
-            </div>
-          ))}
-          <button className="lb-items__add" onClick={() => set('jobItems', [...items, {}])}>+ Add Job</button>
-        </div>
-      </Field>
-    </>
-  )
-}
-
 // ── Involved Hero fields ──────────────────────────────────────────────────────
 function InvolvedHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   return (
@@ -1706,12 +1823,78 @@ function ContactHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
   )
 }
 
+// ── Jobs List fields ──────────────────────────────────────────────────────────
+function JobsListFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const items: any[] = ov.jobItems ?? []
+  const source = ov.jobSource ?? 'manual'
+  return (
+    <>
+      <Field label="Heading">
+        <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Join Our Team" />
+      </Field>
+      <Field label="Subheading">
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="Build your career with us…" />
+      </Field>
+      <Field label="Job Source">
+        <select className="lb-input lb-input--select" value={source} onChange={(e) => set('jobSource', e.target.value)}>
+          <option value="manual">Manual (enter jobs below)</option>
+          <option value="collection">From Collection (Job Vacancies)</option>
+        </select>
+      </Field>
+
+      {source === 'collection' ? (
+        <>
+          <Field label="Category Filter">
+            <input className="lb-input" value={ov.jobCategory ?? ''} onChange={(e) => set('jobCategory', e.target.value)} placeholder="e.g. Engineering (leave empty for all)" />
+          </Field>
+          <Field label="Limit">
+            <input className="lb-input" type="number" min={1} max={100} value={ov.jobLimit ?? 20} onChange={(e) => set('jobLimit', Number(e.target.value))} />
+          </Field>
+        </>
+      ) : (
+        <Field label="Job Openings">
+          <div className="lb-items">
+            {items.map((j: any, i: number) => (
+              <div key={i} className="lb-item">
+                <div className="lb-item__header">
+                  <span>Job {i + 1}</span>
+                  <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); set('jobItems', a) }}>✕</button>
+                </div>
+                <Row>
+                  <input className="lb-input" placeholder="Title" value={j.jobTitle ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobTitle: e.target.value }; set('jobItems', a) }} />
+                  <input className="lb-input" placeholder="Type (Full-time)" value={j.jobType ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobType: e.target.value }; set('jobItems', a) }} />
+                </Row>
+                <Row>
+                  <input className="lb-input" placeholder="Category" value={j.jobCategory ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobCategory: e.target.value }; set('jobItems', a) }} />
+                  <input className="lb-input" placeholder="Location" value={j.jobLocation ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobLocation: e.target.value }; set('jobItems', a) }} />
+                </Row>
+                <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={j.jobDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobDesc: e.target.value }; set('jobItems', a) }} />
+                <Row>
+                  <input className="lb-input" placeholder="CTA Label" value={j.jobCta ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], jobCta: e.target.value }; set('jobItems', a) }} />
+                  <LinkField label="CTA URL" value={j.jobUrl ?? ''} onChange={(v) => { const a = [...items]; a[i] = { ...a[i], jobUrl: v }; set('jobItems', a) }} />
+                </Row>
+              </div>
+            ))}
+            <button className="lb-items__add" onClick={() => set('jobItems', [...items, {}])}>+ Add Job</button>
+          </div>
+        </Field>
+      )}
+    </>
+  )
+}
+
 // ── Contact Stats fields ──────────────────────────────────────────────────────
 function ContactStatsFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   const ctas: any[]  = ov.contactStatCtas ?? []
   const stats: any[] = ov.contactStatItems ?? []
   return (
     <>
+      <Field label="Style">
+        <select className="lb-input lb-input--select" value={ov.contactStatsStyle ?? 'light'} onChange={(e) => set('contactStatsStyle', e.target.value)}>
+          <option value="light">Light (white background)</option>
+          <option value="dark">Dark (black background)</option>
+        </select>
+      </Field>
       <Field label="Heading">
         <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Ready to Start Your Project?" />
       </Field>
@@ -1827,25 +2010,45 @@ function PartnershipFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
 }
 
 function LocationsFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
-  const offices: any[] = ov.officeItems ?? []
+  const cards: any[] = ov.locationCards ?? []
+
+  function setCards(next: any[]) { set('locationCards', next) }
+
   return (
     <>
       <Field label="Heading">
         <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Our Locations" />
       </Field>
-      <Field label="Offices">
+      <Field label="Location Cards">
         <div className="lb-items">
-          {offices.map((o: any, i: number) => (
-            <div key={i} className="lb-item">
-              <div className="lb-item__header">
-                <span>Office {i + 1}</span>
-                <button className="lb-item__remove" onClick={() => { const a = [...offices]; a.splice(i, 1); set('officeItems', a) }}>✕</button>
+          {cards.map((card: any, ci: number) => {
+            const offices: any[] = card.cardOffices ?? []
+            function setOffices(next: any[]) {
+              const c = [...cards]; c[ci] = { ...c[ci], cardOffices: next }; setCards(c)
+            }
+            return (
+              <div key={ci} className="lb-item">
+                <div className="lb-item__header">
+                  <span>Card {ci + 1}</span>
+                  <button className="lb-item__remove" onClick={() => { const c = [...cards]; c.splice(ci, 1); setCards(c) }}>✕</button>
+                </div>
+                <div className="lb-items" style={{ marginTop: 6 }}>
+                  {offices.map((o: any, oi: number) => (
+                    <div key={oi} className="lb-item">
+                      <div className="lb-item__header">
+                        <span>Office {oi + 1}</span>
+                        <button className="lb-item__remove" onClick={() => { const a = [...offices]; a.splice(oi, 1); setOffices(a) }}>✕</button>
+                      </div>
+                      <input className="lb-input" placeholder="Office name" value={o.officeName ?? ''} onChange={(e) => { const a = [...offices]; a[oi] = { ...a[oi], officeName: e.target.value }; setOffices(a) }} />
+                      <textarea className="lb-input lb-input--textarea" rows={3} placeholder="Full address" value={o.officeAddress ?? ''} onChange={(e) => { const a = [...offices]; a[oi] = { ...a[oi], officeAddress: e.target.value }; setOffices(a) }} />
+                    </div>
+                  ))}
+                  <button className="lb-items__add" onClick={() => setOffices([...offices, {}])}>+ Add Office</button>
+                </div>
               </div>
-              <input className="lb-input" placeholder="Office name" value={o.officeName ?? ''} onChange={(e) => { const a = [...offices]; a[i] = { ...a[i], officeName: e.target.value }; set('officeItems', a) }} />
-              <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Full address" value={o.officeAddress ?? ''} onChange={(e) => { const a = [...offices]; a[i] = { ...a[i], officeAddress: e.target.value }; set('officeItems', a) }} />
-            </div>
-          ))}
-          <button className="lb-items__add" onClick={() => set('officeItems', [...offices, {}])}>+ Add Office</button>
+            )
+          })}
+          <button className="lb-items__add" onClick={() => setCards([...cards, { cardOffices: [{}] }])}>+ Add Card</button>
         </div>
       </Field>
     </>
@@ -1902,7 +2105,6 @@ function FAQMainFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => v
       <Field label="Back Button Label">
         <input className="lb-input" value={ov.faqBackLabel ?? ''} onChange={(e) => set('faqBackLabel', e.target.value)} placeholder="Back" />
       </Field>
-      <LinkField label="Back Button URL" value={ov.faqBackUrl ?? ''} onChange={(v) => set('faqBackUrl', v || null)} placeholder="/static/faq" />
     </>
   )
 }
@@ -1975,6 +2177,8 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'partnership'            && <PartnershipFields         ov={ov} set={set} />}
         {blockType === 'faq-main'              && <FAQMainFields             ov={ov} set={set} />}
         {blockType === 'breadcrumb'             && <BreadcrumbFields          ov={ov} set={set} />}
+        {blockType === 'faq-about'             && <FAQAboutFields            ov={ov} set={set} />}
+        {blockType === 'article-submit'        && <ArticleSubmitFields       ov={ov} set={set} />}
       </div>
     )
   }

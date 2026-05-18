@@ -1,18 +1,23 @@
 import { NextResponse } from 'next/server'
 import { sendEmail } from '@/lib/email'
+import { verifyRecaptcha } from '@/lib/recaptcha'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { firstName, lastName, email, phone, message } = body
+    const { firstName, lastName, email, phone, message, recaptchaToken } = body
 
     if (!firstName || !email || !message) {
       return NextResponse.json(
         { error: 'firstName, email, and message are required.' },
         { status: 400 },
       )
+    }
+
+    if (!(await verifyRecaptcha(recaptchaToken ?? ''))) {
+      return NextResponse.json({ error: 'reCAPTCHA verification failed.' }, { status: 400 })
     }
 
     // Get admin notification email from settings

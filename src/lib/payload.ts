@@ -109,6 +109,21 @@ export async function getArticleTemplatePage() {
   return result.docs[0] ?? null
 }
 
+/** Fetch all active plugins (cached; bust with revalidateTag('plugins')) */
+export const getActivePlugins = unstable_cache(
+  async () => {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'plugins',
+      where: { status: { equals: 'active' } },
+      limit: 100,
+    })
+    return result.docs
+  },
+  ['active-plugins'],
+  { tags: ['plugins'] },
+)
+
 /**
  * Batch-fetch block templates by ID.
  * Returns a map of { [id]: blockDoc } for merging with layoutBuilder overrides.

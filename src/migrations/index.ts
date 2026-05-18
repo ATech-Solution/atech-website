@@ -23,6 +23,20 @@ import * as migration_20260513_101316 from './20260513_101316';
 import * as migration_20260517_032348_testimonials_collection from './20260517_032348_testimonials_collection';
 import * as migration_20260517_044131 from './20260517_044131';
 import * as migration_20260517_100900 from './20260517_100900';
+import * as migration_20260517_122029 from './20260517_122029';
+import * as migration_20260518_025256 from './20260518_025256';
+import * as migration_20260518_042130 from './20260518_042130';
+import * as migration_20260518_051631 from './20260518_051631';
+import * as migration_20260518_063704 from './20260518_063704';
+import * as migration_20260518_073747 from './20260518_073747';
+import * as migration_20260518_074905 from './20260518_074905';
+import * as migration_20260518_080757 from './20260518_080757';
+import * as migration_20260518_094914 from './20260518_094914';
+import * as migration_20260518_100026 from './20260518_100026';
+import * as migration_20260518_102842 from './20260518_102842';
+import * as migration_20260518_105658 from './20260518_105658';
+import * as migration_20260518_110000_job_vacancies from './20260518_110000_job_vacancies';
+import * as migration_20260518_111401 from './20260518_111401';
 
 export const migrations = [
   {
@@ -148,6 +162,76 @@ export const migrations = [
   {
     up: migration_20260517_100900.up,
     down: migration_20260517_100900.down,
-    name: '20260517_100900'
+    name: '20260517_100900',
+  },
+  {
+    up: migration_20260517_122029.up,
+    down: migration_20260517_122029.down,
+    name: '20260517_122029',
+  },
+  {
+    up: migration_20260518_025256.up,
+    down: migration_20260518_025256.down,
+    name: '20260518_025256',
+  },
+  {
+    up: migration_20260518_042130.up,
+    down: migration_20260518_042130.down,
+    name: '20260518_042130',
+  },
+  {
+    up: migration_20260518_051631.up,
+    down: migration_20260518_051631.down,
+    name: '20260518_051631',
+  },
+  {
+    up: migration_20260518_063704.up,
+    down: migration_20260518_063704.down,
+    name: '20260518_063704',
+  },
+  {
+    up: migration_20260518_073747.up,
+    down: migration_20260518_073747.down,
+    name: '20260518_073747',
+  },
+  {
+    up: migration_20260518_074905.up,
+    down: migration_20260518_074905.down,
+    name: '20260518_074905',
+  },
+  {
+    up: migration_20260518_080757.up,
+    down: migration_20260518_080757.down,
+    name: '20260518_080757',
+  },
+  {
+    up: migration_20260518_094914.up,
+    down: migration_20260518_094914.down,
+    name: '20260518_094914',
+  },
+  {
+    up: migration_20260518_100026.up,
+    down: migration_20260518_100026.down,
+    name: '20260518_100026',
+  },
+  {
+    up: migration_20260518_102842.up,
+    down: migration_20260518_102842.down,
+    name: '20260518_102842',
+  },
+  {
+    up: migration_20260518_105658.up,
+    down: migration_20260518_105658.down,
+    name: '20260518_105658',
+  },
+  {
+    up: migration_20260518_110000_job_vacancies.up,
+    down: migration_20260518_110000_job_vacancies.down,
+    name: '20260518_110000_job_vacancies',
+  },
+  {
+    up: migration_20260518_111401.up,
+    down: migration_20260518_111401.down,
+    name: '20260518_111401'
   },
 ];

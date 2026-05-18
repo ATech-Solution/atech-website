@@ -308,14 +308,12 @@ async function seed() {
     slug: 'navigation',
     overrideAccess: true,
     data: {
-      siteTitle: 'ATech',
       menuItems: [
-        { label: 'Home',     url: '/',          openInNewTab: false },
-        { label: 'About',    url: '/about',     openInNewTab: false },
-        { label: 'Services', url: '/services',  openInNewTab: false },
-        { label: 'Contact',  url: '/static/contact',   openInNewTab: false },
+        { label: 'Home',     url: '/',               openInNewTab: false },
+        { label: 'About',    url: '/about',          openInNewTab: false },
+        { label: 'Services', url: '/services',       openInNewTab: false },
+        { label: 'Contact',  url: '/static/contact', openInNewTab: false },
       ],
-      footerText: `© ${new Date().getFullYear()} ATech Solutions. All rights reserved.`,
     },
   })
 

@@ -27,6 +27,8 @@ export const ADVANCE_BLOCK_TYPES = [
   'article-detail-hero', 'article-detail-content', 'article-related',
   'faq-main',
   'breadcrumb',
+  'faq-about',
+  'article-submit',
 ] as const
 
 export type BasicBlockType   = typeof BASIC_BLOCK_TYPES[number]
@@ -203,7 +205,10 @@ export interface BlockOverrides {
     aboutHeroHeading?: string
     aboutHeroSubheading?: string
     badgeIcon?: MediaRef | null
+    badgeIconUrl?: string
     aboutHeroVideoUrl?: string
+    aboutHeroMediaType?: 'video' | 'image'
+    aboutHeroImage?: MediaRef | null
 
     // ── About Company ─────────────────────────────────────────────────────
     aboutCompanyHeading?: string
@@ -225,6 +230,7 @@ export interface BlockOverrides {
     // ── About Leadership ──────────────────────────────────────────────────
     leadershipHeading?: string
     leadershipSubheading?: string
+    teamColumns?: 2 | 3
     teamMembers?: Array<{ memberAvatar?: MediaRef | null; memberName?: string; memberRole?: string; memberBio?: string }>
 
     // ── FAQ Section / FAQ Main ────────────────────────────────────────────
@@ -232,12 +238,19 @@ export interface BlockOverrides {
     faqCategorySlug?: string
     faqLimit?: number
     faqBackLabel?: string
-    faqBackUrl?: string
 
     // ── About FAQ ─────────────────────────────────────────────────────────
     faqHeading?: string
     faqSubheading?: string
     faqItems?: Array<{ faqQuestion?: string; faqAnswer?: string }>
+    faqSeeMoreLabel?: string
+    faqSeeMoreUrl?: string
+
+    // ── Article Submit ────────────────────────────────────────────────────
+    articleSubmitHeading?: string
+    articleSubmitSubheading?: string
+    articleSubmitCtaLabel?: string
+    articleSubmitSuccessMessage?: string
 
     // ── Page Hero (portfolio, insight, article, faq, community) ───────────
     pageHeroAlign?: 'left' | 'center'
@@ -294,12 +307,19 @@ export interface BlockOverrides {
     // ── Contact Hero ──────────────────────────────────────────────────────
     contactCards?: Array<{ cardIconSrc?: string; cardTitle?: string; cardDesc?: string; cardValue?: string }>
 
+    // ── Jobs List ─────────────────────────────────────────────────────────
+    jobSource?:   'manual' | 'collection'
+    jobCategory?: string
+    jobLimit?:    number
+
     // ── Contact Stats ─────────────────────────────────────────────────────
+    contactStatsStyle?: 'light' | 'dark'
     contactStatCtas?:  Array<{ contactCtaLabel?: string; contactCtaUrl?: string; contactCtaPrimary?: boolean; contactCtaIcon?: MediaRef | null; contactCtaIconPos?: 'left' | 'right' }>
     contactStatItems?: Array<{ contactStatValue?: string; contactStatLabel?: string }>
 
     // ── Locations ─────────────────────────────────────────────────────────
     officeItems?: Array<{ officeName?: string; officeAddress?: string }>
+    locationCards?: Array<{ cardOffices?: Array<{ officeName?: string; officeAddress?: string }> }>
 
     // ── Featured Case Study ───────────────────────────────────────────────
     caseTitle?:              string

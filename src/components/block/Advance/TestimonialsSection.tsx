@@ -4,8 +4,6 @@
 // Carousel: enabled via enableCarousel — 3 cards per slide on desktop, 1 on mobile
 
 import type React from 'react'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
 import TestimonialsCarousel from './TestimonialsCarousel'
 
 interface TestimonialItem {
@@ -108,9 +106,11 @@ function TestimonialCardItem({ item }: { item: TestimonialItem }) {
   )
 }
 
+export type { TestimonialItem, TestimonialsSectionData }
+
 // ── Shared shell (handles grid vs carousel layout) ───────────────────────────
 
-function TestimonialsShell({ data, items }: { data: TestimonialsSectionData; items: TestimonialItem[] }) {
+export function TestimonialsShell({ data, items }: { data: TestimonialsSectionData; items: TestimonialItem[] }) {
   const enableCarousel = data.enableCarousel ?? false
 
   return (
@@ -190,39 +190,3 @@ export default function TestimonialsSection({ data }: { data: TestimonialsSectio
   return <TestimonialsShell data={data} items={items} />
 }
 
-// ── Async server export (collection mode) ────────────────────────────────────
-
-export async function TestimonialsSectionServerSection({ data }: { data: TestimonialsSectionData }) {
-  const isCollection = (data.testimonialsContentSource ?? 'manual') === 'collection'
-
-  if (!isCollection) {
-    // Manual mode — render directly from overrides.testimonialItems
-    return <TestimonialsSection data={data} />
-  }
-
-  // Collection mode — query Payload directly (no HTTP round-trip)
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const result  = await payload.find({
-      collection: 'testimonials',
-      limit:      data.testimonialsLimit ?? 9,
-      sort:       'order',
-      depth:      1,
-    })
-
-    const items: TestimonialItem[] = result.docs.map((t: any) => ({
-      clientName:    t.clientName    ?? '',
-      clientRole:    t.clientRole    ?? '',
-      clientCompany: t.clientCompany ?? '',
-      quote:         t.quote         ?? '',
-      rating:        t.rating        ?? 5,
-      avatar:        t.avatar?.url
-        ? { url: t.avatar.url, alt: t.avatar.alt ?? t.clientName ?? '' }
-        : undefined,
-    }))
-
-    return <TestimonialsShell data={data} items={items} />
-  } catch {
-    return <TestimonialsShell data={data} items={[]} />
-  }
-}

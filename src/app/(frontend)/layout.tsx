@@ -4,7 +4,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ThemeProvider from '@/components/ThemeProvider'
 import ChunkErrorRecovery from '@/components/ChunkErrorRecovery'
-import { getTheme, getSettings } from '@/lib/payload'
+import { getTheme, getSettings, getActivePlugins, getNavigation } from '@/lib/payload'
 import { buildThemeCssVars } from '@/lib/theme'
 import '../../../public/assets/css/globals.css'
 
@@ -40,9 +40,17 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const theme = await getTheme()
   const settings = await getSettings()
+  const navigation = await getNavigation().catch(() => null)
+  const plugins = await getActivePlugins()
   const themeVars = buildThemeCssVars(theme)
   const customCSS  = (theme as any)?.customCSS ?? ''
   const favicon  = (theme as any)?.favicon ?? ''
+  const scriptPlugins = plugins.filter(
+    (p: any) =>
+      ['frontend-script', 'third-party-embed'].includes(p.pluginType) &&
+      typeof p.scriptCode === 'string' &&
+      p.scriptCode.trim() !== '',
+  )
 
   
   // console.log('theme',theme)
@@ -62,13 +70,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="icon" href={favicon.url} sizes="any" />
         {themeVars && <style dangerouslySetInnerHTML={{ __html: themeVars }} />}
         {customCSS  && <style dangerouslySetInnerHTML={{ __html: customCSS  }} />}
+        {scriptPlugins.map((p: any) => (
+          <script key={p.id} dangerouslySetInnerHTML={{ __html: p.scriptCode }} />
+        ))}
       </head>
       <body>
         <ChunkErrorRecovery />
         <ThemeProvider initialVars={themeVars}>
           <Header theme={theme} />
           <main className="main-content">{children}</main>
-          <Footer theme={theme} settings={settings}/>
+          <Footer theme={theme} settings={settings} navigation={navigation} />
         </ThemeProvider>
       </body>
     </html>

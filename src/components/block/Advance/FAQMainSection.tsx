@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -23,7 +24,6 @@ export interface FAQMainData {
   faqCategorySlug?: string
   faqLimit?: number
   faqBackLabel?: string
-  faqBackUrl?: string
   faqItems?: Array<{ question?: string; answer?: string }>
 }
 
@@ -33,14 +33,15 @@ interface FAQMainClientProps {
   categories: FAQCategory[]
   faqs: FAQEntry[]
   backLabel?: string
-  backUrl?: string
 }
 
-export function FAQMainClient({ categories, faqs, backLabel, backUrl }: FAQMainClientProps) {
+export function FAQMainClient({ categories, faqs, backLabel }: FAQMainClientProps) {
+  const router = useRouter()
   const firstSlug = categories[0]?.slug ?? ''
   const [activeSlug, setActiveSlug] = useState(firstSlug)
   const [search, setSearch] = useState('')
   const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const [backHovered, setBackHovered] = useState(false)
 
   const currentCat = categories.find((c) => c.slug === activeSlug)
 
@@ -136,27 +137,32 @@ export function FAQMainClient({ categories, faqs, backLabel, backUrl }: FAQMainC
         {/* ── Right content ─────────────────────────────────────── */}
         <div style={{ flex: 1, paddingLeft: hasSidebar ? '48px' : '0' }}>
           {/* Back link */}
-          {backUrl && (
-            <a
-              href={backUrl}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                color: '#525252',
-                textDecoration: 'none',
-                fontSize: '14px',
-                fontFamily: 'var(--font-work-sans, sans-serif)',
-                lineHeight: '20px',
-                marginBottom: '40px',
-              }}
-            >
-              <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
-                <path d="M8 2L4 7L8 12" stroke="#525252" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              {backLabel ?? 'Back'}
-            </a>
-          )}
+          <button
+            onClick={() => router.back()}
+            onMouseEnter={() => setBackHovered(true)}
+            onMouseLeave={() => setBackHovered(false)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: backHovered ? '#171717' : '#525252',
+              fontSize: '14px',
+              fontFamily: 'var(--font-work-sans, sans-serif)',
+              fontWeight: 400,
+              lineHeight: '20px',
+              marginBottom: '40px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              transition: 'color 0.15s ease',
+            }}
+          >
+            <svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M0.256348 6.38213C-0.0854492 6.72393 -0.0854492 7.279 0.256348 7.6208L4.63135 11.9958C4.97314 12.3376 5.52822 12.3376 5.87002 11.9958C6.21182 11.654 6.21182 11.0989 5.87002 10.7571L2.98525 7.8751H11.3743C11.8583 7.8751 12.2493 7.48408 12.2493 7.0001C12.2493 6.51611 11.8583 6.1251 11.3743 6.1251H2.98799L5.86729 3.24307C6.20908 2.90127 6.20908 2.34619 5.86729 2.00439C5.52549 1.6626 4.97041 1.6626 4.62861 2.00439L0.253613 6.37939L0.256348 6.38213Z" fill="currentColor" />
+            </svg>
+            {backLabel ?? 'Back'}
+          </button>
 
           {/* Category heading */}
           {hasSidebar && currentCat && (
@@ -167,7 +173,7 @@ export function FAQMainClient({ categories, faqs, backLabel, backUrl }: FAQMainC
               color: '#000000',
               lineHeight: '48px',
               marginBottom: '24px',
-              marginTop: backUrl ? '0' : '0',
+              marginTop: '0',
             }}>
               {currentCat.title}
             </h2>
@@ -273,7 +279,6 @@ export default function FAQMainSection({ data }: { data: FAQMainData }) {
       categories={cats}
       faqs={items}
       backLabel={data.faqBackLabel}
-      backUrl={data.faqBackUrl}
     />
   )
 }

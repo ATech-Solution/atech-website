@@ -31,6 +31,7 @@ import {
   ArticleFeaturedSection,
   ArticleFeaturedServerSection,
   JobsListSection,
+  JobsListServerSection,
   InvolvedHeroSection,
   QuoteFormSection,
   CultureValuesSection,
@@ -54,6 +55,9 @@ import {
   PortfolioMainSection,
   PortfolioMainServerSection,
   BreadcrumbSection,
+  FAQAboutSection,
+  FAQAboutServerSection,
+  ArticleSubmitSection,
 } from '@/components/block'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -866,6 +870,12 @@ export function LayoutBlockRenderer({
       )
     case 'faq-main':
       return wrapAdvanced(<FAQMainServerSection data={data} />)
+    case 'faq-about':
+      return wrapAdvanced(
+        (data as any).faqContentSource === 'collection'
+          ? <FAQAboutServerSection data={data as any} />
+          : <FAQAboutSection data={data as any} />
+      )
 
     case 'home-testimonials':
       return wrapAdvanced(
@@ -883,7 +893,11 @@ export function LayoutBlockRenderer({
     case 'article-featured':
       return wrapAdvanced(<ArticleFeaturedServerSection data={data} />)
     case 'jobs-list':
-      return wrapAdvanced(<JobsListSection data={data} />)
+      return wrapAdvanced(
+        (data as any).jobSource === 'collection'
+          ? <JobsListServerSection data={data} />
+          : <JobsListSection data={data} />
+      )
     case 'involved-hero':
       return wrapAdvanced(<InvolvedHeroSection data={data} />)
     case 'quote-form':
@@ -937,6 +951,9 @@ export function LayoutBlockRenderer({
 
     case 'breadcrumb':
       return wrapAdvanced(<BreadcrumbSection data={data} />)
+
+    case 'article-submit':
+      return wrapAdvanced(<ArticleSubmitSection data={data} />)
 
     default:
       return (

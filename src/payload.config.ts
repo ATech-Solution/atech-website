@@ -23,6 +23,7 @@ import { PortfolioCategories } from './collections/PortfolioCategories'
 import { FAQCategories } from './collections/FAQCategories'
 import { FAQs } from './collections/FAQs'
 import { Testimonials } from './collections/Testimonials'
+import { JobVacancies } from './collections/JobVacancies'
 import { Users } from './collections/Users'
 import { Plugins } from './collections/Plugins'
 import { Blocks } from './collections/Blocks'
@@ -134,6 +135,7 @@ export default buildConfig({
         Logo: '@/components/admin/AdminLogo#AdminLogo',
         Icon: '@/components/admin/AdminLogo#AdminLogo',
       },
+      afterNavLinks: ['@/components/admin/PluginNavLink#PluginNavLink'],
     },
     // autoLogin: process.env.NODE_ENV !== 'production'
     //   ? { email: 'tan@atech.software', prefillOnly: false }
@@ -141,6 +143,7 @@ export default buildConfig({
     // autoLogin: { email: 'tan@atech.software', prefillOnly: false },
     meta: {
       titleSuffix: ' — ATech Admin',
+      icons: [{ url: '/images/favicon-.png' }],
     },
     // ── Live Preview (works for any frontend URL) ──────────────────────────
     livePreview: {
@@ -160,7 +163,7 @@ export default buildConfig({
   csrf: allowedOrigins,
 
   // ── Collections ────────────────────────────────────────────────────────────
-  collections: [Users, Pages, Posts, Categories, Portfolio, PortfolioCategories, FAQCategories, FAQs, Testimonials, Media, Plugins, Blocks],
+  collections: [Users, Pages, Posts, Categories, Portfolio, PortfolioCategories, FAQCategories, FAQs, Testimonials, JobVacancies, Media, Plugins, Blocks],
 
   // ── Globals ────────────────────────────────────────────────────────────────
   globals: [Navigation, Settings, Theme],

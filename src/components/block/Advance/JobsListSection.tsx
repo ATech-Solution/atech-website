@@ -1,24 +1,23 @@
-// Jobs List Section — dark #171717 background, heading + job openings list
+// Jobs List Section — dark #171717 background, heading + searchable job openings list
+// Supports jobSource='manual' (inline items) and jobSource='collection' (fetched from job-vacancies)
 
-import Link from 'next/link'
+import { JobsListClient, type JobItem } from './JobsListClient'
 
-interface JobItem {
-  jobTitle?: string
-  jobType?:  string
-  jobDesc?:  string
-  jobCta?:   string
-  jobUrl?:   string
-}
+const FONT = 'var(--font-work-sans, "Work Sans", sans-serif)'
 
 interface JobsListData {
-  heading?:  string
-  subheading?: string
-  jobItems?: JobItem[]
+  jobSource?:   'manual' | 'collection'
+  jobCategory?: string
+  jobLimit?:    number
+  heading?:     string
+  subheading?:  string
+  jobItems?:    JobItem[]
 }
 
-export default function JobsListSection({ data }: { data: JobsListData }) {
-  const { heading, subheading, jobItems = [] } = data
+// ── Shared shell (server) ─────────────────────────────────────────────────────
 
+function JobsListShell({ data, items }: { data: JobsListData; items: JobItem[] }) {
+  const { heading, subheading } = data
   return (
     <section className="py-24 px-6 md:px-10" style={{ background: '#171717' }}>
       <div className="mx-auto" style={{ maxWidth: '1280px' }}>
@@ -27,68 +26,78 @@ export default function JobsListSection({ data }: { data: JobsListData }) {
             {heading && (
               <h2
                 className="mb-4"
-                style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: 'clamp(1.75rem, 3vw, 3rem)', fontWeight: 400, color: '#ffffff', letterSpacing: '-0.5px', lineHeight: 1 }}
+                style={{ fontFamily: FONT, fontSize: 'clamp(1.75rem, 3vw, 3rem)', fontWeight: 400, color: '#ffffff', letterSpacing: '-0.5px', lineHeight: 1 }}
               >
                 {heading}
               </h2>
             )}
             {subheading && (
-              <p className="max-w-2xl mx-auto" style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.25rem', color: '#d4d4d4', lineHeight: '1.625' }}>
+              <p className="max-w-2xl mx-auto" style={{ fontFamily: FONT, fontSize: '1.25rem', color: '#d4d4d4', lineHeight: '1.625' }}>
                 {subheading}
               </p>
             )}
           </div>
         )}
-
-        {/* Search bar */}
-        <div className="mb-8">
-          <input
-            type="text"
-            placeholder="Search positions..."
-            className="w-full px-6 py-4 text-base outline-none"
-            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff', fontFamily: 'var(--font-work-sans, sans-serif)' }}
-          />
-        </div>
-
-        <div className="flex flex-col gap-4">
-          {jobItems.map((job, i) => (
-            <div
-              key={i}
-              className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-8"
-              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
-            >
-              <div className="flex flex-col gap-3 flex-1">
-                <div className="flex items-center gap-3 flex-wrap">
-                  {job.jobTitle && (
-                    <span style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.5rem', fontWeight: 400, color: '#ffffff', lineHeight: '32px' }}>
-                      {job.jobTitle}
-                    </span>
-                  )}
-                  {job.jobType && (
-                    <span className="px-3 py-1 text-xs" style={{ background: '#ffffff', color: '#171717', fontFamily: 'var(--font-work-sans, sans-serif)' }}>
-                      {job.jobType}
-                    </span>
-                  )}
-                </div>
-                {job.jobDesc && (
-                  <p style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1rem', color: '#d4d4d4', lineHeight: '1.625' }}>
-                    {job.jobDesc}
-                  </p>
-                )}
-              </div>
-              {job.jobCta && job.jobUrl && (
-                <Link
-                  href={job.jobUrl}
-                  className="inline-flex items-center justify-center px-8 py-3 text-sm font-normal transition-opacity duration-200 hover:opacity-80 shrink-0"
-                  style={{ background: '#ffffff', color: '#171717', fontFamily: 'var(--font-work-sans, sans-serif)' }}
-                >
-                  {job.jobCta}
-                </Link>
-              )}
-            </div>
-          ))}
-        </div>
+        <JobsListClient items={items} />
       </div>
     </section>
   )
+}
+
+// ── Default export (manual mode) ──────────────────────────────────────────────
+
+export default function JobsListSection({ data }: { data: JobsListData }) {
+  return <JobsListShell data={data} items={data.jobItems ?? []} />
+}
+
+// ── Async server export (collection mode) ─────────────────────────────────────
+
+export async function JobsListServerSection({ data }: { data: JobsListData }) {
+  const isCollection = (data.jobSource ?? 'manual') === 'collection'
+
+  if (!isCollection) {
+    return <JobsListShell data={data} items={data.jobItems ?? []} />
+  }
+
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_DOMAIN ?? process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+    const params = new URLSearchParams({
+      'where[status][equals]': 'active',
+      limit: String(data.jobLimit ?? 20),
+      sort: 'order',
+      depth: '0',
+    })
+    if (data.jobCategory) {
+      params.set('where[category][equals]', data.jobCategory)
+    }
+
+    const res = await fetch(`${baseUrl}/api/job-vacancies?${params.toString()}`, { next: { revalidate: 60 } })
+    const json = await res.json()
+
+    const items: JobItem[] = (json.docs ?? []).map((j: any) => ({
+      jobTitle:    j.title ?? '',
+      jobType:     j.positionType ? formatPositionType(j.positionType) : undefined,
+      jobCategory: j.category ?? undefined,
+      jobLocation: j.location ?? undefined,
+      jobDesc:     j.excerpt ?? '',
+      jobCta:      j.applyLabel ?? 'Apply Now',
+      jobUrl:      j.applyUrl ?? '#',
+    }))
+
+    return <JobsListShell data={data} items={items} />
+  } catch {
+    return <JobsListShell data={data} items={[]} />
+  }
+}
+
+function formatPositionType(value: string): string {
+  const map: Record<string, string> = {
+    'full-time':  'Full-time',
+    'part-time':  'Part-time',
+    'contract':   'Contract',
+    'remote':     'Remote',
+    'internship': 'Internship',
+    'freelance':  'Freelance',
+  }
+  return map[value] ?? value
 }
