@@ -6,7 +6,7 @@ export const AuditLogs: CollectionConfig = {
   admin: {
     useAsTitle: 'action',
     defaultColumns: ['action', 'collection', 'user', 'ip', 'createdAt'],
-    hidden: ({ user }) => (user as any)?.email !== 'tan@atech.software',
+    hidden: true,
   },
   access: {
     read: ({ req }) => req.user?.role === 'admin',

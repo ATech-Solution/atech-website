@@ -6,7 +6,7 @@ export const SecurityEvents: CollectionConfig = {
   admin: {
     useAsTitle: 'eventType',
     defaultColumns: ['eventType', 'ip', 'count', 'expiresAt', 'resolved', 'createdAt'],
-    hidden: ({ user }) => (user as any)?.email !== 'tan@atech.software',
+    hidden: true,
   },
   access: {
     read: ({ req }) => req.user?.role === 'admin',
