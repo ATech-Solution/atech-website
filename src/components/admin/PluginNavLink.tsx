@@ -1,13 +1,17 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { useAuth } from '@payloadcms/ui'
 
 export function PluginNavLink() {
+  const { user } = useAuth()
   const [isActive, setIsActive] = useState(false)
 
   useEffect(() => {
     setIsActive(window.location.pathname.startsWith('/admin/plugins-activation'))
   }, [])
+
+  if ((user as any)?.email !== 'tan@atech.software') return null
 
   return (
     <div style={{ padding: '0 8px', marginTop: '2px' }}>

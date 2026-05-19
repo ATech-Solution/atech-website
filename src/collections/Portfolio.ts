@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { buildSeoFields } from '@/plugins/seo/fields'
 
 export const Portfolio: CollectionConfig = {
   slug: 'portfolio',
@@ -183,6 +184,7 @@ export const Portfolio: CollectionConfig = {
         },
       ],
     },
+    buildSeoFields('portfolio'),
   ],
   hooks: {
     beforeChange: [

@@ -1,5 +1,6 @@
 import { withPayload } from '@payloadcms/next/withPayload'
 import type { NextConfig } from 'next'
+import { defaultSecurityHeaders } from './src/plugins/security/headers'
 
 // ── Resolve server URL based on NODE_ENV (mirrors payload.config.ts) ────────
 const serverURL =
@@ -72,6 +73,12 @@ const nextConfig: NextConfig = {
   // _next/static chunks: cache forever — safe because filenames are content-hashed.
   async headers() {
     return [
+      // Security headers on all routes
+      {
+        source: '/(.*)',
+        headers: defaultSecurityHeaders,
+      },
+      // Cache headers
       {
         source: '/((?!_next/static).*)',
         headers: [

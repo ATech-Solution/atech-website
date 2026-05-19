@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { buildSeoFields } from '@/plugins/seo/fields'
 
 export const JobVacancies: CollectionConfig = {
   slug: 'job-vacancies',
@@ -131,5 +132,6 @@ export const JobVacancies: CollectionConfig = {
         description: 'Lower numbers appear first in the listing.',
       },
     },
+    buildSeoFields('job-vacancies'),
   ],
 }

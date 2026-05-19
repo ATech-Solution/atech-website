@@ -5,6 +5,11 @@ export const Users: CollectionConfig = {
   auth: {
     useAPIKey: true,
     tokenExpiration: 28800, // 8 hours
+    loginWithUsername: {
+      allowEmailLogin:  true,  // accept email OR username at login
+      requireEmail:     true,  // email still required on user create (needed for password reset)
+      requireUsername:  false, // username is optional — avoids NOT NULL migration issues on existing DBs
+    },
     // Only require email verification when an SMTP transport is configured.
     // Without it the verification email is never sent, locking users out.
     ...(process.env.AWS_SES_SMTP_USER ? { verify: {
@@ -139,7 +144,7 @@ export const Users: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'firstName', 'lastName', 'role', '_verified', 'createdAt'],
+    defaultColumns: ['email', 'username', 'firstName', 'lastName', 'role', '_verified', 'createdAt'],
   },
   access: {
     read: ({ req }) => {
@@ -164,6 +169,43 @@ export const Users: CollectionConfig = {
       name: 'lastName',
       type: 'text',
       label: 'Last Name',
+    },
+    {
+      name: 'showAdminMenu',
+      type: 'checkbox',
+      label: 'Show admin menu',
+      defaultValue: false,
+      saveToJWT: true,
+      admin: {
+        position: 'sidebar',
+        description: 'Show the floating admin shortcut panel on the frontend when logged in.',
+      },
+    },
+    {
+      name: 'twoFactorEnabled',
+      type: 'checkbox',
+      label: 'Two-Factor Authentication',
+      defaultValue: false,
+      saveToJWT: true,
+      admin: {
+        position: 'sidebar',
+        description: 'Enable TOTP-based 2FA for this account.',
+      },
+    },
+    {
+      name: 'twoFactorSecret',
+      type: 'text',
+      label: 'TOTP Secret',
+      admin: { hidden: true },
+    },
+    {
+      name: 'twoFactorBackupCodes',
+      type: 'array',
+      label: 'Backup Codes',
+      admin: { hidden: true },
+      fields: [
+        { name: 'code', type: 'text', required: true },
+      ],
     },
     {
       name: 'role',

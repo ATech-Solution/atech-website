@@ -6,6 +6,7 @@ export const Plugins: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'pluginType', 'status', 'version', 'updatedAt'],
     group: 'System',
+    hidden: true,
   },
   access: {
     read: ({ req }) => Boolean(req.user),

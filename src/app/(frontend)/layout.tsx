@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ThemeProvider from '@/components/ThemeProvider'
 import ChunkErrorRecovery from '@/components/ChunkErrorRecovery'
+import AdminBar from '@/components/AdminBar'
 import { getTheme, getSettings, getActivePlugins, getNavigation } from '@/lib/payload'
 import { buildThemeCssVars } from '@/lib/theme'
 import '../../../public/assets/css/globals.css'
@@ -44,7 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const plugins = await getActivePlugins()
   const themeVars = buildThemeCssVars(theme)
   const customCSS  = (theme as any)?.customCSS ?? ''
-  const favicon  = (theme as any)?.favicon ?? ''
+  const faviconUrl = (theme as any)?.favicon?.url ?? '/images/favicon-.png'
   const scriptPlugins = plugins.filter(
     (p: any) =>
       ['frontend-script', 'third-party-embed'].includes(p.pluginType) &&
@@ -67,7 +68,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   window.addEventListener('error',function(e){if(isChunk(e.message,e.error&&e.error.name))recover()});
   window.addEventListener('unhandledrejection',function(e){if(isChunk(e.reason&&e.reason.message,e.reason&&e.reason.name)){e.preventDefault();recover()}});
 })()` }} />
-        <link rel="icon" href={favicon.url} sizes="any" />
+        <link rel="icon" href={faviconUrl} sizes="any" />
+        <link rel="apple-touch-icon" href={faviconUrl} />
         {themeVars && <style dangerouslySetInnerHTML={{ __html: themeVars }} />}
         {customCSS  && <style dangerouslySetInnerHTML={{ __html: customCSS  }} />}
         {scriptPlugins.map((p: any) => (
@@ -80,6 +82,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Header theme={theme} />
           <main className="main-content">{children}</main>
           <Footer theme={theme} settings={settings} navigation={navigation} />
+          <AdminBar />
         </ThemeProvider>
       </body>
     </html>

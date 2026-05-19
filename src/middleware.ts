@@ -1,11 +1,20 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { checkRateLimitSync } from '@/plugins/security/rateLimiter'
 
 // Admin and infra paths always bypass maintenance checks
 const ADMIN_PREFIXES = ['/admin', '/api', '/_next', '/favicon']
 
 function isAdminPath(pathname: string): boolean {
   return ADMIN_PREFIXES.some((p) => pathname.startsWith(p))
+}
+
+function getClientIp(req: NextRequest): string {
+  return (
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    req.headers.get('x-real-ip') ??
+    'unknown'
+  )
 }
 
 async function isMaintenanceEnabled(request: NextRequest): Promise<boolean> {
@@ -32,20 +41,81 @@ async function isMaintenanceEnabled(request: NextRequest): Promise<boolean> {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+  const ip = getClientIp(request)
 
-  // Admin, API, and Next.js internals pass through unconditionally
+  // ── 1. Custom admin URL ─────────────────────────────────────────────────────
+  const customAdminPath = process.env.ADMIN_PATH
+  if (customAdminPath) {
+    // Block the default /admin path → 404
+    if (pathname.startsWith('/admin')) {
+      return NextResponse.json({ error: 'Not Found' }, { status: 404 })
+    }
+    // Rewrite the custom path to the real /admin
+    if (pathname.startsWith(customAdminPath)) {
+      const rewritten = pathname.replace(customAdminPath, '/admin')
+      return NextResponse.rewrite(new URL(rewritten, request.url))
+    }
+  }
+
+  // ── 2. API rate limiting (edge-safe in-memory) ──────────────────────────────
+  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/maintenance-status')) {
+    const maxReq = parseInt(process.env.API_RATE_LIMIT_MAX ?? '60', 10)
+    const result = checkRateLimitSync(ip, 'api', maxReq)
+    if (!result.allowed) {
+      return NextResponse.json(
+        { error: 'Too Many Requests' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(result.retryAfter),
+            'X-RateLimit-Limit': String(maxReq),
+            'X-RateLimit-Remaining': '0',
+          },
+        },
+      )
+    }
+  }
+
+  // ── 3. 2FA gate (cookie check — no DB, edge-safe) ──────────────────────────
+  if (
+    pathname.startsWith('/admin') &&
+    !pathname.startsWith('/admin/verify-2fa') &&
+    !pathname.startsWith('/admin/login')
+  ) {
+    const payloadToken = request.cookies.get('payload-token')?.value
+    if (payloadToken) {
+      try {
+        const [, payloadB64] = payloadToken.split('.')
+        if (payloadB64) {
+          const pad = payloadB64.length % 4
+          const padded = pad ? payloadB64 + '='.repeat(4 - pad) : payloadB64
+          const claims = JSON.parse(
+            Buffer.from(padded, 'base64').toString('utf8'),
+          )
+          const twoFactorEnabled: boolean = claims?.twoFactorEnabled ?? false
+          const verified = request.cookies.get('2fa-verified')?.value === '1'
+          if (twoFactorEnabled && !verified) {
+            return NextResponse.redirect(new URL('/admin/verify-2fa', request.url))
+          }
+        }
+      } catch {
+        // Malformed JWT — let Payload handle auth
+      }
+    }
+  }
+
+  // ── Pass admin / API through ─────────────────────────────────────────────────
   if (isAdminPath(pathname)) return NextResponse.next()
 
+  // ── Maintenance check (frontend only) ────────────────────────────────────────
   const maintenance = await isMaintenanceEnabled(request)
 
-  // /maintenance page: show when ON, redirect home when OFF
   if (pathname.startsWith('/maintenance')) {
     return maintenance
       ? NextResponse.next()
       : NextResponse.redirect(new URL('/', request.url))
   }
 
-  // All other frontend pages: rewrite to maintenance page when ON
   if (maintenance) {
     return NextResponse.rewrite(new URL('/maintenance', request.url))
   }

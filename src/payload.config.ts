@@ -1,11 +1,11 @@
 import { buildConfig } from 'payload'
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { seoPlugin } from '@payloadcms/plugin-seo'
-import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
+import { seoPlugin } from './plugins/seoPlugin'
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
-import { redirectsPlugin } from '@payloadcms/plugin-redirects'
-import { searchPlugin } from '@payloadcms/plugin-search'
+import { formBuilderPlugin } from './plugins/formBuilderPlugin'
+import { redirectsPlugin } from './plugins/redirectsPlugin'
+import { searchPlugin } from './plugins/searchPlugin'
 import { stripePlugin } from '@payloadcms/plugin-stripe'
 import nodemailer from 'nodemailer'
 import sharp from 'sharp'
@@ -31,6 +31,10 @@ import { Navigation } from './collections/Navigation'
 import { Settings } from './collections/Settings'
 import { Theme } from './collections/Theme'
 import { layoutBuilderPlugin } from './plugins/layoutBuilderPlugin'
+import { backupRestorePlugin } from './plugins/backupRestorePlugin'
+import { securityPlugin } from './plugins/securityPlugin'
+import { AuditLogs } from './collections/AuditLogs'
+import { SecurityEvents } from './collections/SecurityEvents'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -135,12 +139,21 @@ export default buildConfig({
         Logo: '@/components/admin/AdminLogo#AdminLogo',
         Icon: '@/components/admin/AdminLogo#AdminLogo',
       },
-      afterNavLinks: ['@/components/admin/PluginNavLink#PluginNavLink'],
+      afterNavLinks: [
+        '@/components/admin/PluginNavLink#PluginNavLink',
+        '@/components/admin/SeoNavLink#SeoNavLink',
+        '@/components/admin/FormsNavLink#FormsNavLink',
+        '@/components/admin/FormSubmissionsNavLink#FormSubmissionsNavLink',
+        '@/components/admin/RedirectsNavLink#RedirectsNavLink',
+        '@/components/admin/SearchNavLink#SearchNavLink',
+        '@/components/admin/BlocksNavLink#BlocksNavLink',
+        '@/components/admin/BackupNavLink#BackupNavLink',
+        '@/components/admin/SecurityNavLink#SecurityNavLink',
+      ],
     },
     // autoLogin: process.env.NODE_ENV !== 'production'
     //   ? { email: 'tan@atech.software', prefillOnly: false }
     //   : false,
-    // autoLogin: { email: 'tan@atech.software', prefillOnly: false },
     meta: {
       titleSuffix: ' — ATech Admin',
       icons: [{ url: '/images/favicon-.png' }],
@@ -163,7 +176,7 @@ export default buildConfig({
   csrf: allowedOrigins,
 
   // ── Collections ────────────────────────────────────────────────────────────
-  collections: [Users, Pages, Posts, Categories, Portfolio, PortfolioCategories, FAQCategories, FAQs, Testimonials, JobVacancies, Media, Plugins, Blocks],
+  collections: [Users, Pages, Posts, Categories, Portfolio, PortfolioCategories, FAQCategories, FAQs, Testimonials, JobVacancies, Media, Plugins, Blocks, AuditLogs, SecurityEvents],
 
   // ── Globals ────────────────────────────────────────────────────────────────
   globals: [Navigation, Settings, Theme],
@@ -203,6 +216,7 @@ export default buildConfig({
       url: process.env.DATABASE_URL || 'file:./data/payload.db',
     },
     migrationDir: path.resolve(dirname, 'migrations'),
+    push: false,
   }),
 
   // ── Secret ─────────────────────────────────────────────────────────────────
@@ -222,39 +236,24 @@ export default buildConfig({
 
   // ── Plugins ────────────────────────────────────────────────────────────────
   plugins: [
+    // Security Plugin — brute-force, 2FA, upload security, audit log, IP filter, rate limit
+    securityPlugin(),
+
     // Layout Builder — seeds itself into the Plugins collection on first run
     layoutBuilderPlugin(),
 
+    // Backup & Restore — seeds itself into the Plugins collection on first run
+    backupRestorePlugin(),
+
     // 1. SEO ─────────────────────────────────────────────────────────────────
-    // Adds a "Meta" tab to Pages and Posts with title, description, OG image
-    // Shows a real-time SEO score panel in the admin UI
-    seoPlugin({
-      collections: ['pages', 'posts'],
-      uploadsCollection: 'media',
-      generateTitle: ({ doc }) => `${doc.title} | ATech`,
-      generateDescription: ({ doc }) => doc.excerpt ?? doc.title,
-    }),
+    // Traditional SEO + LLM SEO bundle
+    // Replaces @payloadcms/plugin-seo — see src/plugins/seoPlugin.ts
+    seoPlugin(),
 
     // 2. Form Builder ─────────────────────────────────────────────────────────
-    // Creates a "forms" collection in admin; each form is a drag-and-drop
-    // builder with field types: text, email, textarea, select, checkbox, etc.
-    // Submissions are stored in a "formSubmissions" collection automatically.
-    formBuilderPlugin({
-      fields: {
-        text:     true,
-        textarea: true,
-        select:   true,
-        email:    true,
-        state:    false,
-        country:  false,
-        checkbox: true,
-        number:   true,
-        message:  true,
-        payment:  false,
-      },
-      // Email sent to admin on form submission
-      defaultToEmail: process.env.ADMIN_EMAIL ?? 'dev@atech.software',
-    }),
+    // Reusable plugin wrapper — see src/plugins/formBuilderPlugin.ts
+    // Creates "forms" + "formSubmissions" collections and seeds into Plugin Manager.
+    formBuilderPlugin(),
 
     // 3. Nested Docs ──────────────────────────────────────────────────────────
     // Adds a "parent" relationship field to Pages and Categories
@@ -266,32 +265,14 @@ export default buildConfig({
     }),
 
     // 4. Redirects ────────────────────────────────────────────────────────────
-    // Adds a "redirects" collection: map old URLs to new ones (301/302)
-    // Use in Next.js middleware to check and apply redirects
-    redirectsPlugin({
-      collections: ['pages', 'posts'],
-    }),
+    // Reusable plugin wrapper — see src/plugins/redirectsPlugin.ts
+    // Creates "redirects" collection and seeds into Plugin Manager.
+    redirectsPlugin(),
 
     // 5. Search ───────────────────────────────────────────────────────────────
-    // Adds a "search" collection that indexes content from pages and posts
-    // Query /api/search?q=term to find results across collections
-    searchPlugin({
-      collections: ['posts', 'pages'],
-      defaultPriorities: {
-        posts: 10,
-        pages: 20,
-      },
-      searchOverrides: {
-        fields: ({ defaultFields }) => [
-          ...defaultFields,
-          {
-            name: 'excerpt',
-            type: 'textarea',
-            label: 'Excerpt',
-          },
-        ],
-      },
-    }),
+    // Reusable plugin wrapper — see src/plugins/searchPlugin.ts
+    // Creates "search-results" collection and seeds into Plugin Manager.
+    searchPlugin(),
 
     // 6. Stripe ───────────────────────────────────────────────────────────────
     // Syncs Payload documents with Stripe objects (products, customers, etc.)

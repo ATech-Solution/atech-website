@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { getPageTemplateOptions } from '@/lib/page-templates'
 import { settingsAccess } from '@/lib/access'
+import { buildSeoFields } from '@/plugins/seo/fields'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -10,10 +11,14 @@ export const Pages: CollectionConfig = {
     defaultColumns: ['title', 'slug', 'status', 'updatedAt', 'pageActions'],
     livePreview: {
       url: ({ data }) => {
-        const slug        = data?.slug        as string  | undefined
         const isFrontpage = data?.isFrontpage as boolean | undefined
         const base        = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
         if (isFrontpage) return base
+        // Use full breadcrumb path when a parent is set
+        const breadcrumbs = data?.breadcrumbs as Array<{ url?: string }> | undefined
+        const fullPath    = breadcrumbs?.at(-1)?.url
+        if (fullPath) return `${base}${fullPath}`
+        const slug = data?.slug as string | undefined
         return slug ? `${base}/${slug}` : base
       },
     },
@@ -436,6 +441,7 @@ export const Pages: CollectionConfig = {
         description: 'When checked, this page\'s Layout Builder becomes the template for all article detail pages (/article/<slug>).',
       },
     },
+    buildSeoFields('pages'),
   ],
   hooks: {
     beforeChange: [

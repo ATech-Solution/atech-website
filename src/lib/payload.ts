@@ -4,6 +4,7 @@
  */
 import { getPayload } from 'payload'
 import { unstable_cache } from 'next/cache'
+import { cookies } from 'next/headers'
 import config from '@payload-config'
 
 // Singleton so the connection is reused across requests during dev
@@ -155,6 +156,65 @@ export const getActivePlugins = unstable_cache(
   ['active-plugins'],
   { tags: ['plugins'] },
 )
+
+export interface LoggedInUser {
+  id: string
+  email: string
+  firstName?: string
+  lastName?: string
+  role?: string
+  showAdminMenu?: boolean
+}
+
+/**
+ * Return the currently logged-in Payload user, or null if no valid session.
+ * Decodes the payload-token JWT to get the user ID, then fetches fresh data
+ * from the DB so field values (like showAdminMenu) are always current.
+ */
+export async function getLoggedInUser(): Promise<LoggedInUser | null> {
+  try {
+    const cookieStore = await cookies()
+    const token = cookieStore.get('payload-token')?.value
+    if (!token) return null
+
+    // Decode without verifying — we only need the user ID and expiry
+    const { decodeJwt } = await import('jose')
+    const decoded = decodeJwt(token) as { id?: string; exp?: number }
+
+    if (!decoded.id || !decoded.exp || decoded.exp * 1000 < Date.now()) return null
+
+    const payload = await getPayloadClient()
+    const user = await payload.findByID({
+      collection: 'users',
+      id: decoded.id,
+      depth: 0,
+    })
+    if (!user) return null
+
+    return {
+      id:            String(user.id),
+      email:         user.email,
+      firstName:     (user as any).firstName ?? undefined,
+      lastName:      (user as any).lastName  ?? undefined,
+      role:          (user as any).role      ?? undefined,
+      showAdminMenu: (user as any).showAdminMenu ?? false,
+    }
+  } catch {
+    return null
+  }
+}
+
+/** Return the favicon URL from the theme global, with a static fallback */
+export async function getFaviconUrl(): Promise<string> {
+  try {
+    const theme = await getTheme()
+    const url = (theme as any)?.favicon?.url
+    if (url) return url
+  } catch {
+    // non-fatal
+  }
+  return '/images/favicon-.png'
+}
 
 /**
  * Batch-fetch block templates by ID.

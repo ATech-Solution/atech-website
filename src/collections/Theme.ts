@@ -318,6 +318,32 @@ export const Theme: GlobalConfig = {
               label: 'Get Started — Button URL',
               defaultValue: '/static/contact',
             },
+            // ── Social Links ──────────────────────────────────────────────────
+            {
+              name: 'twitter',
+              type: 'text',
+              label: 'Twitter / X URL',
+            },
+            {
+              name: 'facebook',
+              type: 'text',
+              label: 'Facebook URL',
+            },
+            {
+              name: 'instagram',
+              type: 'text',
+              label: 'Instagram URL',
+            },
+            {
+              name: 'linkedin',
+              type: 'text',
+              label: 'LinkedIn URL',
+            },
+            {
+              name: 'github',
+              type: 'text',
+              label: 'GitHub URL',
+            },
           ],
         },
 

@@ -25,16 +25,20 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { OverviewComponent as OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
-import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
-import { MetaDescriptionComponent as MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
-import { MetaImageComponent as MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
-import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
+import { SeoGenerateButton as SeoGenerateButton_54b074df4f268488a1d1330c0ab6c6a1 } from '@/components/admin/SeoGenerateButton'
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ColorPickerField as ColorPickerField_d572ded1c017fe858839e8cdc754e090 } from '@/components/admin/ColorPickerField'
 import { AdminLogo as AdminLogo_b80a86fce1072afc84cd6a430a965697 } from '@/components/admin/AdminLogo'
 import { PluginNavLink as PluginNavLink_6d8289064affaea8aefade109e98ab3d } from '@/components/admin/PluginNavLink'
+import { SeoNavLink as SeoNavLink_d7f24def64ecaaf197dfccd6a5cb8846 } from '@/components/admin/SeoNavLink'
+import { FormsNavLink as FormsNavLink_da1ce0b36e8fb15d6c6ca4944fb23999 } from '@/components/admin/FormsNavLink'
+import { FormSubmissionsNavLink as FormSubmissionsNavLink_ff47acd8fd14e9b697e23b7d9507c4f9 } from '@/components/admin/FormSubmissionsNavLink'
+import { RedirectsNavLink as RedirectsNavLink_34e45372f79025bfb19eb14b74070f8f } from '@/components/admin/RedirectsNavLink'
+import { SearchNavLink as SearchNavLink_c5d72b064dce59295828e942aeb1a3b0 } from '@/components/admin/SearchNavLink'
+import { BlocksNavLink as BlocksNavLink_bf7bac25a8582350c353d0ee20dbe966 } from '@/components/admin/BlocksNavLink'
+import { BackupNavLink as BackupNavLink_5ac2c4bebc240e9518bb38d8e0100915 } from '@/components/admin/BackupNavLink'
+import { SecurityNavLink as SecurityNavLink_2a85c1063bca21d3b9a1d89b4968b870 } from '@/components/admin/SecurityNavLink'
 
 export const importMap = {
   "@/components/admin/SlugField#SlugField": SlugField_5bc3d1261b9f84311e93975be7a9a4d6,
@@ -64,14 +68,18 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@payloadcms/plugin-seo/client#OverviewComponent": OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
-  "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,
-  "@payloadcms/plugin-seo/client#MetaDescriptionComponent": MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860,
-  "@payloadcms/plugin-seo/client#MetaImageComponent": MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860,
-  "@payloadcms/plugin-seo/client#PreviewComponent": PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
+  "@/components/admin/SeoGenerateButton#SeoGenerateButton": SeoGenerateButton_54b074df4f268488a1d1330c0ab6c6a1,
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
   "@/components/admin/ColorPickerField#ColorPickerField": ColorPickerField_d572ded1c017fe858839e8cdc754e090,
   "@/components/admin/AdminLogo#AdminLogo": AdminLogo_b80a86fce1072afc84cd6a430a965697,
-  "@/components/admin/PluginNavLink#PluginNavLink": PluginNavLink_6d8289064affaea8aefade109e98ab3d
+  "@/components/admin/PluginNavLink#PluginNavLink": PluginNavLink_6d8289064affaea8aefade109e98ab3d,
+  "@/components/admin/SeoNavLink#SeoNavLink": SeoNavLink_d7f24def64ecaaf197dfccd6a5cb8846,
+  "@/components/admin/FormsNavLink#FormsNavLink": FormsNavLink_da1ce0b36e8fb15d6c6ca4944fb23999,
+  "@/components/admin/FormSubmissionsNavLink#FormSubmissionsNavLink": FormSubmissionsNavLink_ff47acd8fd14e9b697e23b7d9507c4f9,
+  "@/components/admin/RedirectsNavLink#RedirectsNavLink": RedirectsNavLink_34e45372f79025bfb19eb14b74070f8f,
+  "@/components/admin/SearchNavLink#SearchNavLink": SearchNavLink_c5d72b064dce59295828e942aeb1a3b0,
+  "@/components/admin/BlocksNavLink#BlocksNavLink": BlocksNavLink_bf7bac25a8582350c353d0ee20dbe966,
+  "@/components/admin/BackupNavLink#BackupNavLink": BackupNavLink_5ac2c4bebc240e9518bb38d8e0100915,
+  "@/components/admin/SecurityNavLink#SecurityNavLink": SecurityNavLink_2a85c1063bca21d3b9a1d89b4968b870
 }

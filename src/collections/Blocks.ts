@@ -127,8 +127,7 @@ export const Blocks: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'blockType', 'category', 'updatedAt'],
-    group: 'Layout Builder',
-    hidden: false,
+    hidden: () => true,
   },
   access: {
     read: ({ req }) => Boolean(req.user),

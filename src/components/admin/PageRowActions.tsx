@@ -2,7 +2,12 @@
 
 import React, { useState } from 'react'
 
-type RowData = { id?: string | number; slug?: string; title?: string }
+type RowData = {
+  id?: string | number
+  slug?: string
+  title?: string
+  breadcrumbs?: Array<{ url?: string; label?: string }>
+}
 
 // ── View + Duplicate cell — rendered in the Pages list table ─────────────────
 
@@ -15,8 +20,9 @@ export function PageRowActionsCell(props: any) {
   const id    = rowData.id
   const title = (rowData.title as string) ?? 'this page'
 
-  const base    = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-  const pageUrl = slug === 'home' ? base : `${base}/${slug}`
+  const base      = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const fullPath  = rowData.breadcrumbs?.at(-1)?.url
+  const pageUrl   = slug === 'home' ? base : fullPath ? `${base}${fullPath}` : `${base}/${slug}`
 
   const handleDuplicate = async () => {
     if (!id || loading) return

@@ -1,10 +1,11 @@
-// Page Template : Dynamic
+// Page Template : Dynamic (catch-all — handles /slug and /parent/slug)
 
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { getPage, getBlockTemplates } from '@/lib/payload'
 import { collectBlockIds, LayoutBlockRenderer } from '@/lib/layout-renderer'
+import { buildJsonLd } from '@/plugins/seo/jsonld'
 
 export const revalidate = 60
 
@@ -15,14 +16,46 @@ export const revalidate = 60
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string[] }>
 }): Promise<Metadata> {
-  const { slug } = await params
-  const page = await getPage(slug)
+  const { slug: segments } = await params
+  const pageSlug = segments[segments.length - 1]
+  const page = await getPage(pageSlug)
   if (!page) return {}
+
+  const meta = (page as any).meta ?? {}
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://atech.software'
+  const canonicalUrl = meta.canonical || `${siteUrl}/${segments.join('/')}`
+  const ogImageUrl = meta.image?.url ?? null
+
+  const jsonLd = buildJsonLd({
+    doc: page as any,
+    collectionSlug: 'pages',
+    siteUrl,
+    siteName: 'ATech',
+  })
+
   return {
-    title: (page?.meta as any)?.title ?? page.title,
-    description: (page?.meta as any)?.description ?? undefined,
+    title: meta.title ?? (page as any).title,
+    description: meta.description ?? undefined,
+    robots: meta.noIndex ? { index: false, follow: false } : undefined,
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      title: meta.ogTitle || meta.title || (page as any).title,
+      description: meta.ogDescription || meta.description || undefined,
+      url: canonicalUrl,
+      type: 'website',
+      ...(ogImageUrl && { images: [{ url: ogImageUrl }] }),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: meta.ogTitle || meta.title || (page as any).title,
+      description: meta.ogDescription || meta.description || undefined,
+      ...(ogImageUrl && { images: [ogImageUrl] }),
+    },
+    other: {
+      'application/ld+json': JSON.stringify(jsonLd),
+    },
   }
 }
 
@@ -318,13 +351,24 @@ function Block({ block }: { block: any }) {
 export default async function DynamicPage({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string[] }>
 }) {
-  const { slug } = await params
+  const { slug: segments } = await params
 
-  const page = await getPage(slug)
+  // Slug is globally unique — look up by the last path segment
+  const pageSlug = segments[segments.length - 1]
+  const page = await getPage(pageSlug)
 
   if (!page || page.status !== 'published') notFound()
+
+  // For nested paths, verify the breadcrumb URL matches to avoid serving a page
+  // at an incorrect parent path (e.g. /wrong-parent/e-commerce-retail → 404)
+  if (segments.length > 1) {
+    const expectedPath = '/' + segments.join('/')
+    const breadcrumbs = (page as any).breadcrumbs as Array<{ url?: string }> | undefined
+    const actualPath = breadcrumbs?.at(-1)?.url
+    if (actualPath && actualPath !== expectedPath) notFound()
+  }
 
   // Prefer layoutBuilder (new system) — fall back to layout blocks (original)
   const layoutBuilderTree: any[] = Array.isArray((page as any).layoutBuilder)

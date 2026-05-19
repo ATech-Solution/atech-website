@@ -117,11 +117,11 @@ export default async function Footer({ theme, settings, navigation }: FooterProp
             {/* Social icons */}
             <div className="flex flex-wrap gap-3">
               {([
-                { icon: <IconX />,         href: settings?.twitter,   label: 'X (Twitter)' },
-                { icon: <IconLinkedIn />,   href: settings?.linkedin,  label: 'LinkedIn'    },
-                { icon: <IconFacebook />,   href: settings?.facebook,  label: 'Facebook'    },
-                { icon: <IconInstagram />,  href: settings?.instagram, label: 'Instagram'   },
-                { icon: <IconGitHub />,     href: settings?.github,    label: 'GitHub'      },
+                { icon: <IconX />,         href: t.twitter,   label: 'X (Twitter)' },
+                { icon: <IconLinkedIn />,   href: t.linkedin,  label: 'LinkedIn'    },
+                { icon: <IconFacebook />,   href: t.facebook,  label: 'Facebook'    },
+                { icon: <IconInstagram />,  href: t.instagram, label: 'Instagram'   },
+                { icon: <IconGitHub />,     href: t.github,    label: 'GitHub'      },
               ] as const).filter(({ href }) => Boolean(href)).map(({ icon, href, label }) => (
                 <a
                   key={label}

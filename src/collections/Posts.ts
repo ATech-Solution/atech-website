@@ -1,6 +1,7 @@
 import type { CollectionConfig, PayloadRequest } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { settingsAccess } from '@/lib/access'
+import { buildSeoFields } from '@/plugins/seo/fields'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -137,6 +138,7 @@ export const Posts: CollectionConfig = {
         },
       ],
     },
+    buildSeoFields('posts'),
   ],
   // ── Hooks ─────────────────────────────────────────────────────────────
   hooks: {
