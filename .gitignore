@@ -56,8 +56,7 @@ data/payload.db
 
 # generated / local artifacts
 backups/
-plugins/
-!plugins/*.zip
+/plugins/
 .superpowers/
 data/ip-cache.json
 next.zip
