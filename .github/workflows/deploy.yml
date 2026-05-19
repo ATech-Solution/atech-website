@@ -7,7 +7,11 @@ name: Build & Deploy
 #
 #  workflow_dispatch (manual):
 #   migrate_data=true  → copy committed data/payload.db to server
-#                        (replaces server DB — old DB is backed up)
+#                        (replaces server DB — old DB is backed up first)
+#                        NOTE: uploaded media files are NOT in git; to
+#                        migrate media, manually rsync your local
+#                        public/media/ to the server's media/ directory
+#                        before or after triggering this workflow.
 #   migrate_data=false → normal deploy, server DB is preserved
 # ─────────────────────────────────────────────────────────────
 on:
@@ -21,7 +25,6 @@ on:
         description: >
           Copy committed data/payload.db to server.
           WARNING: replaces live server data — old DB is timestamped-backed-up first.
-          Also syncs media/ if present in the repo.
         required: false
         default: 'false'
         type: choice
@@ -49,7 +52,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Build
         env:
@@ -125,6 +128,12 @@ jobs:
               cp -rn "$DEPLOY_PATH/public/media/." "$DEPLOY_PATH/media/" 2>/dev/null || true
             fi
 
+            # ── Stop the old app FIRST so SQLite closes cleanly ──────────────
+            # This ensures WAL files are checkpointed before we touch the DB,
+            # preventing "database is locked" / corruption on next start.
+            echo "==> Stopping running app..."
+            pm2 stop atech-website 2>/dev/null || true
+
             echo "==> Backing up old static chunks..."
             if [ -d "$DEPLOY_PATH/standalone/.next/static" ]; then
               cp -r "$DEPLOY_PATH/standalone/.next/static" /tmp/old-next-static
@@ -147,10 +156,12 @@ jobs:
             mkdir -p "$DEPLOY_PATH/standalone/public"
             ln -sfn "$DEPLOY_PATH/media" "$DEPLOY_PATH/standalone/public/media"
 
-            # ── DB: save server DB before git reset overwrites it ───────────
+            # ── DB: backup server DB before git reset overwrites it ──────────
+            # Store backup in data/ (not /tmp) so it survives across steps and
+            # is kept alongside other server-backup files.
             TIMESTAMP=$(date +%Y%m%d_%H%M%S)
             SERVER_DB="$DEPLOY_PATH/data/payload.db"
-            SAVED_DB="/tmp/server-payload-${TIMESTAMP}.db"
+            SAVED_DB="$DEPLOY_PATH/data/payload.db.pre-deploy.${TIMESTAMP}"
             if [ -f "$SERVER_DB" ]; then
               cp "$SERVER_DB" "$SAVED_DB"
               echo "==> Server DB saved to $SAVED_DB"
@@ -175,6 +186,9 @@ jobs:
                 cp "$SAVED_DB" "$BACKUP"
                 echo "==> Old server DB preserved at $BACKUP"
               fi
+              # Remove stale WAL/SHM from the git-restored dev DB so SQLite
+              # starts with a clean, consistent state on next open.
+              rm -f "${SERVER_DB}-shm" "${SERVER_DB}-wal"
               echo "==> Dev DB from git is now active at $SERVER_DB"
             else
               echo "==> Normal deploy: restoring persistent server DB..."
@@ -184,8 +198,14 @@ jobs:
               else
                 echo "==> Starting with fresh DB (no prior server DB existed)"
               fi
+              # Always clean WAL/SHM after any DB file swap — stale WAL files
+              # from the old session must not be applied to a different DB page.
+              rm -f "${SERVER_DB}-shm" "${SERVER_DB}-wal"
               rm -f "$SAVED_DB"
             fi
+
+            # Ensure the DB file is writable by the deploy user
+            chmod 664 "$SERVER_DB" 2>/dev/null || true
 
             # ── Prune old server-backup files (keep last 5) ─────────────────
             ls -t "$DEPLOY_PATH/data/payload.db.server-backup."* 2>/dev/null | tail -n +6 | xargs rm -f || true
@@ -222,6 +242,7 @@ jobs:
             EMAIL_FROM="${{ secrets.EMAIL_FROM }}" \
             EMAIL_FROM_NAME="${{ secrets.EMAIL_FROM_NAME }}" \
             ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}" \
+            RECAPTCHA_SECRET_KEY="${{ secrets.RECAPTCHA_SECRET_KEY }}" \
             pm2 start "$DEPLOY_PATH/standalone/server.js" \
               --name "atech-website" \
               --cwd "$DEPLOY_PATH/standalone"
@@ -288,6 +309,10 @@ jobs:
               cp -rn "$DEPLOY_PATH/public/media/." "$DEPLOY_PATH/media/" 2>/dev/null || true
             fi
 
+            # ── Stop the old app FIRST so SQLite closes cleanly ──────────────
+            echo "==> Stopping running app..."
+            pm2 stop atech-website-prod 2>/dev/null || true
+
             echo "==> Backing up old static chunks..."
             if [ -d "$DEPLOY_PATH/standalone/.next/static" ]; then
               cp -r "$DEPLOY_PATH/standalone/.next/static" /tmp/old-next-static
@@ -310,10 +335,10 @@ jobs:
             mkdir -p "$DEPLOY_PATH/standalone/public"
             ln -sfn "$DEPLOY_PATH/media" "$DEPLOY_PATH/standalone/public/media"
 
-            # ── DB: save server DB before git reset overwrites it ───────────
+            # ── DB: backup server DB before git reset overwrites it ──────────
             TIMESTAMP=$(date +%Y%m%d_%H%M%S)
             SERVER_DB="$DEPLOY_PATH/data/payload.db"
-            SAVED_DB="/tmp/server-payload-${TIMESTAMP}.db"
+            SAVED_DB="$DEPLOY_PATH/data/payload.db.pre-deploy.${TIMESTAMP}"
             if [ -f "$SERVER_DB" ]; then
               cp "$SERVER_DB" "$SAVED_DB"
               echo "==> Server DB saved to $SAVED_DB"
@@ -336,6 +361,7 @@ jobs:
                 cp "$SAVED_DB" "$BACKUP"
                 echo "==> Old server DB preserved at $BACKUP"
               fi
+              rm -f "${SERVER_DB}-shm" "${SERVER_DB}-wal"
               echo "==> Dev DB from git is now active at $SERVER_DB"
             else
               echo "==> Normal deploy: restoring persistent server DB..."
@@ -345,15 +371,18 @@ jobs:
               else
                 echo "==> Starting with fresh DB (no prior server DB existed)"
               fi
+              rm -f "${SERVER_DB}-shm" "${SERVER_DB}-wal"
               rm -f "$SAVED_DB"
             fi
+
+            chmod 664 "$SERVER_DB" 2>/dev/null || true
 
             # ── Prune old server-backup files (keep last 5) ─────────────────
             ls -t "$DEPLOY_PATH/data/payload.db.server-backup."* 2>/dev/null | tail -n +6 | xargs rm -f || true
 
             echo "==> Running database migrations..."
             set +e
-            export DATABASE_URL="${{ secrets.PROD_DATABASE_URL }}"
+            export DATABASE_URL="file:$DEPLOY_PATH/data/payload.db"
             export PAYLOAD_SECRET="${{ secrets.PROD_PAYLOAD_SECRET }}"
             yes | npm run migrate 2>&1
             MIGRATE_EXIT=$?
@@ -367,7 +396,7 @@ jobs:
             NODE_ENV=production \
             PORT=3000 \
             HOSTNAME=0.0.0.0 \
-            DATABASE_URL="${{ secrets.PROD_DATABASE_URL }}" \
+            DATABASE_URL="file:$DEPLOY_PATH/data/payload.db" \
             PAYLOAD_MEDIA_DIR="$DEPLOY_PATH/media" \
             PAYLOAD_SECRET="${{ secrets.PROD_PAYLOAD_SECRET }}" \
             NEXT_PUBLIC_SITE_URL="${{ secrets.PROD_SITE_URL }}" \
@@ -383,6 +412,7 @@ jobs:
             EMAIL_FROM="${{ secrets.EMAIL_FROM }}" \
             EMAIL_FROM_NAME="${{ secrets.EMAIL_FROM_NAME }}" \
             ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}" \
+            RECAPTCHA_SECRET_KEY="${{ secrets.RECAPTCHA_SECRET_KEY }}" \
             pm2 start "$DEPLOY_PATH/standalone/server.js" \
               --name "atech-website-prod" \
               --cwd "$DEPLOY_PATH/standalone"
@@ -391,3 +421,17 @@ jobs:
             echo "==> Done"
             pm2 status
           ENDSSH
+
+      - name: Health check Production
+        run: |
+          echo "Waiting for app to start..."
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Origin: ${{ secrets.PROD_SITE_URL }}" \
+            "${{ secrets.PROD_SITE_URL }}/api/users/me" || echo "000")
+          echo "Health check status: $STATUS"
+          if [ "$STATUS" = "000" ]; then
+            echo "::error::Health check failed — app unreachable. Check pm2 logs."
+            exit 1
+          fi
+          echo "App is up (HTTP $STATUS)"
