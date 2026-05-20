@@ -26,6 +26,7 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { SeoGenerateButton as SeoGenerateButton_54b074df4f268488a1d1330c0ab6c6a1 } from '@/components/admin/SeoGenerateButton'
+import { CollectionExportButton as CollectionExportButton_56ff21e978253d1a16dc21e09a3411a8 } from '@/components/admin/CollectionExportButton'
 import { AiContentFeatureClient as AiContentFeatureClient_7b1062806d6a397ed5dac57ed5374f55 } from '@/features/aiContent/feature.client'
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
@@ -40,6 +41,7 @@ import { SearchNavLink as SearchNavLink_c5d72b064dce59295828e942aeb1a3b0 } from 
 import { BlocksNavLink as BlocksNavLink_bf7bac25a8582350c353d0ee20dbe966 } from '@/components/admin/BlocksNavLink'
 import { BackupNavLink as BackupNavLink_5ac2c4bebc240e9518bb38d8e0100915 } from '@/components/admin/BackupNavLink'
 import { SecurityNavLink as SecurityNavLink_2a85c1063bca21d3b9a1d89b4968b870 } from '@/components/admin/SecurityNavLink'
+import { ExportImportNavLink as ExportImportNavLink_34ee2b30dac11c0754efe98ac198a258 } from '@/components/admin/ExportImportNavLink'
 
 export const importMap = {
   "@/components/admin/SlugField#SlugField": SlugField_5bc3d1261b9f84311e93975be7a9a4d6,
@@ -70,6 +72,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/SeoGenerateButton#SeoGenerateButton": SeoGenerateButton_54b074df4f268488a1d1330c0ab6c6a1,
+  "@/components/admin/CollectionExportButton#CollectionExportButton": CollectionExportButton_56ff21e978253d1a16dc21e09a3411a8,
   "@/features/aiContent/feature.client#AiContentFeatureClient": AiContentFeatureClient_7b1062806d6a397ed5dac57ed5374f55,
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
@@ -83,5 +86,6 @@ export const importMap = {
   "@/components/admin/SearchNavLink#SearchNavLink": SearchNavLink_c5d72b064dce59295828e942aeb1a3b0,
   "@/components/admin/BlocksNavLink#BlocksNavLink": BlocksNavLink_bf7bac25a8582350c353d0ee20dbe966,
   "@/components/admin/BackupNavLink#BackupNavLink": BackupNavLink_5ac2c4bebc240e9518bb38d8e0100915,
-  "@/components/admin/SecurityNavLink#SecurityNavLink": SecurityNavLink_2a85c1063bca21d3b9a1d89b4968b870
+  "@/components/admin/SecurityNavLink#SecurityNavLink": SecurityNavLink_2a85c1063bca21d3b9a1d89b4968b870,
+  "@/components/admin/ExportImportNavLink#ExportImportNavLink": ExportImportNavLink_34ee2b30dac11c0754efe98ac198a258
 }

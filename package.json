@@ -37,6 +37,8 @@
     "@payloadcms/richtext-lexical": "3.33.0",
     "@payloadcms/storage-s3": "3.33.0",
     "@payloadcms/ui": "3.33.0",
+    "adm-zip": "^0.5.17",
+    "archiver": "^8.0.0",
     "googleapis": "^171.4.0",
     "next": "^15.3.4",
     "nodemailer": "^6.9.0",
@@ -50,6 +52,7 @@
   },
   "devDependencies": {
     "@tailwindcss/container-queries": "^0.1.1",
+    "@types/archiver": "^7.0.0",
     "@types/node": "^20.0.0",
     "@types/nodemailer": "^6.4.0",
     "@types/qrcode": "^1.5.6",

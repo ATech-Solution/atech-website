@@ -34,6 +34,7 @@ import { layoutBuilderPlugin } from './plugins/layoutBuilderPlugin'
 import { backupRestorePlugin } from './plugins/backupRestorePlugin'
 import { securityPlugin } from './plugins/securityPlugin'
 import { AiContentFeature } from './features/aiContent/feature.server'
+import { exportImportPlugin } from './plugins/exportImportPlugin'
 import { AuditLogs } from './collections/AuditLogs'
 import { SecurityEvents } from './collections/SecurityEvents'
 
@@ -150,6 +151,7 @@ export default buildConfig({
         '@/components/admin/BlocksNavLink#BlocksNavLink',
         '@/components/admin/BackupNavLink#BackupNavLink',
         '@/components/admin/SecurityNavLink#SecurityNavLink',
+        '@/components/admin/ExportImportNavLink#ExportImportNavLink',
       ],
     },
     // autoLogin: process.env.NODE_ENV !== 'production'
@@ -244,6 +246,9 @@ export default buildConfig({
   plugins: [
     // Security Plugin — brute-force, 2FA, upload security, audit log, IP filter, rate limit
     securityPlugin(),
+
+    // Export & Import — ZIP-based content export/import per collection + globals
+    exportImportPlugin(),
 
     // Layout Builder — seeds itself into the Plugins collection on first run
     layoutBuilderPlugin(),
