@@ -1,6 +1,6 @@
 import { buildConfig } from 'payload'
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, FixedToolbarFeature } from '@payloadcms/richtext-lexical'
 import { seoPlugin } from './plugins/seoPlugin'
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { formBuilderPlugin } from './plugins/formBuilderPlugin'
@@ -195,6 +195,7 @@ export default buildConfig({
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,
+      FixedToolbarFeature(),
       AiContentFeature(),
     ],
   }),
