@@ -243,6 +243,7 @@ jobs:
             EMAIL_FROM_NAME="${{ secrets.EMAIL_FROM_NAME }}" \
             ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}" \
             RECAPTCHA_SECRET_KEY="${{ secrets.RECAPTCHA_SECRET_KEY }}" \
+            ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
             pm2 start "$DEPLOY_PATH/standalone/server.js" \
               --name "atech-website" \
               --cwd "$DEPLOY_PATH/standalone"
@@ -413,6 +414,7 @@ jobs:
             EMAIL_FROM_NAME="${{ secrets.EMAIL_FROM_NAME }}" \
             ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}" \
             RECAPTCHA_SECRET_KEY="${{ secrets.RECAPTCHA_SECRET_KEY }}" \
+            ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
             pm2 start "$DEPLOY_PATH/standalone/server.js" \
               --name "atech-website-prod" \
               --cwd "$DEPLOY_PATH/standalone"
