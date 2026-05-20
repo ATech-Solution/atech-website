@@ -19,17 +19,32 @@ const wrapText = (text: string) =>
   })
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
-  // Find every pages_locales row whose excerpt is non-empty plain text
-  // (i.e. does NOT start with '{', which would indicate it's already JSON).
+  // Step 1: NULL out empty-string excerpts — empty string is NOT valid Lexical JSON
+  // and causes drizzle to throw "Unexpected end of JSON input" on every page fetch.
+  await db.run(sql`UPDATE pages_locales SET excerpt = NULL WHERE excerpt = ''`)
+  await db.run(sql`UPDATE _pages_v_locales SET version_excerpt = NULL WHERE version_excerpt = ''`)
+  payload.logger.info('[migrate] Cleared empty-string excerpts in pages_locales and _pages_v_locales')
+
+  // Step 2: Wrap remaining plain-text (non-JSON) excerpts in a Lexical paragraph envelope.
   const rows = await db.all<{ id: number; excerpt: string }>(
     sql`SELECT id, excerpt FROM pages_locales WHERE excerpt IS NOT NULL AND excerpt != '' AND substr(excerpt,1,1) != '{'`
   )
-
   for (const row of rows) {
     await db.run(
       sql`UPDATE pages_locales SET excerpt = ${wrapText(row.excerpt)} WHERE id = ${row.id}`
     )
     payload.logger.info(`[migrate] Converted plain-text excerpt for pages_locales id=${row.id}`)
+  }
+
+  // Step 3: Same for version table
+  const vrows = await db.all<{ id: number; version_excerpt: string }>(
+    sql`SELECT id, version_excerpt FROM _pages_v_locales WHERE version_excerpt IS NOT NULL AND version_excerpt != '' AND substr(version_excerpt,1,1) != '{'`
+  )
+  for (const row of vrows) {
+    await db.run(
+      sql`UPDATE _pages_v_locales SET version_excerpt = ${wrapText(row.version_excerpt)} WHERE id = ${row.id}`
+    )
+    payload.logger.info(`[migrate] Converted plain-text version_excerpt for _pages_v_locales id=${row.id}`)
   }
 }
 
