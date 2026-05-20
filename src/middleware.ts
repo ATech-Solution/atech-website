@@ -44,8 +44,11 @@ export async function middleware(request: NextRequest) {
   const ip = getClientIp(request)
 
   // ── 1. Custom admin URL ─────────────────────────────────────────────────────
+  // Only activate when ADMIN_PATH is explicitly set to a path OTHER than /admin.
+  // When ADMIN_PATH=/admin (the default), both conditions would match the same
+  // prefix and every /admin/* route would return 404.
   const customAdminPath = process.env.ADMIN_PATH
-  if (customAdminPath) {
+  if (customAdminPath && customAdminPath !== '/admin') {
     // Block the default /admin path → 404
     if (pathname.startsWith('/admin')) {
       return NextResponse.json({ error: 'Not Found' }, { status: 404 })

@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import React from 'react'
+import { getFaviconUrl } from '@/lib/payload'
 
-export const metadata: Metadata = {
-  icons: [{ rel: 'icon', url: '/images/favicon-.png' }],
+export async function generateMetadata(): Promise<Metadata> {
+  const icon = await getFaviconUrl()
+  return { icons: [{ rel: 'icon', url: icon }] }
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
