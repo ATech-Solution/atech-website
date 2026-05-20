@@ -716,13 +716,13 @@ export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark'
         onClick={() => setMobileOpen(true)}
         aria-label="Open menu"
       >
-        {[18, 18, 12].map((w, i) => (
+        {[18, 18, 18].map((w, i) => (
           <span
             key={i}
             style={{
               display: 'block', width: w, height: 1.5, borderRadius: 2,
               background: isLight ? '#171717' : 'var(--color-text, #fafafa)',
-              ...(i === 2 ? { alignSelf: 'flex-start', marginLeft: 3 } : {}),
+              // ...(i === 2 ? { alignSelf: 'flex-start', marginLeft: 3 } : {}),
             }}
           />
         ))}

@@ -13,10 +13,7 @@ const config: Config = {
     preflight: false, // Prevents Tailwind from breaking the Admin UI
   },
   content: [
-    './src/**/*.{js,ts,jsx,tsx,mdx}',    
-    // ...other paths
-    './src/**/**/LayoutPreview.tsx', // Target your plugin file specifically
-    './src/components/LayoutBuilder/LayoutPreview.tsx'
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
 
   // content: [],

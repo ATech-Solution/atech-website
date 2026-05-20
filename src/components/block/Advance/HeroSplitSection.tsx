@@ -62,7 +62,9 @@ export default function HeroSplitSection({ data }: { data: HeroSplitSectionData 
           <img
             src={data.heroImage.url}
             alt={data.heroImage.alt ?? ''}
-            style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+            width={'100%'}
+            height={'625px'}
+            style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, width: '100%', height: '625px', objectFit: 'cover' }}
           />
         )}
       </div>
@@ -70,16 +72,12 @@ export default function HeroSplitSection({ data }: { data: HeroSplitSectionData 
   )
 
   return (
-    <section style={{ background: '#ffffff', position: 'relative', display: 'flex', flexDirection: 'column', minHeight: '720px' }}>
+    <section style={{ background: '#ffffff', position: 'relative', display: 'flex', flexDirection: 'column', height: '625px' }}>
       {/* ── Main 2-column grid ── */}
       <div
-        className="grid grid-cols-1 lg:grid-cols-2 items-stretch"
-        style={{
-          flex: 1,
-          paddingLeft:  !imageOnLeft ? `${H_PAD}px` : `0`,
-          paddingRight: imageOnLeft ? `${H_PAD}px` : `0`,
-          paddingBottom: `${V_PAD}px`,
-        }}
+        className={`grid grid-cols-1 lg:grid-cols-2 items-stretch 
+          ${imageOnLeft ? 'pr-[40px] md:pr-[104px]' : 'pl-[40px] md:pl-[104px]'}`}
+        style={{ flex: 1 }}
       >
         {imageOnLeft && ImagePanel}
 
@@ -88,7 +86,7 @@ export default function HeroSplitSection({ data }: { data: HeroSplitSectionData 
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          paddingTop: `${V_PAD}px`,
+          paddingBottom: `${V_PAD}px`,
           paddingLeft: imageOnLeft ? `60px` : '0',
           paddingRight: !imageOnLeft ? `60px` : '0',
         }}>

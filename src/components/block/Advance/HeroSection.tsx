@@ -151,18 +151,16 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
               style={{
                 fontFamily: 'var(--font-work-sans, sans-serif)',
                 color: '#ffffff',
-                lineHeight: '60px',
-                fontSize: '0',
                 paddingRight: '30px'
               }}
             >
               {data.heading && (
-                <span style={{ fontSize: '64px', fontWeight: 700, lineHeight: '60px', display: 'block' }}>
+                <span className="text-4xl sm:text-6xl md:text-[64px]" style={{fontWeight: 700, lineHeight: '1.1', display: 'block' }}>
                   {data.heading}{data.headingSub ? ' ' : ''}
                 </span>
               )}
               {data.headingSub && (
-                <span style={{ fontSize: '48px', fontWeight: 400, lineHeight: '60px' }}>
+                <span className="text-2xl sm:text-4xl md:text-[48px]" style={{fontWeight: 400, lineHeight: '1.2' }}>
                   {data.headingSub}
                 </span>
               )}
@@ -188,7 +186,7 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
               {data.ctaPrimaryLabel && data.ctaPrimaryUrl && (
                 <Link
                   href={data.ctaPrimaryUrl}
-                  className="inline-flex items-center gap-2 transition-opacity duration-200 hover:opacity-90"
+                  className="w-full sm:w-[350px] md:w-auto inline-flex items-center gap-2 transition-opacity duration-200 hover:opacity-90"
                   style={{
                     background: '#ffffff',
                     color: '#000000',
@@ -213,7 +211,7 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
               {data.ctaSecondaryLabel && data.ctaSecondaryUrl && (
                 <Link
                   href={data.ctaSecondaryUrl}
-                  className="inline-flex items-center gap-2.5 transition-opacity duration-200 hover:opacity-80"
+                  className="w-full sm:w-[350px] md:w-auto inline-flex items-center gap-2.5 transition-opacity duration-200 hover:opacity-80"
                   style={{
                     background: '#41403f',
                     color: '#ffffff',

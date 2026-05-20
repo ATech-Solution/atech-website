@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Syne, DM_Sans, Work_Sans } from 'next/font/google'
 import React from 'react'
-import '../../../public/assets/css/globals.css'
+import '../globals.css'
 import { getFaviconUrl } from '@/lib/payload'
 
 const syne = Syne({

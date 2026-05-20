@@ -7,7 +7,7 @@ import ChunkErrorRecovery from '@/components/ChunkErrorRecovery'
 import AdminBar from '@/components/AdminBar'
 import { getTheme, getSettings, getActivePlugins, getNavigation } from '@/lib/payload'
 import { buildThemeCssVars } from '@/lib/theme'
-import '../../../public/assets/css/globals.css'
+import '../globals.css'
 
 const syne = Syne({
   subsets: ['latin'],
@@ -76,7 +76,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <script key={p.id} dangerouslySetInnerHTML={{ __html: p.scriptCode }} />
         ))}
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <ChunkErrorRecovery />
         <ThemeProvider initialVars={themeVars}>
           <Header theme={theme} />
