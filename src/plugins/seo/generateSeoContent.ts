@@ -28,7 +28,7 @@ const FILLER_OPENERS = [
   /^Whether you('re| are)[^,]+,\s*/i,
 ]
 
-function humanize(text: string): string {
+export function humanize(text: string): string {
   let out = text.trim()
 
   // Remove em-dash overuse — replace with comma or rewrite

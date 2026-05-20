@@ -33,6 +33,7 @@ import { Theme } from './collections/Theme'
 import { layoutBuilderPlugin } from './plugins/layoutBuilderPlugin'
 import { backupRestorePlugin } from './plugins/backupRestorePlugin'
 import { securityPlugin } from './plugins/securityPlugin'
+import { AiContentFeature } from './features/aiContent/feature.server'
 import { AuditLogs } from './collections/AuditLogs'
 import { SecurityEvents } from './collections/SecurityEvents'
 
@@ -189,7 +190,12 @@ export default buildConfig({
   // ]),
 
   // ── Rich text editor ───────────────────────────────────────────────────────
-  editor: lexicalEditor({}),
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures,
+      AiContentFeature(),
+    ],
+  }),
 
   // ── Localization ───────────────────────────────────────────────────────────
   // Fields marked `localized: true` get a copy per locale
