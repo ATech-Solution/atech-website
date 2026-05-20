@@ -63,7 +63,10 @@ export async function middleware(request: NextRequest) {
   // ── 2. API rate limiting (edge-safe in-memory) ──────────────────────────────
   if (pathname.startsWith('/api/') && !pathname.startsWith('/api/maintenance-status')) {
     const maxReq = parseInt(process.env.API_RATE_LIMIT_MAX ?? '60', 10)
-    const result = checkRateLimitSync(ip, 'api', maxReq)
+    // Key by pathname so each endpoint gets its own quota; prevents admin-panel
+    // page-load bursts (which hit ~10 different endpoints at once) from exhausting
+    // a single shared bucket and triggering false 429s.
+    const result = checkRateLimitSync(ip, pathname, maxReq)
     if (!result.allowed) {
       return NextResponse.json(
         { error: 'Too Many Requests' },
