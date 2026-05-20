@@ -15,22 +15,22 @@ import type { LexicalEditor } from 'lexical'
 import { $createHeadingNode } from '@lexical/rich-text'
 import { useDocumentInfo } from '@payloadcms/ui'
 import { useLocale } from '@payloadcms/ui'
-import { OPEN_AI_PANEL_COMMAND } from './command'
+import { OPEN_AI_PANEL_COMMAND, type AiPanelContext } from './command'
 
 type Action = 'draft' | 'expand' | 'rewrite' | 'summarize'
 
 const PLACEHOLDERS: Record<Action, string> = {
   draft: 'What would you like to write about?\ne.g. Write an intro about AI trends for senior devs...',
   expand: 'Direction for expansion (optional)\ne.g. Add more examples and concrete detail...',
-  rewrite: 'How should it be rewritten?\ne.g. More direct, less jargon, shorter sentences...',
+  rewrite: 'How should it be rewritten? (optional)\ne.g. More direct, less jargon, shorter sentences...',
   summarize: 'Format preference (optional)\ne.g. 3 bullet points for a non-technical reader...',
 }
 
 const TIPS: Record<Action, string> = {
   draft: "Name your target audience. Include a keyword you want to rank for. Specify tone: 'conversational', 'technical', or 'punchy'.",
-  expand: 'Select the paragraph to expand first. Mention any angle to add: examples, data, or deeper explanation.',
-  rewrite: "Select the text to rewrite. Describe the tone shift: 'more direct', 'less jargon', 'shorter sentences'.",
-  summarize: "Select the full passage first. Specify format: 'one sentence', 'bullet points', 'for a non-technical reader'.",
+  expand: 'Works on selected text — or the paragraph your cursor is in. Mention any angle to add: examples, data, or deeper explanation.',
+  rewrite: "Works on selected text — or the paragraph your cursor is in. Describe the tone shift: 'more direct', 'less jargon', 'shorter sentences'.",
+  summarize: "Works on selected text — or the paragraph your cursor is in. Specify format: 'one sentence', 'bullet points', 'for a non-technical reader'.",
 }
 
 // ── Markdown → Lexical nodes ──────────────────────────────────────────────────
@@ -124,7 +124,12 @@ function insertMarkdownContent(
   })
 }
 
-// ── Panel component ───────────────────────────────────────────────────────────
+// Extracts all plain text from the editor (used as last-resort context)
+function getFullDocText(editor: LexicalEditor): string {
+  return editor.getEditorState().read(() => $getRoot().getTextContent())
+}
+
+// ── Panel styles ──────────────────────────────────────────────────────────────
 
 const panelStyle: React.CSSProperties = {
   background: 'var(--theme-elevation-50, #1a1a1a)',
@@ -166,6 +171,8 @@ const btnSecondary: React.CSSProperties = {
   cursor: 'pointer',
 }
 
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export const AiContentPlugin: React.FC<{ clientProps?: unknown }> = () => {
   const [editor] = useLexicalComposerContext()
   const docInfo = useDocumentInfo()
@@ -174,7 +181,11 @@ export const AiContentPlugin: React.FC<{ clientProps?: unknown }> = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [action, setAction] = useState<Action>('draft')
   const [prompt, setPrompt] = useState('')
+
+  // Context from the editor at the time the panel was opened
   const [selectedText, setSelectedText] = useState('')
+  const [paragraphText, setParagraphText] = useState('')
+
   const [tipsOpen, setTipsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [generated, setGenerated] = useState<string | null>(null)
@@ -187,15 +198,20 @@ export const AiContentPlugin: React.FC<{ clientProps?: unknown }> = () => {
   useEffect(() => {
     return editor.registerCommand(
       OPEN_AI_PANEL_COMMAND,
-      (payload) => {
-        setSelectedText(payload ?? '')
+      (payload: AiPanelContext | null) => {
+        const sel = payload?.selectedText ?? ''
+        const para = payload?.paragraphText ?? ''
+
+        setSelectedText(sel)
+        setParagraphText(para)
+
         setIsOpen((prev) => {
           if (!prev) {
             setGenerated(null)
             setError(null)
             setPrompt('')
-            if (payload) setAction('expand')
-            else setAction('draft')
+            // If text is selected → expand is most useful; otherwise draft
+            setAction(sel ? 'expand' : 'draft')
           }
           return !prev
         })
@@ -216,6 +232,21 @@ export const AiContentPlugin: React.FC<{ clientProps?: unknown }> = () => {
     setLongWait(false)
   }, [])
 
+  // Resolve the best context text for Expand/Rewrite/Summarize
+  const resolvedContext = selectedText || paragraphText || getFullDocText(editor)
+  const wordCount = resolvedContext.trim().split(/\s+/).filter(Boolean).length
+
+  const contextLabel: string | null =
+    action === 'draft'
+      ? null
+      : selectedText
+        ? `${wordCount} word${wordCount !== 1 ? 's' : ''} selected`
+        : paragraphText
+          ? 'current paragraph'
+          : wordCount > 0
+            ? 'full document'
+            : null
+
   const handleGenerate = useCallback(async () => {
     abortRef.current?.abort()
     const abort = new AbortController()
@@ -228,6 +259,9 @@ export const AiContentPlugin: React.FC<{ clientProps?: unknown }> = () => {
 
     longWaitTimer.current = setTimeout(() => setLongWait(true), 8000)
 
+    // Use resolved context for non-draft actions
+    const contextText = action === 'draft' ? '' : resolvedContext
+
     try {
       const res = await fetch('/api/seo/generate-content', {
         method: 'POST',
@@ -235,7 +269,7 @@ export const AiContentPlugin: React.FC<{ clientProps?: unknown }> = () => {
         body: JSON.stringify({
           action,
           prompt: prompt.trim(),
-          selectedText: selectedText.slice(0, 4000),
+          selectedText: contextText.slice(0, 4000),
           collectionSlug: docInfo.collectionSlug ?? undefined,
           docId: docInfo.id ? String(docInfo.id) : undefined,
           locale: (locale as any)?.code ?? 'en',
@@ -258,10 +292,11 @@ export const AiContentPlugin: React.FC<{ clientProps?: unknown }> = () => {
       setLoading(false)
       setLongWait(false)
     }
-  }, [action, prompt, selectedText, docInfo, locale])
+  }, [action, prompt, resolvedContext, docInfo, locale])
 
   const handleAccept = useCallback(() => {
     if (!generated) return
+    // Replace explicit selection; for auto-context (paragraph/doc) insert at cursor
     const replaceSelection = action !== 'draft' && !!selectedText.trim()
     insertMarkdownContent(editor, generated, replaceSelection)
     handleClose()
@@ -269,9 +304,7 @@ export const AiContentPlugin: React.FC<{ clientProps?: unknown }> = () => {
 
   if (!isOpen) return null
 
-  const needsSelection = action !== 'draft'
-  const missingSelection = needsSelection && !selectedText.trim()
-  const canGenerate = !loading && !missingSelection && (action !== 'draft' || !!prompt.trim())
+  const canGenerate = !loading && (action !== 'draft' || !!prompt.trim())
 
   return (
     <div style={panelStyle}>
@@ -316,24 +349,7 @@ export const AiContentPlugin: React.FC<{ clientProps?: unknown }> = () => {
           ))}
         </div>
 
-        {/* Selection warning */}
-        {missingSelection && (
-          <div
-            style={{
-              background: 'rgba(250,200,50,0.08)',
-              border: '1px solid rgba(250,200,50,0.2)',
-              borderRadius: '4px',
-              padding: '6px 10px',
-              fontSize: '11px',
-              color: '#d4a700',
-              marginBottom: '8px',
-            }}
-          >
-            Select text in the editor first — then click ✨ AI again.
-          </div>
-        )}
-
-        {/* Preview state */}
+        {/* Generated preview */}
         {generated ? (
           <>
             <div
@@ -482,40 +498,24 @@ export const AiContentPlugin: React.FC<{ clientProps?: unknown }> = () => {
               </div>
             )}
 
-            {/* Generate row */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {/* Generate row with context chip */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               {loading ? (
                 <>
                   <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
-                    <span
-                      style={{
-                        width: '5px',
-                        height: '5px',
-                        borderRadius: '50%',
-                        background: '#a5b4fc',
-                        display: 'inline-block',
-                      }}
-                    />
-                    <span
-                      style={{
-                        width: '5px',
-                        height: '5px',
-                        borderRadius: '50%',
-                        background: '#a5b4fc',
-                        opacity: 0.6,
-                        display: 'inline-block',
-                      }}
-                    />
-                    <span
-                      style={{
-                        width: '5px',
-                        height: '5px',
-                        borderRadius: '50%',
-                        background: '#a5b4fc',
-                        opacity: 0.3,
-                        display: 'inline-block',
-                      }}
-                    />
+                    {[1, 0.6, 0.3].map((opacity, i) => (
+                      <span
+                        key={i}
+                        style={{
+                          width: '5px',
+                          height: '5px',
+                          borderRadius: '50%',
+                          background: '#a5b4fc',
+                          opacity,
+                          display: 'inline-block',
+                        }}
+                      />
+                    ))}
                   </div>
                   <span style={{ fontSize: '11px', color: '#6366f1' }}>
                     {longWait ? 'Still generating…' : 'Generating…'}
@@ -553,6 +553,24 @@ export const AiContentPlugin: React.FC<{ clientProps?: unknown }> = () => {
                     ✨ Generate
                   </button>
                   <span style={{ fontSize: '10px', color: 'var(--theme-elevation-400, #555)' }}>⌘↵</span>
+
+                  {/* Context chip */}
+                  {contextLabel && (
+                    <span
+                      style={{
+                        marginLeft: 'auto',
+                        fontSize: '10px',
+                        color: 'var(--theme-elevation-500, #666)',
+                        background: 'var(--theme-elevation-100, #111)',
+                        border: '1px solid var(--theme-elevation-200, #2a2a2a)',
+                        borderRadius: '10px',
+                        padding: '2px 8px',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      ✎ {contextLabel}
+                    </span>
+                  )}
                 </>
               )}
             </div>

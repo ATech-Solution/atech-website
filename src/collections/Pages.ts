@@ -1,5 +1,4 @@
 import type { CollectionConfig } from 'payload'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { getPageTemplateOptions } from '@/lib/page-templates'
 import { settingsAccess } from '@/lib/access'
 import { buildSeoFields } from '@/plugins/seo/fields'
@@ -134,11 +133,11 @@ export const Pages: CollectionConfig = {
             },
             {
               name: 'excerpt',
-              type: 'textarea',
+              type: 'richText',
               localized: true,
-              label: 'Excerpt',
+              label: 'Content',
               admin: {
-                description: 'Short description shown in search results and SEO.',
+                description: 'Page content. For metadata shown in search results and SEO, use the SEO Meta Description field.',
               },
             },
             // ── Row actions (list view only — View URL + Duplicate) ────────────
@@ -200,7 +199,6 @@ export const Pages: CollectionConfig = {
                     {
                       name: 'content',
                       type: 'richText',
-                      editor: lexicalEditor({}),
                       localized: true,
                     },
                   ],

@@ -1,8 +1,7 @@
 'use client'
 
 import React from 'react'
-import { $getSelection, $isRangeSelection } from 'lexical'
-import { COMMAND_PRIORITY_EDITOR } from 'lexical'
+import { $getSelection, $isRangeSelection, $isTextNode } from 'lexical'
 import type { LexicalEditor } from 'lexical'
 import type { ToolbarGroupItem } from '@payloadcms/richtext-lexical'
 import { OPEN_AI_PANEL_COMMAND } from './command'
@@ -17,14 +16,27 @@ interface Props {
 
 export const AiToolbarButton: React.FC<Props> = ({ editor }) => {
   const handleClick = () => {
-    const selectedText = editor.getEditorState().read(() => {
+    editor.getEditorState().read(() => {
       const selection = $getSelection()
-      if ($isRangeSelection(selection) && !selection.isCollapsed()) {
-        return selection.getTextContent()
+
+      let selectedText = ''
+      let paragraphText = ''
+
+      if ($isRangeSelection(selection)) {
+        if (!selection.isCollapsed()) {
+          selectedText = selection.getTextContent()
+        }
+
+        // Read current paragraph text (the block node containing the anchor)
+        const anchorNode = selection.anchor.getNode()
+        const block = $isTextNode(anchorNode) ? anchorNode.getParent() : anchorNode
+        if (block) {
+          paragraphText = block.getTextContent?.() ?? ''
+        }
       }
-      return null
+
+      editor.dispatchCommand(OPEN_AI_PANEL_COMMAND, { selectedText, paragraphText })
     })
-    editor.dispatchCommand(OPEN_AI_PANEL_COMMAND, selectedText)
   }
 
   return (
@@ -48,12 +60,10 @@ export const AiToolbarButton: React.FC<Props> = ({ editor }) => {
         whiteSpace: 'nowrap',
       }}
       onMouseEnter={(e) => {
-        ;(e.currentTarget as HTMLButtonElement).style.color =
-          'var(--theme-elevation-1000, #ccc)'
+        ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-elevation-1000, #ccc)'
       }}
       onMouseLeave={(e) => {
-        ;(e.currentTarget as HTMLButtonElement).style.color =
-          'var(--theme-elevation-800, #aaa)'
+        ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-elevation-800, #aaa)'
       }}
     >
       <span>✨</span>
