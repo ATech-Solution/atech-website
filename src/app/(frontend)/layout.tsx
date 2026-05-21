@@ -6,6 +6,7 @@ import ThemeProvider from '@/components/ThemeProvider'
 import ChunkErrorRecovery from '@/components/ChunkErrorRecovery'
 import AdminBar from '@/components/AdminBar'
 import { ChatbotWidget } from '@/components/ChatbotWidget'
+import { ScrollToTop } from '@/components/ScrollToTop'
 import { getTheme, getSettings, getActivePlugins, getNavigation } from '@/lib/payload'
 import { buildThemeCssVars } from '@/lib/theme'
 import '../globals.css'
@@ -85,6 +86,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <main className="main-content">{children}</main>
           <Footer theme={theme} settings={settings} navigation={navigation} />
           <AdminBar />
+          <ScrollToTop />
           {isChatbotActive && <ChatbotWidget />}
         </ThemeProvider>
       </body>
