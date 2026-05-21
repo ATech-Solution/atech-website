@@ -5,6 +5,7 @@ import Footer from '@/components/Footer'
 import ThemeProvider from '@/components/ThemeProvider'
 import ChunkErrorRecovery from '@/components/ChunkErrorRecovery'
 import AdminBar from '@/components/AdminBar'
+import { ChatbotWidget } from '@/components/ChatbotWidget'
 import { getTheme, getSettings, getActivePlugins, getNavigation } from '@/lib/payload'
 import { buildThemeCssVars } from '@/lib/theme'
 import '../globals.css'
@@ -52,6 +53,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       typeof p.scriptCode === 'string' &&
       p.scriptCode.trim() !== '',
   )
+  const isChatbotActive = plugins.some((p: any) => p.slug === 'chatbot')
 
   
   // console.log('theme',theme)
@@ -83,6 +85,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <main className="main-content">{children}</main>
           <Footer theme={theme} settings={settings} navigation={navigation} />
           <AdminBar />
+          {isChatbotActive && <ChatbotWidget />}
         </ThemeProvider>
       </body>
     </html>

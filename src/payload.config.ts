@@ -32,6 +32,7 @@ import { Settings } from './collections/Settings'
 import { Theme } from './collections/Theme'
 import { layoutBuilderPlugin } from './plugins/layoutBuilderPlugin'
 import { backupRestorePlugin } from './plugins/backupRestorePlugin'
+import { chatbotPlugin } from './plugins/chatbotPlugin'
 import { securityPlugin } from './plugins/securityPlugin'
 import { AiContentFeature } from './features/aiContent/feature.server'
 import { exportImportPlugin } from './plugins/exportImportPlugin'
@@ -152,6 +153,7 @@ export default buildConfig({
         '@/components/admin/BackupNavLink#BackupNavLink',
         '@/components/admin/SecurityNavLink#SecurityNavLink',
         '@/components/admin/ExportImportNavLink#ExportImportNavLink',
+        '@/components/admin/ChatbotNavLink#ChatbotNavLink',
       ],
     },
     // autoLogin: process.env.NODE_ENV !== 'production'
@@ -256,6 +258,9 @@ export default buildConfig({
 
     // Backup & Restore — seeds itself into the Plugins collection on first run
     backupRestorePlugin(),
+
+    // Chatbot Widget — floating Q&A widget with WhatsApp redirect, lead capture, analytics
+    chatbotPlugin(),
 
     // 1. SEO ─────────────────────────────────────────────────────────────────
     // Traditional SEO + LLM SEO bundle

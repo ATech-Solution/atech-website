@@ -43,6 +43,7 @@ import { BlocksNavLink as BlocksNavLink_bf7bac25a8582350c353d0ee20dbe966 } from 
 import { BackupNavLink as BackupNavLink_5ac2c4bebc240e9518bb38d8e0100915 } from '@/components/admin/BackupNavLink'
 import { SecurityNavLink as SecurityNavLink_2a85c1063bca21d3b9a1d89b4968b870 } from '@/components/admin/SecurityNavLink'
 import { ExportImportNavLink as ExportImportNavLink_34ee2b30dac11c0754efe98ac198a258 } from '@/components/admin/ExportImportNavLink'
+import { ChatbotNavLink as ChatbotNavLink_8a29521843fe7cc97f86f7b10183d8a8 } from '@/components/admin/ChatbotNavLink'
 
 export const importMap = {
   "@/components/admin/SlugField#SlugField": SlugField_5bc3d1261b9f84311e93975be7a9a4d6,
@@ -89,5 +90,6 @@ export const importMap = {
   "@/components/admin/BlocksNavLink#BlocksNavLink": BlocksNavLink_bf7bac25a8582350c353d0ee20dbe966,
   "@/components/admin/BackupNavLink#BackupNavLink": BackupNavLink_5ac2c4bebc240e9518bb38d8e0100915,
   "@/components/admin/SecurityNavLink#SecurityNavLink": SecurityNavLink_2a85c1063bca21d3b9a1d89b4968b870,
-  "@/components/admin/ExportImportNavLink#ExportImportNavLink": ExportImportNavLink_34ee2b30dac11c0754efe98ac198a258
+  "@/components/admin/ExportImportNavLink#ExportImportNavLink": ExportImportNavLink_34ee2b30dac11c0754efe98ac198a258,
+  "@/components/admin/ChatbotNavLink#ChatbotNavLink": ChatbotNavLink_8a29521843fe7cc97f86f7b10183d8a8
 }

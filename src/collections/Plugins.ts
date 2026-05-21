@@ -2,6 +2,15 @@ import type { CollectionConfig } from 'payload'
 
 export const Plugins: CollectionConfig = {
   slug: 'plugins',
+  hooks: {
+    afterChange: [
+      async () => {
+        // Bust the getActivePlugins() cache so layout.tsx picks up status changes immediately
+        const { revalidateTag } = await import('next/cache')
+        revalidateTag('plugins')
+      },
+    ],
+  },
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'pluginType', 'status', 'version', 'updatedAt'],
