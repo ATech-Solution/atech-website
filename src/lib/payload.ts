@@ -18,12 +18,13 @@ export async function getPayloadClient() {
 }
 
 /** Fetch the page marked as the site frontpage (isFrontpage: true) */
-export async function getFrontpage() {
+export async function getFrontpage(locale: string = 'en') {
   try {
     const payload = await getPayloadClient()
     const result = await payload.find({
       collection: 'pages',
       where: { isFrontpage: { equals: true }, status: { equals: 'published' } },
+      locale: locale as any,
       limit: 1,
     })
     return result.docs[0] ?? null
@@ -33,12 +34,13 @@ export async function getFrontpage() {
 }
 
 /** Fetch a single page by its slug */
-export async function getPage(slug: string) {
+export async function getPage(slug: string, locale: string = 'en') {
   try {
     const payload = await getPayloadClient()
     const result = await payload.find({
       collection: 'pages',
       where: { slug: { equals: slug } },
+      locale: locale as any,
       limit: 1,
     })
     return result.docs[0] ?? null
@@ -48,10 +50,10 @@ export async function getPage(slug: string) {
 }
 
 /** Fetch the global navigation config */
-export async function getNavigation() {
+export async function getNavigation(locale: string = 'en') {
   try {
     const payload = await getPayloadClient()
-    return payload.findGlobal({ slug: 'navigation' })
+    return payload.findGlobal({ slug: 'navigation', locale: locale as any })
   } catch {
     return null
   }
@@ -59,30 +61,45 @@ export async function getNavigation() {
 
 /** Fetch the site theme global (cached; busted by revalidateTag('theme') in Theme afterChange hook) */
 export const getTheme = unstable_cache(
-  async () => {
+  async (locale: string = 'en') => {
     const payload = await getPayloadClient()
-    return payload.findGlobal({ slug: 'theme' }).catch(() => null)
+    return payload.findGlobal({ slug: 'theme', locale: locale as any }).catch(() => null)
   },
   ['theme'],
   { tags: ['theme'] },
 )
 
 export const getSettings = unstable_cache(
-  async () => {
+  async (locale: string = 'en') => {
     const payload = await getPayloadClient()
-    return payload.findGlobal({ slug: 'settings' }).catch(() => null)
+    return payload.findGlobal({ slug: 'settings', locale: locale as any }).catch(() => null)
   },
   ['settings'],
   { tags: ['settings'] },
 )
 
+/** Fetch language settings for the multilanguage plugin */
+export const getLanguageSettings = unstable_cache(
+  async () => {
+    try {
+      const payload = await getPayloadClient()
+      return payload.findGlobal({ slug: 'language-settings' as any }).catch(() => null)
+    } catch {
+      return null
+    }
+  },
+  ['language-settings'],
+  { tags: ['multilang-settings'] },
+)
+
 /** Fetch a single portfolio item by slug, with categories and featuredImage populated */
-export async function getPortfolioItem(slug: string) {
+export async function getPortfolioItem(slug: string, locale: string = 'en') {
   try {
     const payload = await getPayloadClient()
     const result = await payload.find({
       collection: 'portfolio',
       where: { slug: { equals: slug }, status: { equals: 'published' } },
+      locale: locale as any,
       depth: 2,
       limit: 1,
     })
@@ -93,12 +110,13 @@ export async function getPortfolioItem(slug: string) {
 }
 
 /** Fetch the Page marked as the portfolio detail template */
-export async function getPortfolioTemplatePage() {
+export async function getPortfolioTemplatePage(locale: string = 'en') {
   try {
     const payload = await getPayloadClient()
     const result = await payload.find({
       collection: 'pages',
       where: { portfolioDetailTemplate: { equals: true } },
+      locale: locale as any,
       limit: 1,
     })
     return result.docs[0] ?? null
@@ -108,12 +126,13 @@ export async function getPortfolioTemplatePage() {
 }
 
 /** Fetch a single post (article) by slug, with categories and featuredImage populated */
-export async function getPostItem(slug: string) {
+export async function getPostItem(slug: string, locale: string = 'en') {
   try {
     const payload = await getPayloadClient()
     const result = await payload.find({
       collection: 'posts',
       where: { slug: { equals: slug }, status: { equals: 'published' } },
+      locale: locale as any,
       depth: 2,
       limit: 1,
     })
@@ -124,12 +143,13 @@ export async function getPostItem(slug: string) {
 }
 
 /** Fetch the Page marked as the article detail template */
-export async function getArticleTemplatePage() {
+export async function getArticleTemplatePage(locale: string = 'en') {
   try {
     const payload = await getPayloadClient()
     const result = await payload.find({
       collection: 'pages',
       where: { articleDetailTemplate: { equals: true } },
+      locale: locale as any,
       limit: 1,
     })
     return result.docs[0] ?? null
@@ -220,13 +240,14 @@ export async function getFaviconUrl(): Promise<string> {
  * Batch-fetch block templates by ID.
  * Returns a map of { [id]: blockDoc } for merging with layoutBuilder overrides.
  */
-export async function getBlockTemplates(ids: string[]): Promise<Record<string, any>> {
+export async function getBlockTemplates(ids: string[], locale: string = 'en'): Promise<Record<string, any>> {
   if (!ids.length) return {}
   try {
     const payload = await getPayloadClient()
     const result = await payload.find({
       collection: 'blocks',
       where: { id: { in: ids } },
+      locale: locale as any,
       limit: ids.length,
     })
     return Object.fromEntries(result.docs.map((doc) => [String(doc.id), doc]))

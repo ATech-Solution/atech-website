@@ -17,7 +17,13 @@ const BANNED_WORDS = [
 
 export function buildContentPrompt(args: PromptArgs): { system: string; user: string } {
   const { action, prompt, selectedText = '', docTitle = '', docExcerpt = '', locale = 'en' } = args
-  const lang = locale === 'id' ? 'Bahasa Indonesia' : 'English'
+  const LOCALE_NAMES: Record<string, string> = {
+    'en':    'English',
+    'zh-hk': 'Traditional Chinese (繁體中文)',
+    'zh-cn': 'Simplified Chinese (简体中文)',
+    'id':    'Bahasa Indonesia',
+  }
+  const lang = LOCALE_NAMES[locale] ?? 'English'
 
   const system = `You are a professional content writer. Write as a knowledgeable human expert.
 

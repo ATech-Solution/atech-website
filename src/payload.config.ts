@@ -36,6 +36,7 @@ import { chatbotPlugin } from './plugins/chatbotPlugin'
 import { securityPlugin } from './plugins/securityPlugin'
 import { AiContentFeature } from './features/aiContent/feature.server'
 import { exportImportPlugin } from './plugins/exportImportPlugin'
+import { multilanguagePlugin } from './plugins/multilanguagePlugin'
 import { AuditLogs } from './collections/AuditLogs'
 import { SecurityEvents } from './collections/SecurityEvents'
 
@@ -154,6 +155,7 @@ export default buildConfig({
         '@/components/admin/SecurityNavLink#SecurityNavLink',
         '@/components/admin/ExportImportNavLink#ExportImportNavLink',
         '@/components/admin/ChatbotNavLink#ChatbotNavLink',
+        '@/components/admin/AdminLocaleSwitcher#AdminLocaleSwitcher',
       ],
     },
     // autoLogin: process.env.NODE_ENV !== 'production'
@@ -206,8 +208,10 @@ export default buildConfig({
   // Fields marked `localized: true` get a copy per locale
   localization: {
     locales: [
-      { label: 'English',    code: 'en' },
-      { label: 'Indonesian', code: 'id' },
+      { label: 'English',             code: 'en' },
+      { label: 'Traditional Chinese', code: 'zh-hk' },
+      { label: 'Simplified Chinese',  code: 'zh-cn' },
+      { label: 'Indonesian',          code: 'id' },
     ],
     defaultLocale: 'en',
     fallback: true, // fall back to default locale when translation missing
@@ -261,6 +265,9 @@ export default buildConfig({
 
     // Chatbot Widget — floating Q&A widget with WhatsApp redirect, lead capture, analytics
     chatbotPlugin(),
+
+    // Multilanguage — subdirectory locale routing, language switcher, translation manager
+    multilanguagePlugin(),
 
     // 1. SEO ─────────────────────────────────────────────────────────────────
     // Traditional SEO + LLM SEO bundle

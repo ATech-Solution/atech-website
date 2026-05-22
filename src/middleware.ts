@@ -17,6 +17,29 @@ function getClientIp(req: NextRequest): string {
   )
 }
 
+interface LocaleConfig {
+  isActive: boolean
+  autoDetect: boolean
+  defaultLocale: string
+  activeLocales: { code: string; label: string }[]
+}
+
+async function getLocaleConfig(request: NextRequest): Promise<LocaleConfig> {
+  try {
+    // Always use the actual request origin so local dev calls localhost, not a remote URL
+    const origin = request.nextUrl.origin
+
+    const res = await fetch(`${origin}/api/plugins/multilanguage/settings`, {
+      cache: 'no-store',
+    })
+
+    if (res.ok) return res.json()
+  } catch {
+    // Fail open — serve default locale silently
+  }
+  return { isActive: false, autoDetect: false, defaultLocale: 'en', activeLocales: [] }
+}
+
 async function isMaintenanceEnabled(request: NextRequest): Promise<boolean> {
   try {
     const origin =
@@ -112,6 +135,57 @@ export async function middleware(request: NextRequest) {
 
   // ── Pass admin / API through ─────────────────────────────────────────────────
   if (isAdminPath(pathname)) return NextResponse.next()
+
+  // ── Locale routing (frontend only) ───────────────────────────────────────────
+  // Skip the /maintenance special path and any file requests
+  if (!pathname.startsWith('/maintenance') && !pathname.match(/\.[^/]+$/)) {
+    const localeConfig = await getLocaleConfig(request)
+
+    // Build supported locales dynamically from CMS settings
+    const defaultLocale = localeConfig.defaultLocale || 'en'
+    const supportedLocales =
+      localeConfig.isActive && localeConfig.activeLocales.length > 0
+        ? [...new Set([defaultLocale, ...localeConfig.activeLocales.map((l) => l.code)])]
+        : [defaultLocale]
+
+    const firstSegment = pathname.split('/').filter(Boolean)[0] ?? ''
+
+    if (!supportedLocales.includes(firstSegment)) {
+      if (localeConfig.isActive) {
+        // Detect locale: NEXT_LOCALE cookie > Accept-Language > defaultLocale
+        let locale = defaultLocale
+
+        const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value
+        if (cookieLocale && supportedLocales.includes(cookieLocale)) {
+          locale = cookieLocale
+        } else if (localeConfig.autoDetect) {
+          const acceptLang = request.headers.get('accept-language') ?? ''
+          const preferred = acceptLang
+            .split(',')
+            .map((l) => l.split(';')[0]?.trim().slice(0, 2).toLowerCase())
+            .find((c) => c && supportedLocales.includes(c))
+          if (preferred) locale = preferred
+        }
+
+        // If the path starts with an unrecognised locale-like segment (e.g. /fr/about),
+        // strip that segment so we redirect to /{locale}/about instead of /{locale}/fr/about.
+        const segments = pathname.split('/').filter(Boolean)
+        const strippedPath =
+          segments.length > 0 && /^[a-z]{2}(-[a-z]{2,4})?$/.test(segments[0] ?? '')
+            ? '/' + segments.slice(1).join('/')
+            : pathname
+        const localePath = strippedPath === '/' || strippedPath === '' ? '' : strippedPath
+        const redirectUrl = new URL(`/${locale}${localePath}`, request.url)
+        redirectUrl.search = request.nextUrl.search
+        return NextResponse.redirect(redirectUrl, 307)
+      } else {
+        // Plugin inactive: rewrite to default locale prefix without a visible redirect
+        const rewriteUrl = new URL(`/${defaultLocale}${pathname}`, request.url)
+        rewriteUrl.search = request.nextUrl.search
+        return NextResponse.rewrite(rewriteUrl)
+      }
+    }
+  }
 
   // ── Maintenance check (frontend only) ────────────────────────────────────────
   const maintenance = await isMaintenanceEnabled(request)
