@@ -148,18 +148,26 @@ export async function POST(req: NextRequest) {
     const translated: Record<string, string> = {}
     const errors: Record<string, string> = {}
 
+    // Non-localized top-level keys stored in the main collection table (not in _locales).
+    // Passing them in a locale-scoped update overwrites the SHARED column — the last
+    // locale processed wins and all other locales see its content.  Strip them entirely.
+    const NON_LOCALIZED_KEYS = new Set([
+      'id', 'createdAt', 'updatedAt', 'publishedAt',
+      'status', '_status',
+      'slug', 'parent', 'breadcrumbs',
+      'isFrontpage', 'portfolioDetailTemplate', 'articleDetailTemplate',
+      'seoTopics',
+    ])
+
     for (const targetLocale of validTargets) {
       try {
         const translatedStrings = await translateStrings(client, strings, targetLocale)
-        const updatedDoc = applyTranslations(sourceDoc, fields, translatedStrings)
+        const updatedDoc = applyTranslations(sourceDoc, fields, translatedStrings) as Record<string, unknown>
 
-        // Remove fields that shouldn't be in update payload
-        const { id: _id, createdAt, updatedAt, ...updateData } = updatedDoc as any
-
-        // For collections with a custom 'status' field (Pages, Posts, etc.), ensure
-        // AI-translated content is saved as draft so editors must review before publish.
-        if (updateData.status !== undefined) {
-          updateData.status = 'draft'
+        // Strip non-localized keys — only localized fields should reach Payload's update.
+        const updateData: Record<string, unknown> = {}
+        for (const [k, v] of Object.entries(updatedDoc)) {
+          if (!NON_LOCALIZED_KEYS.has(k)) updateData[k] = v
         }
 
         if (globalSlug) {
@@ -179,7 +187,7 @@ export async function POST(req: NextRequest) {
           } as any)
         }
 
-        translated[targetLocale] = 'draft'
+        translated[targetLocale] = 'saved'
       } catch (err) {
         console.error(`[translate] ${collection ?? globalSlug} → ${targetLocale}:`, err)
         errors[targetLocale] = err instanceof Error ? err.message : 'Unknown error'

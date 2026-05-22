@@ -41,5 +41,15 @@ export const FAQs: CollectionConfig = {
       defaultValue: 0,
       admin: { description: 'Lower numbers appear first within a category.' },
     },
+    {
+      name: 'translatePanel',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/TranslateDocButton#TranslateDocButton',
+        },
+      },
+    },
   ],
 }

@@ -3,6 +3,12 @@
 // heroImagePosition: 'left' | 'right' (default right)
 
 import Link from 'next/link'
+import type { CSSProperties, ReactNode } from 'react'
+
+function CtaWrap({ href, className, style, children }: { href?: string; className?: string; style?: CSSProperties; children: ReactNode }) {
+  if (href) return <Link href={href} className={className} style={style}>{children}</Link>
+  return <span className={className} style={style}>{children}</span>
+}
 
 const CTA_ARROW = 'https://www.figma.com/api/mcp/asset/c2581a0e-817f-4155-a70f-a7a969d6d77f'
 
@@ -15,14 +21,15 @@ export interface HeroSplitSectionData {
   breadcrumbs?:         BreadcrumbItem[]
   heading?:             string
   body?:                string
-  ctaPrimaryLabel?:     string
-  ctaPrimaryUrl?:       string
-  ctaPrimaryIcon?:      { url: string } | null
-  ctaPrimaryIconPos?:   'left' | 'right'
-  ctaSecondaryLabel?:   string
-  ctaSecondaryUrl?:     string
-  ctaSecondaryIcon?:    { url: string } | null
-  ctaSecondaryIconPos?: 'left' | 'right'
+  ctaPrimaryLabel?:        string
+  ctaPrimaryUrl?:          string
+  ctaPrimaryIcon?:         { url: string } | null
+  ctaPrimaryIconPos?:      'left' | 'right'
+  ctaPrimaryIconFill?:     boolean
+  ctaSecondaryLabel?:      string
+  ctaSecondaryUrl?:        string
+  ctaSecondaryIcon?:       { url: string } | null
+  ctaSecondaryIconPos?:    'left' | 'right'
   heroImage?:           { url: string; alt?: string } | null
   heroImagePosition?:   'left' | 'right'
   heroImagePadding?:    boolean
@@ -210,8 +217,8 @@ export default function HeroSplitSection({ data }: { data: HeroSplitSectionData 
           )}
 
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px' }}>
-            {data.ctaPrimaryLabel && data.ctaPrimaryUrl && (
-              <Link
+            {data.ctaPrimaryLabel && (
+              <CtaWrap
                 href={data.ctaPrimaryUrl}
                 className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity duration-200"
                 style={{
@@ -227,21 +234,21 @@ export default function HeroSplitSection({ data }: { data: HeroSplitSectionData 
               >
                 {data.ctaPrimaryIcon?.url && data.ctaPrimaryIconPos === 'left' && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={data.ctaPrimaryIcon.url} alt="" style={{ width: '14px', height: '16px', objectFit: 'contain' }} />
+                  <img src={data.ctaPrimaryIcon.url} alt="" style={{ width: '14px', height: '16px', objectFit: data.ctaPrimaryIconFill ? 'fill' : 'contain' }} />
                 )}
                 {data.ctaPrimaryLabel}
                 {data.ctaPrimaryIcon?.url && data.ctaPrimaryIconPos !== 'left' ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={data.ctaPrimaryIcon.url} alt="" style={{ width: '14px', height: '16px', objectFit: 'contain' }} />
-                ) : !data.ctaPrimaryIcon?.url ? (
+                  <img src={data.ctaPrimaryIcon.url} alt="" style={{ width: '14px', height: '16px', objectFit: data.ctaPrimaryIconFill ? 'fill' : 'contain' }} />
+                ) : data.ctaPrimaryIcon === undefined ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={CTA_ARROW} alt="" style={{ width: '14px', height: '16px', objectFit: 'contain' }} />
                 ) : null}
-              </Link>
+              </CtaWrap>
             )}
 
-            {data.ctaSecondaryLabel && data.ctaSecondaryUrl && (
-              <Link
+            {data.ctaSecondaryLabel && (
+              <CtaWrap
                 href={data.ctaSecondaryUrl}
                 className="inline-flex items-center hover:opacity-70 transition-opacity duration-200"
                 style={{
@@ -256,7 +263,7 @@ export default function HeroSplitSection({ data }: { data: HeroSplitSectionData 
                 }}
               >
                 {data.ctaSecondaryLabel}
-              </Link>
+              </CtaWrap>
             )}
           </div>
         </div>

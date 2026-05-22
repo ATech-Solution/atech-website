@@ -72,11 +72,13 @@ export const Settings: GlobalConfig = {
               type: 'text',
               defaultValue: 'ATech',
               label: 'Site Name',
+              localized: true,
             },
             {
               name: 'siteDescription',
               type: 'textarea',
               label: 'Site Description (default SEO)',
+              localized: true,
             },
             {
               name: 'ogImage',
@@ -105,6 +107,7 @@ export const Settings: GlobalConfig = {
                   type: 'text',
                   label: 'Maintenance Page Title',
                   defaultValue: 'Under Construction.',
+                  localized: true,
                   admin: {
                     condition: (_, siblingData) => Boolean(siblingData?.maintenanceMode),
                   },
@@ -115,6 +118,7 @@ export const Settings: GlobalConfig = {
                   label: 'Maintenance Message',
                   defaultValue:
                     "We're rebuilding something great. Our systems are temporarily offline while we upgrade — we'll be back shortly.",
+                  localized: true,
                   admin: {
                     condition: (_, siblingData) => Boolean(siblingData?.maintenanceMode),
                   },
@@ -124,6 +128,7 @@ export const Settings: GlobalConfig = {
                   type: 'text',
                   label: 'Status Badge Text',
                   defaultValue: 'System upgrade in progress',
+                  localized: true,
                   admin: {
                     condition: (_, siblingData) => Boolean(siblingData?.maintenanceMode),
                   },
@@ -133,6 +138,7 @@ export const Settings: GlobalConfig = {
                   type: 'text',
                   label: 'Estimated Completion (shown in stats)',
                   defaultValue: 'Soon',
+                  localized: true,
                   admin: {
                     condition: (_, siblingData) => Boolean(siblingData?.maintenanceMode),
                   },
@@ -503,6 +509,16 @@ export const Settings: GlobalConfig = {
           ],
         },
       ],
+    },
+    {
+      name: 'translatePanel',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/TranslateDocButton#TranslateDocButton',
+        },
+      },
     },
   ],
 }

@@ -13,10 +13,18 @@ const SKIP_KEYS = new Set([
   'createdAt', 'updatedAt', 'publishedAt', '_status', 'locale',
   '_locale', 'code', 'version', 'format', 'indent', 'direction',
   'relationTo', 'value', 'uploadedTo',
+  // Non-localized fields — stored in the main collection table (shared across all locales).
+  'breadcrumbs', 'parent', 'seoTopics',
+  'isFrontpage', 'portfolioDetailTemplate', 'articleDetailTemplate',
+  // Layout Builder block structural fields (not user-visible content)
+  'blockStyle', 'advanced', 'templateSnapshot', 'blockId', 'blockTemplateName', 'order',
 ])
 
 // UUID / numeric ID pattern — skip these strings
 const ID_RE = /^[0-9a-f]{8}-[0-9a-f-]{27,}$/i
+
+// Keys ending with these suffixes contain URLs, positions, or config flags — not user-visible text
+const URL_KEY_RE = /(?:Url|Href|Embed|Src|Position|Pos|Source)$/i
 
 function isLexical(v: unknown): v is { root: unknown } {
   return typeof v === 'object' && v !== null && 'root' in v
@@ -64,6 +72,7 @@ export function extractFields(
     if (typeof val === 'string') {
       if (!val.trim()) continue
       if (ID_RE.test(val)) continue
+      if (URL_KEY_RE.test(key)) continue
       result.push({ path, type: 'text', value: val })
     } else if (isLexical(val)) {
       const texts = extractLexicalText((val as any).root)

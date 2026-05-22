@@ -13,15 +13,20 @@ declare global {
   }
 }
 
+interface MediaRef { url: string; alt?: string }
+
 interface ContactSectionData {
-  heading?:           string
-  contactSubheading?: string
-  formHeading?:       string
-  submitLabel?:       string
-  infoHeading?:       string
-  contactEmail?:      string
-  contactPhone?:      string
-  contactLocation?:   string
+  heading?:              string
+  contactSubheading?:    string
+  formHeading?:          string
+  submitLabel?:          string
+  infoHeading?:          string
+  contactEmail?:         string
+  contactPhone?:         string
+  contactLocation?:      string
+  contactEmailIcon?:     MediaRef | null
+  contactPhoneIcon?:     MediaRef | null
+  contactLocationIcon?:  MediaRef | null
 }
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error'
@@ -64,14 +69,17 @@ function LocationIcon() {
   )
 }
 
-function ContactInfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function ContactInfoRow({ icon, iconSrc, label, value }: { icon: React.ReactNode; iconSrc?: string; label: string; value: string }) {
   return (
     <div className="flex items-start gap-4">
       <div
         className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
         style={{ background: '#000000' }}
       >
-        {icon}
+        {iconSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={iconSrc} alt="" style={{ width: 16, height: 16, objectFit: 'contain' }} />
+        ) : icon}
       </div>
       <div className="flex flex-col gap-1">
         <span
@@ -201,7 +209,7 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
                   fontFamily: 'var(--font-work-sans, sans-serif)',
                   fontSize: 'clamp(1.75rem, 3vw, 2.25rem)',
                   fontWeight: 700,
-                  color: 'var(--color-text, #fafafa)',
+                  color: 'var(--color-text, #fff)',
                   letterSpacing: '-0.01em',
                 }}
               >
@@ -214,7 +222,7 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
                 style={{
                   fontFamily: 'var(--font-work-sans, sans-serif)',
                   fontSize: '1.125rem',
-                  color: 'var(--color-muted, #525252)',
+                  color: 'var(--color-text, #fff)',
                   maxWidth: '44rem',
                   marginLeft: 'auto',
                   marginRight: 'auto',
@@ -237,13 +245,13 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
             </h3>
             <div className="flex flex-col gap-6">
               {data.contactEmail && (
-                <ContactInfoRow icon={<EmailIcon />} label="Email" value={data.contactEmail} />
+                <ContactInfoRow icon={<EmailIcon />} iconSrc={data.contactEmailIcon?.url} label="Email" value={data.contactEmail} />
               )}
               {data.contactPhone && (
-                <ContactInfoRow icon={<PhoneIcon />} label="Phone" value={data.contactPhone} />
+                <ContactInfoRow icon={<PhoneIcon />} iconSrc={data.contactPhoneIcon?.url} label="Phone" value={data.contactPhone} />
               )}
               {data.contactLocation && (
-                <ContactInfoRow icon={<LocationIcon />} label="Location" value={data.contactLocation} />
+                <ContactInfoRow icon={<LocationIcon />} iconSrc={data.contactLocationIcon?.url} label="Location" value={data.contactLocation} />
               )}
             </div>
           </div>

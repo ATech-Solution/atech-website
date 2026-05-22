@@ -2,32 +2,40 @@
 // Used by: hero block type
 
 import Link from 'next/link'
+import type { CSSProperties, ReactNode } from 'react'
+
+function CtaWrap({ href, className, style, children }: { href?: string; className?: string; style?: CSSProperties; children: ReactNode }) {
+  if (href) return <Link href={href} className={className} style={style}>{children}</Link>
+  return <span className={className} style={style}>{children}</span>
+}
 
 interface HeroStat         { statValue: string; statLabel: string }
 interface FloatingCard     { cardText: string; cardPosition: string; cardIcon?: { url: string } }
 interface HeroSectionData {
-  badge?:              string
-  badgeIcon?:          { url: string } | null
-  heading?:            string
-  headingSub?:         string
-  body?:               string
-  ctaPrimaryLabel?:    string
-  ctaPrimaryUrl?:      string
-  ctaPrimaryIcon?:     { url: string } | null
-  ctaPrimaryIconPos?:  'left' | 'right'
-  ctaSecondaryLabel?:  string
-  ctaSecondaryUrl?:    string
-  ctaSecondaryIcon?:   { url: string } | null
-  ctaSecondaryIconPos?: 'left' | 'right'
-  heroImage?:          { url: string; alt?: string }
-  heroImagePadding?:   boolean
-  heroStats?:          HeroStat[]
-  floatingCards?:      FloatingCard[]
+  badge?:                 string
+  badgeIcon?:             { url: string } | null
+  heading?:               string
+  headingSub?:            string
+  body?:                  string
+  ctaPrimaryLabel?:       string
+  ctaPrimaryUrl?:         string
+  ctaPrimaryIcon?:        { url: string } | null
+  ctaPrimaryIconPos?:     'left' | 'right'
+  ctaPrimaryIconFill?:    boolean
+  ctaSecondaryLabel?:     string
+  ctaSecondaryUrl?:       string
+  ctaSecondaryIcon?:      { url: string } | null
+  ctaSecondaryIconPos?:   'left' | 'right'
+  ctaSecondaryIconFill?:  boolean
+  heroImage?:             { url: string; alt?: string }
+  heroImagePadding?:      boolean
+  heroStats?:             HeroStat[]
+  floatingCards?:         FloatingCard[]
 }
 
-function BtnIcon({ src, size = 14 }: { src: string; size?: number }) {
+function BtnIcon({ src, size = 14, fill }: { src: string; size?: number; fill?: boolean }) {
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt="" width={size} height={size} style={{ objectFit: 'contain', display: 'inline-block', verticalAlign: 'middle' }} />
+  return <img src={src} alt="" width={size} height={size} style={{ objectFit: fill ? 'fill' : 'contain', display: 'inline-block', verticalAlign: 'middle' }} />
 }
 
 function ArrowDefault() {
@@ -120,7 +128,8 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
         {/* maxWidth: 'var(--content-max-width, 1280px)' */}
         {/* ── Left ── */}
         {/* flex-1 */}
-        <div className="flex flex-col px-6 md:px-10 py-20 lg:py-24 lg:pl-24 lg:pr-16 lg:mt-5">
+        <div className="w-full lg:flex-1 flex flex-col
+          ">
           {data.badge && (
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 self-start"
@@ -144,7 +153,7 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
               </span>
             </div>
           )}
-
+          <span className='px-6 md:px-10 py-20 lg:py-24 lg:pl-24 lg:pr-16 lg:mt-5'>
           {(data.heading || data.headingSub) && (
             <h1
               className="mb-6"
@@ -183,8 +192,8 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
 
           {(data.ctaPrimaryLabel || data.ctaSecondaryLabel) && (
             <div className="flex flex-wrap gap-4 mb-14">
-              {data.ctaPrimaryLabel && data.ctaPrimaryUrl && (
-                <Link
+              {data.ctaPrimaryLabel && (
+                <CtaWrap
                   href={data.ctaPrimaryUrl}
                   className="w-full sm:w-[350px] md:w-auto inline-flex items-center gap-2 transition-opacity duration-200 hover:opacity-90"
                   style={{
@@ -198,18 +207,18 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
                   }}
                 >
                   {data.ctaPrimaryIcon?.url && primaryIconPos === 'left' && (
-                    <BtnIcon src={data.ctaPrimaryIcon.url} />
+                    <BtnIcon src={data.ctaPrimaryIcon.url} fill={data.ctaPrimaryIconFill} />
                   )}
                   {data.ctaPrimaryLabel}
                   {data.ctaPrimaryIcon?.url && primaryIconPos === 'right' ? (
-                    <BtnIcon src={data.ctaPrimaryIcon.url} />
-                  ) : !data.ctaPrimaryIcon?.url ? (
+                    <BtnIcon src={data.ctaPrimaryIcon.url} fill={data.ctaPrimaryIconFill} />
+                  ) : data.ctaPrimaryIcon === undefined ? (
                     <ArrowDefault />
                   ) : null}
-                </Link>
+                </CtaWrap>
               )}
-              {data.ctaSecondaryLabel && data.ctaSecondaryUrl && (
-                <Link
+              {data.ctaSecondaryLabel && (
+                <CtaWrap
                   href={data.ctaSecondaryUrl}
                   className="w-full sm:w-[350px] md:w-auto inline-flex items-center gap-2.5 transition-opacity duration-200 hover:opacity-80"
                   style={{
@@ -224,13 +233,13 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
                   }}
                 >
                   {data.ctaSecondaryIcon?.url && secondaryIconPos === 'left' && (
-                    <BtnIcon src={data.ctaSecondaryIcon.url} />
+                    <BtnIcon src={data.ctaSecondaryIcon.url} fill={data.ctaSecondaryIconFill} />
                   )}
                   {data.ctaSecondaryLabel}
                   {data.ctaSecondaryIcon?.url && secondaryIconPos === 'right' && (
-                    <BtnIcon src={data.ctaSecondaryIcon.url} />
+                    <BtnIcon src={data.ctaSecondaryIcon.url} fill={data.ctaSecondaryIconFill} />
                   )}
-                </Link>
+                </CtaWrap>
               )}
             </div>
           )}
@@ -245,33 +254,36 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
               ))}
             </div>
           )}
+          </span>
         </div>
+        {/* px-6 md:px-10 py-20 lg:py-24 lg:pl-24 lg:pr-16 lg:mt-5 */}
 
         {/* ── Right — image + floating cards ── */}
         {data.heroImage?.url && (
           <div
-            className="hidden lg:block relative 2xl:mt-8"
-            style={{ flex: 1, minHeight: '480px' }}
+            className="w-full lg:flex-1 hiddens lg:blocks relative 2xl:mt-8"
+            style={{ flex: 1, minHeight: '100%' }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={data.heroImage.url}
               alt={data.heroImage.alt ?? ''}
               style={{
-                position: 'absolute',
+                position: 'relative',
                 top:    data.heroImagePadding ? '80px' : '0',
                 right:  data.heroImagePadding ? '40px' : '0',
                 bottom: data.heroImagePadding ? '40px' : '0',
                 left:   data.heroImagePadding ? '40px' : 'unset',
                 objectFit: 'cover',
                 maxHeight: data.heroImagePadding ? '600px' : 'none',
+                width: '100%',
                 margin: data.heroImagePadding ? '0 auto' : 'auto',
               }}
             />
-            {topCard    && <FloatingBadgeCard {...topCard}    className="top-[250px] w-[200px] right-20"  />}
-            {bottomCard && <FloatingBadgeCard {...bottomCard} className="bottom-[100px] min-w-[200px]  left-[-24px]" />}
-            {topLeftCard  && <FloatingBadgeCard {...topLeftCard}  className="top-[174px] min-w-[250px]  -left-3" />}
-            {botRightCard && <FloatingBadgeCard {...botRightCard} className="bottom-[144px] min-w-[250px] -right-3" />}
+            {topCard    && <FloatingBadgeCard {...topCard}    className="w-[200px] top-[90px] md:top-[250px] right-[15px] md:right-20" />}
+            {bottomCard && <FloatingBadgeCard {...bottomCard} className="min-w-[200px] bottom-[100px] left-[15px] md:left-[-24px]" />}
+            {topLeftCard  && <FloatingBadgeCard {...topLeftCard}  className="min-w-[250px] top-[174px] md:-left-3" />}
+            {botRightCard && <FloatingBadgeCard {...botRightCard} className="min-w-[250px] bottom-[144px] md:-right-3" />}
           </div>
         )}
       </div>

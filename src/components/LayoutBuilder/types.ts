@@ -170,18 +170,26 @@ export interface BlockOverrides {
     contactEmail?: string
     contactPhone?: string
     contactLocation?: string
+    contactEmailIcon?: MediaRef | null
+    contactPhoneIcon?: MediaRef | null
+    contactLocationIcon?: MediaRef | null
 
     // ── Button icons ──────────────────────────────────────────────────────
     ctaPrimaryIcon?: MediaRef | null
     ctaPrimaryIconPos?: 'left' | 'right'
+    ctaPrimaryIconFill?: boolean
     ctaSecondaryIcon?: MediaRef | null
     ctaSecondaryIconPos?: 'left' | 'right'
+    ctaSecondaryIconFill?: boolean
     buttonIcon?: MediaRef | null
     buttonIconPos?: 'left' | 'right'
+    buttonIconFill?: boolean
     customSolutionCtaIcon?: MediaRef | null
     customSolutionCtaIconPos?: 'left' | 'right'
+    customSolutionCtaIconFill?: boolean
     ambassadorCtaIcon?: MediaRef | null
     ambassadorCtaIconPos?: 'left' | 'right'
+    ambassadorCtaIconFill?: boolean
 
     // ── Service Hero (generic service page hero with breadcrumb) ─────────
     badgeIconSrc?: string
@@ -317,7 +325,7 @@ export interface BlockOverrides {
 
     // ── Contact Stats ─────────────────────────────────────────────────────
     contactStatsStyle?: 'light' | 'dark'
-    contactStatCtas?:  Array<{ contactCtaLabel?: string; contactCtaUrl?: string; contactCtaPrimary?: boolean; contactCtaIcon?: MediaRef | null; contactCtaIconPos?: 'left' | 'right' }>
+    contactStatCtas?:  Array<{ contactCtaLabel?: string; contactCtaUrl?: string; contactCtaPrimary?: boolean; contactCtaIcon?: MediaRef | null; contactCtaIconPos?: 'left' | 'right'; contactCtaIconFill?: boolean }>
     contactStatItems?: Array<{ contactStatValue?: string; contactStatLabel?: string }>
 
     // ── Locations ─────────────────────────────────────────────────────────

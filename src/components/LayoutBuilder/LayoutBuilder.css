@@ -532,6 +532,7 @@
 /* ── Items list in content ────────────────────────────────────────────────── */
 .lb-items { display: flex; flex-direction: column; gap: 8px; }
 .lb-item { border: 1px solid var(--theme-elevation-150, #e5e7eb); border-radius: 4px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+.lb-cta-group { border: 1px solid var(--theme-elevation-150, #e5e7eb); border-radius: 8px; padding: 10px; margin-bottom: 8px; background: var(--theme-elevation-50, #f9fafb); display: flex; flex-direction: column; gap: 6px; }
 .lb-item__header { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 600; color: var(--theme-elevation-500, #6b7280); }
 .lb-item__remove { background: transparent; border: none; cursor: pointer; color: #ef4444; font-size: 12px; }
 .lb-items__add {
@@ -1320,6 +1321,10 @@
 
 /* Items list */
 .lbfs-root .lb-item {
+  border-color: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+}
+.lbfs-root .lb-cta-group {
   border-color: rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.03);
 }

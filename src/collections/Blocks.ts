@@ -1473,5 +1473,15 @@ export const Blocks: CollectionConfig = {
         },
       ],
     },
+    {
+      name: 'translatePanel',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/TranslateDocButton#TranslateDocButton',
+        },
+      },
+    },
   ],
 }

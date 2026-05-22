@@ -159,6 +159,7 @@ export const Pages: CollectionConfig = {
               type: 'json',
               label: 'Layout Builder',
               defaultValue: [],
+              localized: true,
               admin: {
                 description: 'Visual drag-and-drop page builder. Activate the Layout Builder plugin in Plugins to use.',
                 components: {
@@ -440,6 +441,16 @@ export const Pages: CollectionConfig = {
       },
     },
     buildSeoFields('pages'),
+    {
+      name: 'translatePanel',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/TranslateDocButton#TranslateDocButton',
+        },
+      },
+    },
   ],
   hooks: {
     beforeChange: [

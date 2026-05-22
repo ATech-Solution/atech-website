@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -41,6 +41,7 @@ interface MegaMenuNavProps {
   ctaUrl?: string
   /** 'light' = white header (dark text), 'dark' = dark header (light text) */
   navTheme?: 'light' | 'dark'
+  languageSwitcher?: React.ReactNode
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -467,6 +468,7 @@ function MobileDrawer({
   items,
   ctaLabel,
   ctaUrl,
+  languageSwitcher,
   open,
   onClose,
 }: MegaMenuNavProps & { open: boolean; onClose: () => void }) {
@@ -565,6 +567,18 @@ function MobileDrawer({
             </div>
           ))}
 
+          {languageSwitcher && (
+            <div
+              style={{
+                marginTop: 20,
+                paddingTop: 16,
+                borderTop: '1px solid #f0f0f0',
+              }}
+            >
+              {languageSwitcher}
+            </div>
+          )}
+
           <Link
             href={ctaUrl ?? '/static/contact'}
             onClick={onClose}
@@ -587,7 +601,7 @@ function MobileDrawer({
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark' }: MegaMenuNavProps) {
+export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark', languageSwitcher }: MegaMenuNavProps) {
   const [activeMenu, setActiveMenu]   = useState<string | null>(null)
   const [mobileOpen, setMobileOpen]   = useState(false)
   const closeTimer                    = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -681,7 +695,14 @@ export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark'
             )}
           </div>
         ))}
+        
+        {/* Language Switcher — between nav and CTA */}
+        {languageSwitcher && (
+          <div className="hidden md:block ml-12">{languageSwitcher}</div>
+        )}
       </nav>
+
+      
 
       {/* Desktop CTA — black button matching Figma */}
       <Link
@@ -733,6 +754,7 @@ export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark'
         items={items}
         ctaLabel={ctaLabel}
         ctaUrl={ctaUrl}
+        languageSwitcher={languageSwitcher}
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
       />

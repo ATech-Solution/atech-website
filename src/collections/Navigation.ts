@@ -19,7 +19,7 @@ export const Navigation: GlobalConfig = {
       type: 'array',
       label: 'Menu Items',
       fields: [
-        { name: 'label', type: 'text', required: true },
+        { name: 'label', type: 'text', required: true, localized: true },
         {
           name: 'url',
           type: 'text',
@@ -68,18 +68,20 @@ export const Navigation: GlobalConfig = {
               name: 'columnTitle',
               type: 'text',
               label: 'Column Heading',
+              localized: true,
             },
             {
               name: 'links',
               type: 'array',
               label: 'Links',
               fields: [
-                { name: 'label',       type: 'text', required: true },
+                { name: 'label',       type: 'text', required: true, localized: true },
                 { name: 'url',         type: 'text', required: true },
                 {
                   name: 'description',
                   type: 'text',
                   label: 'Short description (optional)',
+                  localized: true,
                 },
                 {
                   name: 'icon',
@@ -101,10 +103,10 @@ export const Navigation: GlobalConfig = {
             description: 'Optional promotional card shown on the right side of the mega menu.',
           },
           fields: [
-            { name: 'title',       type: 'text',   label: 'Card Title' },
-            { name: 'description', type: 'text',   label: 'Card Description' },
+            { name: 'title',       type: 'text',   label: 'Card Title',        localized: true },
+            { name: 'description', type: 'text',   label: 'Card Description',  localized: true },
             { name: 'url',         type: 'text',   label: 'Card Link URL' },
-            { name: 'cta',         type: 'text',   label: 'CTA Button Label', defaultValue: 'Learn More' },
+            { name: 'cta',         type: 'text',   label: 'CTA Button Label',  defaultValue: 'Learn More', localized: true },
             {
               name: 'image',
               type: 'upload',
@@ -121,6 +123,7 @@ export const Navigation: GlobalConfig = {
       type: 'text',
       label: 'Header CTA Button Label',
       defaultValue: 'Get a Quote',
+      localized: true,
     },
     {
       name: 'ctaUrl',
@@ -134,13 +137,13 @@ export const Navigation: GlobalConfig = {
       type: 'array',
       label: 'Footer Link Columns',
       fields: [
-        { name: 'heading', type: 'text', required: true, label: 'Column Heading' },
+        { name: 'heading', type: 'text', required: true, label: 'Column Heading', localized: true },
         {
           name: 'links',
           type: 'array',
           label: 'Links',
           fields: [
-            { name: 'label', type: 'text', required: true },
+            { name: 'label', type: 'text', required: true, localized: true },
             { name: 'url',   type: 'text', required: true },
           ],
         },
@@ -155,9 +158,19 @@ export const Navigation: GlobalConfig = {
         description: 'Links shown in the footer bottom bar (e.g. Privacy Policy, Terms of Service).',
       },
       fields: [
-        { name: 'label', type: 'text', required: true, label: 'Label' },
+        { name: 'label', type: 'text', required: true, label: 'Label', localized: true },
         { name: 'url',   type: 'text', required: true, label: 'URL'   },
       ],
+    },
+    {
+      name: 'translatePanel',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/TranslateDocButton#TranslateDocButton',
+        },
+      },
     },
   ],
 }

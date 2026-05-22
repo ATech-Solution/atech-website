@@ -320,21 +320,33 @@ function LinkField({
   )
 }
 
-// ── Button icon row (icon media + position select) ─────────────────────────────
+// ── Button icon row (icon media + position select + optional fill toggle) ──────
 function BtnIconRow({
   iconValue,
   iconPos,
+  iconFill,
   onIconChange,
   onIconPosChange,
+  onIconFillChange,
 }: {
   iconValue: string
   iconPos: string
+  iconFill?: boolean
   onIconChange: (ref: MediaRef | null) => void
   onIconPosChange: (v: string) => void
+  onIconFillChange?: (v: boolean) => void
 }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 8, alignItems: 'end' }}>
-      <MediaField label="Button Icon (empty = none)" value={iconValue} onChange={onIconChange} />
+      <div>
+        <MediaField label="Button Icon (empty = none)" value={iconValue} onChange={onIconChange} />
+        {iconValue && onIconFillChange && (
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#6b7280', cursor: 'pointer', marginTop: 4 }}>
+            <input type="checkbox" checked={iconFill ?? false} onChange={(e) => onIconFillChange(e.target.checked)} style={{ margin: 0 }} />
+            Fill (stretch icon to fit)
+          </label>
+        )}
+      </div>
       <div>
         <label className="lb-field__label" style={{ display: 'block', marginBottom: 4 }}>Position</label>
         <select className="lb-input lb-input--select" value={iconPos} onChange={(e) => onIconPosChange(e.target.value)}
@@ -347,33 +359,34 @@ function BtnIconRow({
   )
 }
 
-// ── CTA button group (label + URL + icon + pos) ────────────────────────────────
+// ── CTA button group (label + URL + icon + pos + fill) ─────────────────────────
 function CtaGroup({
   groupLabel,
   label, labelPlaceholder,
   url, urlPlaceholder,
-  iconValue, iconPos,
-  onLabelChange, onUrlChange, onIconChange, onIconPosChange,
+  iconValue, iconPos, iconFill,
+  onLabelChange, onUrlChange, onIconChange, onIconPosChange, onIconFillChange,
 }: {
   groupLabel: string
   label: string; labelPlaceholder?: string
   url: string; urlPlaceholder?: string
-  iconValue: string; iconPos: string
+  iconValue: string; iconPos: string; iconFill?: boolean
   onLabelChange: (v: string) => void
   onUrlChange: (v: string) => void
   onIconChange: (ref: MediaRef | null) => void
   onIconPosChange: (v: string) => void
+  onIconFillChange?: (v: boolean) => void
 }) {
   return (
-    <div style={{ border: '1px solid #e8e8e8', borderRadius: 8, padding: 10, marginBottom: 8, background: '#fafafa' }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{groupLabel}</div>
+    <div className="lb-cta-group">
+      <div className="lb-field__label" style={{ fontSize: 11, fontWeight: 600, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{groupLabel}</div>
       <Row>
         <Field label="Label">
           <input className="lb-input" value={label} onChange={(e) => onLabelChange(e.target.value)} placeholder={labelPlaceholder ?? 'Button label'} />
         </Field>
         <LinkField label="URL" value={url} onChange={onUrlChange} placeholder={urlPlaceholder ?? '/page or https://…'} />
       </Row>
-      <BtnIconRow iconValue={iconValue} iconPos={iconPos} onIconChange={onIconChange} onIconPosChange={onIconPosChange} />
+      <BtnIconRow iconValue={iconValue} iconPos={iconPos} iconFill={iconFill} onIconChange={onIconChange} onIconPosChange={onIconPosChange} onIconFillChange={onIconFillChange} />
     </div>
   )
 }
@@ -404,21 +417,23 @@ function HomeHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => 
         groupLabel="Primary CTA"
         label={ov.ctaPrimaryLabel ?? ''} labelPlaceholder="Explore Services"
         url={ov.ctaPrimaryUrl ?? ''} urlPlaceholder="/services"
-        iconValue={ov.ctaPrimaryIcon?.url ?? ''} iconPos={ov.ctaPrimaryIconPos ?? 'right'}
+        iconValue={ov.ctaPrimaryIcon?.url ?? ''} iconPos={ov.ctaPrimaryIconPos ?? 'right'} iconFill={ov.ctaPrimaryIconFill ?? false}
         onLabelChange={(v) => set('ctaPrimaryLabel', v)}
         onUrlChange={(v) => set('ctaPrimaryUrl', v)}
         onIconChange={(ref) => set('ctaPrimaryIcon', ref)}
         onIconPosChange={(v) => set('ctaPrimaryIconPos', v)}
+        onIconFillChange={(v) => set('ctaPrimaryIconFill', v)}
       />
       <CtaGroup
         groupLabel="Secondary CTA"
         label={ov.ctaSecondaryLabel ?? ''} labelPlaceholder="Learn More"
         url={ov.ctaSecondaryUrl ?? ''} urlPlaceholder="/about"
-        iconValue={ov.ctaSecondaryIcon?.url ?? ''} iconPos={ov.ctaSecondaryIconPos ?? 'right'}
+        iconValue={ov.ctaSecondaryIcon?.url ?? ''} iconPos={ov.ctaSecondaryIconPos ?? 'right'} iconFill={ov.ctaSecondaryIconFill ?? false}
         onLabelChange={(v) => set('ctaSecondaryLabel', v)}
         onUrlChange={(v) => set('ctaSecondaryUrl', v)}
         onIconChange={(ref) => set('ctaSecondaryIcon', ref)}
         onIconPosChange={(v) => set('ctaSecondaryIconPos', v)}
+        onIconFillChange={(v) => set('ctaSecondaryIconFill', v)}
       />
 
       <MediaField label="Hero Image" value={ov.heroImage?.url ?? ''} onChange={(ref) => set('heroImage', ref)} />
@@ -565,11 +580,12 @@ function HomeServicesFields({ ov, set }: { ov: any; set: (k: string, v: unknown)
         groupLabel="Custom Solution CTA"
         label={ov.customSolutionCtaLabel ?? ''} labelPlaceholder="Chat with us"
         url={ov.customSolutionCtaUrl ?? ''} urlPlaceholder="/static/contact"
-        iconValue={ov.customSolutionCtaIcon?.url ?? ''} iconPos={ov.customSolutionCtaIconPos ?? 'right'}
+        iconValue={ov.customSolutionCtaIcon?.url ?? ''} iconPos={ov.customSolutionCtaIconPos ?? 'right'} iconFill={ov.customSolutionCtaIconFill ?? false}
         onLabelChange={(v) => set('customSolutionCtaLabel', v)}
         onUrlChange={(v) => set('customSolutionCtaUrl', v)}
         onIconChange={(ref) => set('customSolutionCtaIcon', ref)}
         onIconPosChange={(v) => set('customSolutionCtaIconPos', v)}
+        onIconFillChange={(v) => set('customSolutionCtaIconFill', v)}
       />
     </>
   )
@@ -679,17 +695,18 @@ function HomeContactFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
       <Field label="Info Section Heading">
         <input className="lb-input" value={ov.infoHeading ?? ''} onChange={(e) => set('infoHeading', e.target.value)} placeholder="Contact Information" />
       </Field>
-      <Row>
-        <Field label="Email">
-          <input className="lb-input" type="email" value={ov.contactEmail ?? ''} onChange={(e) => set('contactEmail', e.target.value)} placeholder="hello@example.com" />
-        </Field>
-        <Field label="Phone">
-          <input className="lb-input" value={ov.contactPhone ?? ''} onChange={(e) => set('contactPhone', e.target.value)} placeholder="+1 234 567 8900" />
-        </Field>
-      </Row>
+      <Field label="Email">
+        <input className="lb-input" type="email" value={ov.contactEmail ?? ''} onChange={(e) => set('contactEmail', e.target.value)} placeholder="hello@example.com" />
+      </Field>
+      <MediaField label="Email Icon (empty = default)" value={ov.contactEmailIcon?.url ?? ''} onChange={(ref) => set('contactEmailIcon', ref)} />
+      <Field label="Phone">
+        <input className="lb-input" value={ov.contactPhone ?? ''} onChange={(e) => set('contactPhone', e.target.value)} placeholder="+1 234 567 8900" />
+      </Field>
+      <MediaField label="Phone Icon (empty = default)" value={ov.contactPhoneIcon?.url ?? ''} onChange={(ref) => set('contactPhoneIcon', ref)} />
       <Field label="Location">
         <input className="lb-input" value={ov.contactLocation ?? ''} onChange={(e) => set('contactLocation', e.target.value)} placeholder="Hong Kong" />
       </Field>
+      <MediaField label="Location Icon (empty = default)" value={ov.contactLocationIcon?.url ?? ''} onChange={(ref) => set('contactLocationIcon', ref)} />
       <Field label="Form Heading">
         <input className="lb-input" value={ov.formHeading ?? ''} onChange={(e) => set('formHeading', e.target.value)} placeholder="Send us a Message" />
       </Field>
@@ -1131,21 +1148,23 @@ function ServeHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =>
         groupLabel="Primary CTA"
         label={ov.ctaPrimaryLabel ?? ''} labelPlaceholder="Get Started"
         url={ov.ctaPrimaryUrl ?? ''} urlPlaceholder="/static/contact"
-        iconValue="" iconPos="right"
+        iconValue={ov.ctaPrimaryIcon?.url ?? ''} iconPos={ov.ctaPrimaryIconPos ?? 'right'} iconFill={ov.ctaPrimaryIconFill ?? false}
         onLabelChange={(v) => set('ctaPrimaryLabel', v)}
         onUrlChange={(v) => set('ctaPrimaryUrl', v)}
-        onIconChange={() => {}}
-        onIconPosChange={() => {}}
+        onIconChange={(ref) => set('ctaPrimaryIcon', ref)}
+        onIconPosChange={(v) => set('ctaPrimaryIconPos', v)}
+        onIconFillChange={(v) => set('ctaPrimaryIconFill', v)}
       />
       <CtaGroup
         groupLabel="Secondary CTA"
         label={ov.ctaSecondaryLabel ?? ''} labelPlaceholder="View Success Stories"
         url={ov.ctaSecondaryUrl ?? ''} urlPlaceholder="/portfolio"
-        iconValue="" iconPos="right"
+        iconValue={ov.ctaSecondaryIcon?.url ?? ''} iconPos={ov.ctaSecondaryIconPos ?? 'right'} iconFill={ov.ctaSecondaryIconFill ?? false}
         onLabelChange={(v) => set('ctaSecondaryLabel', v)}
         onUrlChange={(v) => set('ctaSecondaryUrl', v)}
-        onIconChange={() => {}}
-        onIconPosChange={() => {}}
+        onIconChange={(ref) => set('ctaSecondaryIcon', ref)}
+        onIconPosChange={(v) => set('ctaSecondaryIconPos', v)}
+        onIconFillChange={(v) => set('ctaSecondaryIconFill', v)}
       />
 
       <MediaField label="Hero Image" value={ov.heroImage?.url ?? ''} onChange={(ref) => set('heroImage', ref)} />
@@ -1205,21 +1224,23 @@ function ServiceHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
         groupLabel="Primary CTA"
         label={ov.ctaPrimaryLabel ?? ''} labelPlaceholder="Start Your Project"
         url={ov.ctaPrimaryUrl ?? ''} urlPlaceholder="/static/contact"
-        iconValue={ov.ctaPrimaryIcon?.url ?? ''} iconPos={ov.ctaPrimaryIconPos ?? 'right'}
+        iconValue={ov.ctaPrimaryIcon?.url ?? ''} iconPos={ov.ctaPrimaryIconPos ?? 'right'} iconFill={ov.ctaPrimaryIconFill ?? false}
         onLabelChange={(v) => set('ctaPrimaryLabel', v)}
         onUrlChange={(v) => set('ctaPrimaryUrl', v)}
         onIconChange={(ref) => set('ctaPrimaryIcon', ref)}
         onIconPosChange={(v) => set('ctaPrimaryIconPos', v)}
+        onIconFillChange={(v) => set('ctaPrimaryIconFill', v)}
       />
       <CtaGroup
         groupLabel="Secondary CTA"
         label={ov.ctaSecondaryLabel ?? ''} labelPlaceholder="View Case Studies"
         url={ov.ctaSecondaryUrl ?? ''} urlPlaceholder="/case-studies"
-        iconValue={ov.ctaSecondaryIcon?.url ?? ''} iconPos={ov.ctaSecondaryIconPos ?? 'right'}
+        iconValue={ov.ctaSecondaryIcon?.url ?? ''} iconPos={ov.ctaSecondaryIconPos ?? 'right'} iconFill={ov.ctaSecondaryIconFill ?? false}
         onLabelChange={(v) => set('ctaSecondaryLabel', v)}
         onUrlChange={(v) => set('ctaSecondaryUrl', v)}
         onIconChange={(ref) => set('ctaSecondaryIcon', ref)}
         onIconPosChange={(v) => set('ctaSecondaryIconPos', v)}
+        onIconFillChange={(v) => set('ctaSecondaryIconFill', v)}
       />
 
       <MediaField label="Hero Image" value={ov.heroImage?.url ?? ''} onChange={(ref) => set('heroImage', ref)} />
@@ -1371,11 +1392,12 @@ function CTABannerFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =>
         groupLabel="Button"
         label={ov.buttonLabel ?? ''} labelPlaceholder="Get Started"
         url={ov.buttonUrl ?? ''} urlPlaceholder="/static/contact"
-        iconValue={ov.buttonIcon?.url ?? ''} iconPos={ov.buttonIconPos ?? 'right'}
+        iconValue={ov.buttonIcon?.url ?? ''} iconPos={ov.buttonIconPos ?? 'right'} iconFill={ov.buttonIconFill ?? false}
         onLabelChange={(v) => set('buttonLabel', v)}
         onUrlChange={(v) => set('buttonUrl', v)}
         onIconChange={(ref) => set('buttonIcon', ref)}
         onIconPosChange={(v) => set('buttonIconPos', v)}
+        onIconFillChange={(v) => set('buttonIconFill', v)}
       />
 
       <Field label="Stats">
@@ -1419,21 +1441,23 @@ function PageHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => 
         groupLabel="Primary CTA"
         label={ov.ctaPrimaryLabel ?? ''} labelPlaceholder="View Projects"
         url={ov.ctaPrimaryUrl ?? ''} urlPlaceholder="#projects"
-        iconValue={ov.ctaPrimaryIcon?.url ?? ''} iconPos={ov.ctaPrimaryIconPos ?? 'right'}
+        iconValue={ov.ctaPrimaryIcon?.url ?? ''} iconPos={ov.ctaPrimaryIconPos ?? 'right'} iconFill={ov.ctaPrimaryIconFill ?? false}
         onLabelChange={(v) => set('ctaPrimaryLabel', v)}
         onUrlChange={(v) => set('ctaPrimaryUrl', v)}
         onIconChange={(ref) => set('ctaPrimaryIcon', ref)}
         onIconPosChange={(v) => set('ctaPrimaryIconPos', v)}
+        onIconFillChange={(v) => set('ctaPrimaryIconFill', v)}
       />
       <CtaGroup
         groupLabel="Secondary CTA"
         label={ov.ctaSecondaryLabel ?? ''} labelPlaceholder="Contact Us"
         url={ov.ctaSecondaryUrl ?? ''} urlPlaceholder="/static/contact"
-        iconValue={ov.ctaSecondaryIcon?.url ?? ''} iconPos={ov.ctaSecondaryIconPos ?? 'right'}
+        iconValue={ov.ctaSecondaryIcon?.url ?? ''} iconPos={ov.ctaSecondaryIconPos ?? 'right'} iconFill={ov.ctaSecondaryIconFill ?? false}
         onLabelChange={(v) => set('ctaSecondaryLabel', v)}
         onUrlChange={(v) => set('ctaSecondaryUrl', v)}
         onIconChange={(ref) => set('ctaSecondaryIcon', ref)}
         onIconPosChange={(v) => set('ctaSecondaryIconPos', v)}
+        onIconFillChange={(v) => set('ctaSecondaryIconFill', v)}
       />
 
       <Row>
@@ -1761,21 +1785,23 @@ function InvolvedHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown)
         groupLabel="Primary CTA"
         label={ov.ctaPrimaryLabel ?? ''} labelPlaceholder="Explore Partnerships"
         url={ov.ctaPrimaryUrl ?? ''} urlPlaceholder="#partnership"
-        iconValue={ov.ctaPrimaryIcon?.url ?? ''} iconPos={ov.ctaPrimaryIconPos ?? 'right'}
+        iconValue={ov.ctaPrimaryIcon?.url ?? ''} iconPos={ov.ctaPrimaryIconPos ?? 'right'} iconFill={ov.ctaPrimaryIconFill ?? false}
         onLabelChange={(v) => set('ctaPrimaryLabel', v)}
         onUrlChange={(v) => set('ctaPrimaryUrl', v)}
         onIconChange={(ref) => set('ctaPrimaryIcon', ref)}
         onIconPosChange={(v) => set('ctaPrimaryIconPos', v)}
+        onIconFillChange={(v) => set('ctaPrimaryIconFill', v)}
       />
       <CtaGroup
         groupLabel="Secondary CTA"
         label={ov.ctaSecondaryLabel ?? ''} labelPlaceholder="Get a Quote"
         url={ov.ctaSecondaryUrl ?? ''} urlPlaceholder="#quote"
-        iconValue={ov.ctaSecondaryIcon?.url ?? ''} iconPos={ov.ctaSecondaryIconPos ?? 'right'}
+        iconValue={ov.ctaSecondaryIcon?.url ?? ''} iconPos={ov.ctaSecondaryIconPos ?? 'right'} iconFill={ov.ctaSecondaryIconFill ?? false}
         onLabelChange={(v) => set('ctaSecondaryLabel', v)}
         onUrlChange={(v) => set('ctaSecondaryUrl', v)}
         onIconChange={(ref) => set('ctaSecondaryIcon', ref)}
         onIconPosChange={(v) => set('ctaSecondaryIconPos', v)}
+        onIconFillChange={(v) => set('ctaSecondaryIconFill', v)}
       />
     </>
   )
@@ -1892,11 +1918,12 @@ function CommunityAmbassadorFields({ ov, set }: { ov: any; set: (k: string, v: u
         groupLabel="Ambassador CTA"
         label={ov.ambassadorCta ?? ''} labelPlaceholder="Apply to Become an Ambassador"
         url={ov.ambassadorUrl ?? ''} urlPlaceholder="#"
-        iconValue={ov.ambassadorCtaIcon?.url ?? ''} iconPos={ov.ambassadorCtaIconPos ?? 'right'}
+        iconValue={ov.ambassadorCtaIcon?.url ?? ''} iconPos={ov.ambassadorCtaIconPos ?? 'right'} iconFill={ov.ambassadorCtaIconFill ?? false}
         onLabelChange={(v) => set('ambassadorCta', v)}
         onUrlChange={(v) => set('ambassadorUrl', v)}
         onIconChange={(ref) => set('ambassadorCtaIcon', ref)}
         onIconPosChange={(v) => set('ambassadorCtaIconPos', v)}
+        onIconFillChange={(v) => set('ambassadorCtaIconFill', v)}
       />
     </>
   )
@@ -2066,8 +2093,10 @@ function ContactStatsFields({ ov, set }: { ov: any; set: (k: string, v: unknown)
               <BtnIconRow
                 iconValue={btn.contactCtaIcon?.url ?? ''}
                 iconPos={btn.contactCtaIconPos ?? 'right'}
+                iconFill={btn.contactCtaIconFill ?? false}
                 onIconChange={(ref) => { const a = [...ctas]; a[i] = { ...a[i], contactCtaIcon: ref }; set('contactStatCtas', a) }}
                 onIconPosChange={(v) => { const a = [...ctas]; a[i] = { ...a[i], contactCtaIconPos: v }; set('contactStatCtas', a) }}
+                onIconFillChange={(v) => { const a = [...ctas]; a[i] = { ...a[i], contactCtaIconFill: v }; set('contactStatCtas', a) }}
               />
             </div>
           ))}
@@ -2131,12 +2160,12 @@ function FeaturedCaseStudyFields({ ov, set }: { ov: any; set: (k: string, v: unk
             <div key={i} className="lb-item">
               <div className="lb-item__header">
                 <span>Logo {i + 1}</span>
-                <button className="lb-item__remove" onClick={() => { const a = [...logos]; a.splice(i, 1); set('clientLogos', a); set('clientLogo', null) }}>✕</button>
+                <button className="lb-item__remove" onClick={() => { const a = [...logos]; a.splice(i, 1); set('clientLogos', a) }}>✕</button>
               </div>
-              <MediaField label="Logo Image" value={logo.url ?? ''} onChange={(ref) => { const a = [...logos]; a[i] = ref; set('clientLogos', a); set('clientLogo', null) }} />
+              <MediaField label="Logo Image" value={logo?.url ?? ''} onChange={(ref) => { const a = [...logos]; if (ref) { a[i] = ref } else { a.splice(i, 1) }; set('clientLogos', a) }} />
             </div>
           ))}
-          <button className="lb-items__add" onClick={() => { const a = [...logos, { url: '', alt: '' }]; set('clientLogos', a); set('clientLogo', null) }}>+ Add Logo</button>
+          <button className="lb-items__add" onClick={() => set('clientLogos', [...logos, { url: '', alt: '' }])}>+ Add Logo</button>
         </div>
       </Field>
 
@@ -2147,9 +2176,7 @@ function FeaturedCaseStudyFields({ ov, set }: { ov: any; set: (k: string, v: unk
       <Field label="Floating Badge — Subtitle">
         <input className="lb-input" value={ov.floatingPlatformType ?? ''} onChange={(e) => set('floatingPlatformType', e.target.value)} placeholder="Streamlined Workflow" />
       </Field>
-      <Field label="Floating Badge Icon URL (optional)">
-        <input className="lb-input" value={ov.floatingIconSrc ?? ''} onChange={(e) => set('floatingIconSrc', e.target.value)} placeholder="https://…" />
-      </Field>
+      <MediaField label="Floating Badge Icon (empty = default emoji)" value={ov.floatingIconSrc ?? ''} onChange={(ref) => set('floatingIconSrc', ref?.url ?? '')} />
       <Field label="Image Position">
         <select className="lb-input lb-input--select" value={ov.imagePosition ?? 'right'} onChange={(e) => set('imagePosition', e.target.value)}>
           <option value="right">Right (text left, image right)</option>
@@ -2393,6 +2420,12 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
           </Field>
           <LinkField label="Button URL" value={ov.buttonUrl ?? ''} onChange={(v) => set('buttonUrl', v)} placeholder="/page-slug" />
           <MediaField label="Button Icon (empty = none)" value={ov.buttonIcon?.url ?? ''} onChange={(ref) => set('buttonIcon', ref)} />
+          {ov.buttonIcon?.url && (
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#6b7280', cursor: 'pointer', marginBottom: 4 }}>
+              <input type="checkbox" checked={ov.buttonIconFill ?? false} onChange={(e) => set('buttonIconFill', e.target.checked)} style={{ margin: 0 }} />
+              Fill (stretch icon to fit)
+            </label>
+          )}
           <Field label="Icon Position">
             <select className="lb-input lb-input--select" value={ov.buttonIconPos ?? 'right'} onChange={(e) => set('buttonIconPos', e.target.value)}>
               <option value="left">Left</option>

@@ -2,6 +2,12 @@
 // Used by: home-services block type
 
 import Link from 'next/link'
+import type { CSSProperties, ReactNode } from 'react'
+
+function CtaWrap({ href, className, style, children }: { href?: string; className?: string; style?: CSSProperties; children: ReactNode }) {
+  if (href) return <Link href={href} className={className} style={style}>{children}</Link>
+  return <span className={className} style={style}>{children}</span>
+}
 
 interface ServiceItem {
   serviceIcon?:  { url: string; alt?: string }
@@ -18,8 +24,9 @@ interface ServicesSectionData {
   customSolutionBody?:       string
   customSolutionCtaLabel?:   string
   customSolutionCtaUrl?:     string
-  customSolutionCtaIcon?:    { url: string } | null
-  customSolutionCtaIconPos?: 'left' | 'right'
+  customSolutionCtaIcon?:     { url: string } | null
+  customSolutionCtaIconPos?:  'left' | 'right'
+  customSolutionCtaIconFill?: boolean
 }
 
 function Arrow() {
@@ -94,6 +101,7 @@ export default function ServicesSection({ data }: { data: ServicesSectionData })
   const items      = data.serviceItems ?? []
   const ctaIconPos = data.customSolutionCtaIconPos ?? 'right'
   const hasCtaIcon = !!data.customSolutionCtaIcon?.url
+  const ctaIconFit = data.customSolutionCtaIconFill ? 'fill' : 'contain'
 
   return (
     <section
@@ -169,8 +177,8 @@ export default function ServicesSection({ data }: { data: ServicesSectionData })
                 </p>
               )}
             </div>
-            {data.customSolutionCtaLabel && data.customSolutionCtaUrl && (
-              <Link
+            {data.customSolutionCtaLabel && (
+              <CtaWrap
                 href={data.customSolutionCtaUrl}
                 className="flex-shrink-0 inline-flex items-center gap-2.5 whitespace-nowrap transition-opacity duration-200 hover:opacity-80"
                 style={{
@@ -185,14 +193,14 @@ export default function ServicesSection({ data }: { data: ServicesSectionData })
               >
                 {hasCtaIcon && ctaIconPos === 'left' && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={data.customSolutionCtaIcon!.url} alt="" width={14} height={14} style={{ objectFit: 'contain' }} />
+                  <img src={data.customSolutionCtaIcon!.url} alt="" width={14} height={14} style={{ objectFit: ctaIconFit }} />
                 )}
                 {data.customSolutionCtaLabel}
                 {hasCtaIcon && ctaIconPos === 'right' && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={data.customSolutionCtaIcon!.url} alt="" width={14} height={14} style={{ objectFit: 'contain' }} />
+                  <img src={data.customSolutionCtaIcon!.url} alt="" width={14} height={14} style={{ objectFit: ctaIconFit }} />
                 )}
-              </Link>
+              </CtaWrap>
             )}
           </div>
         )}

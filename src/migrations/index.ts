@@ -78,7 +78,13 @@ import * as migration_20260522_050240 from './20260522_050240';
 import * as migration_20260522_054341 from './20260522_054341';
 import * as migration_20260522_060358 from './20260522_060358';
 import * as migration_20260522_060931 from './20260522_060931';
+import * as migration_20260522_094654 from './20260522_094654';
+import * as migration_20260522_103513 from './20260522_103513';
+import * as migration_20260522_110957 from './20260522_110957';
+import * as migration_20260522_114726 from './20260522_114726';
+import * as migration_20260522_115301 from './20260522_115301';
 import * as migration_20260522_120000_add_zh_cn_id_locales from './20260522_120000_add_zh_cn_id_locales';
+import * as migration_20260522_130000_localize_layout_builder from './20260522_130000_localize_layout_builder';
 
 export const migrations = [
   {
@@ -482,8 +488,38 @@ export const migrations = [
     name: '20260522_060931',
   },
   {
+    up: migration_20260522_094654.up,
+    down: migration_20260522_094654.down,
+    name: '20260522_094654',
+  },
+  {
+    up: migration_20260522_103513.up,
+    down: migration_20260522_103513.down,
+    name: '20260522_103513',
+  },
+  {
+    up: migration_20260522_110957.up,
+    down: migration_20260522_110957.down,
+    name: '20260522_110957',
+  },
+  {
+    up: migration_20260522_114726.up,
+    down: migration_20260522_114726.down,
+    name: '20260522_114726',
+  },
+  {
+    up: migration_20260522_115301.up,
+    down: migration_20260522_115301.down,
+    name: '20260522_115301',
+  },
+  {
     up: migration_20260522_120000_add_zh_cn_id_locales.up,
     down: migration_20260522_120000_add_zh_cn_id_locales.down,
     name: '20260522_120000_add_zh_cn_id_locales',
+  },
+  {
+    up: migration_20260522_130000_localize_layout_builder.up,
+    down: migration_20260522_130000_localize_layout_builder.down,
+    name: '20260522_130000_localize_layout_builder'
   },
 ];

@@ -145,17 +145,6 @@ export default buildConfig({
       },
       afterNavLinks: [
         '@/components/admin/PluginNavLink#PluginNavLink',
-        '@/components/admin/SeoNavLink#SeoNavLink',
-        '@/components/admin/FormsNavLink#FormsNavLink',
-        '@/components/admin/FormSubmissionsNavLink#FormSubmissionsNavLink',
-        '@/components/admin/RedirectsNavLink#RedirectsNavLink',
-        '@/components/admin/SearchNavLink#SearchNavLink',
-        '@/components/admin/BlocksNavLink#BlocksNavLink',
-        '@/components/admin/BackupNavLink#BackupNavLink',
-        '@/components/admin/SecurityNavLink#SecurityNavLink',
-        '@/components/admin/ExportImportNavLink#ExportImportNavLink',
-        '@/components/admin/ChatbotNavLink#ChatbotNavLink',
-        '@/components/admin/AdminLocaleSwitcher#AdminLocaleSwitcher',
       ],
     },
     // autoLogin: process.env.NODE_ENV !== 'production'

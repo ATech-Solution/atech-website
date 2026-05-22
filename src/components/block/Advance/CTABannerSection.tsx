@@ -2,6 +2,12 @@
 // Used by: cta-banner block type
 
 import Link from 'next/link'
+import type { CSSProperties, ReactNode } from 'react'
+
+function CtaWrap({ href, className, style, children }: { href?: string; className?: string; style?: CSSProperties; children: ReactNode }) {
+  if (href) return <Link href={href} className={className} style={style}>{children}</Link>
+  return <span className={className} style={style}>{children}</span>
+}
 
 function ArrowRight() {
   return (
@@ -19,17 +25,19 @@ interface Stat {
 export interface CTABannerSectionData {
   heading?:      string
   subtitle?:     string
-  buttonLabel?:  string
-  buttonUrl?:    string
-  buttonIcon?:   { url: string } | null
-  buttonIconPos?: 'left' | 'right'
-  heroStats?:    Stat[]
+  buttonLabel?:    string
+  buttonUrl?:      string
+  buttonIcon?:     { url: string } | null
+  buttonIconPos?:  'left' | 'right'
+  buttonIconFill?: boolean
+  heroStats?:      Stat[]
 }
 
 export default function CTABannerSection({ data }: { data: CTABannerSectionData }) {
   const stats      = data.heroStats ?? []
   const iconPos    = data.buttonIconPos ?? 'right'
   const hasIcon    = !!data.buttonIcon?.url
+  const iconFit    = data.buttonIconFill ? 'fill' : 'contain'
 
   return (
     <section
@@ -68,9 +76,9 @@ export default function CTABannerSection({ data }: { data: CTABannerSectionData 
           </p>
         )}
 
-        {data.buttonLabel && data.buttonUrl && (
+        {data.buttonLabel && (
           <div className="pt-4 pb-8 flex items-center justify-center w-full">
-            <Link
+            <CtaWrap
               href={data.buttonUrl}
               className="inline-flex items-center gap-2 transition-opacity duration-200 hover:opacity-90"
               style={{
@@ -86,16 +94,16 @@ export default function CTABannerSection({ data }: { data: CTABannerSectionData 
             >
               {hasIcon && iconPos === 'left' && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={data.buttonIcon!.url} alt="" width={14} height={14} style={{ objectFit: 'contain' }} />
+                <img src={data.buttonIcon!.url} alt="" width={14} height={14} style={{ objectFit: iconFit }} />
               )}
               {data.buttonLabel}
               {hasIcon && iconPos === 'right' ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={data.buttonIcon!.url} alt="" width={14} height={14} style={{ objectFit: 'contain' }} />
-              ) : !hasIcon ? (
+                <img src={data.buttonIcon!.url} alt="" width={14} height={14} style={{ objectFit: iconFit }} />
+              ) : data.buttonIcon === undefined ? (
                 <ArrowRight />
               ) : null}
-            </Link>
+            </CtaWrap>
           </div>
         )}
 

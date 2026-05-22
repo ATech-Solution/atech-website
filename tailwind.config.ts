@@ -224,6 +224,7 @@ const config: Config = {
 
       // ── Spacing (site-level tokens) ──────────────────────────────────────────
       spacing: {
+        '15': '60px',
         '18': '72px',
         '22': '88px',
         '25': '100px',

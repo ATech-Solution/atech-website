@@ -137,6 +137,16 @@ export const Posts: CollectionConfig = {
       ],
     },
     buildSeoFields('posts'),
+    {
+      name: 'translatePanel',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/TranslateDocButton#TranslateDocButton',
+        },
+      },
+    },
   ],
   // ── Hooks ─────────────────────────────────────────────────────────────
   hooks: {
