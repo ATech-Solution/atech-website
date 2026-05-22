@@ -156,12 +156,19 @@ export async function POST(req: NextRequest) {
         // Remove fields that shouldn't be in update payload
         const { id: _id, createdAt, updatedAt, ...updateData } = updatedDoc as any
 
+        // For collections with a custom 'status' field (Pages, Posts, etc.), ensure
+        // AI-translated content is saved as draft so editors must review before publish.
+        if (updateData.status !== undefined) {
+          updateData.status = 'draft'
+        }
+
         if (globalSlug) {
+          // Globals like Navigation/Settings have versions.drafts — save without draft flag
+          // (direct save; editor can revert via version history if needed)
           await payload.updateGlobal({
             slug: globalSlug as any,
             locale: targetLocale as any,
             data: updateData,
-            draft: true,
           } as any)
         } else {
           await payload.update({
@@ -169,7 +176,6 @@ export async function POST(req: NextRequest) {
             id: id!,
             locale: targetLocale as any,
             data: updateData,
-            draft: true,
           } as any)
         }
 

@@ -11,6 +11,18 @@ export const LanguageSettingsGlobal: GlobalConfig = {
     group: 'System',
     description: 'Configure multilanguage routing, switcher, and active locales.',
   },
+  hooks: {
+    afterChange: [
+      async () => {
+        try {
+          const { revalidateTag } = await import('next/cache')
+          revalidateTag('multilang-settings')
+        } catch {
+          // Ignore in non-Next.js contexts
+        }
+      },
+    ],
+  },
   fields: [
     // ── Active Locales ────────────────────────────────────────────────────────
     {

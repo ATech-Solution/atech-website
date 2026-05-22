@@ -89,7 +89,7 @@ export const getLanguageSettings = unstable_cache(
     }
   },
   ['language-settings'],
-  { tags: ['multilang-settings'] },
+  { tags: ['multilang-settings'], revalidate: 60 },
 )
 
 /** Fetch a single portfolio item by slug, with categories and featuredImage populated */
