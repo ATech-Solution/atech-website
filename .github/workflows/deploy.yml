@@ -8,11 +8,13 @@ name: Build & Deploy
 #  workflow_dispatch (manual):
 #   migrate_data=true  → copy committed data/payload.db to server
 #                        (replaces server DB — old DB is backed up first)
-#                        NOTE: uploaded media files are NOT in git; to
-#                        migrate media, manually rsync your local
-#                        public/media/ to the server's media/ directory
-#                        before or after triggering this workflow.
+#                        Steps: commit data/payload.db → push → trigger here
 #   migrate_data=false → normal deploy, server DB is preserved
+#
+#  Media sync (cannot be done via GitHub Actions — media is not in git):
+#   Run locally: ./sync-media-to-uat.sh
+#   Requires:    ~/.ssh/github_actions_deploy key + .env.deploy with DEPLOY_UAT_HOST
+#   Dry-run:     ./sync-media-to-uat.sh --dry-run
 # ─────────────────────────────────────────────────────────────
 on:
   push:
