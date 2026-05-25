@@ -3,8 +3,19 @@
 // Get in Touch section — Figma node 1:26746
 // Dark background, centered heading, 2-col: contact info + contact form
 
-import { useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import SectionHeader from '@/components/ui/SectionHeader'
+
+declare global {
+  interface Window {
+    grecaptcha?: {
+      render:      (container: string | HTMLElement, params: Record<string, string>) => number
+      getResponse: (widgetId?: number) => string
+      reset:       (widgetId?: number) => void
+      ready:       (cb: () => void) => void
+    }
+  }
+}
 
 const EMAIL_ICON_SRC    = 'https://www.figma.com/api/mcp/asset/10e9f417-5d38-4844-a82c-a2b1a3934a73'
 const PHONE_ICON_SRC    = 'https://www.figma.com/api/mcp/asset/6d11bde0-c62c-4e41-acb9-480cdc319304'
@@ -61,9 +72,51 @@ type Status = 'idle' | 'sending' | 'success' | 'error'
 export default function ContactBlock({ data }: { data: ContactData }) {
   const { heading, subheading, info, form } = data
 
-  const [fields, setFields] = useState({ firstName: '', lastName: '', email: '', phone: '', message: '' })
-  const [status, setStatus] = useState<Status>('idle')
-  const [errorMsg, setErrorMsg] = useState('')
+  const siteKey     = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? ''
+  const captchaId   = useId().replace(/:/g, '')
+  const captchaRef  = useRef<HTMLDivElement>(null)
+  const widgetIdRef = useRef<number | null>(null)
+  const timerRef    = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const [fields,       setFields]       = useState({ firstName: '', lastName: '', email: '', phone: '', message: '' })
+  const [status,       setStatus]       = useState<Status>('idle')
+  const [errorMsg,     setErrorMsg]     = useState('')
+  // true = widget rendered; false = still loading; null = failed to render
+  const [captchaReady, setCaptchaReady] = useState<boolean | null>(!siteKey ? true : false)
+
+  useEffect(() => {
+    if (!siteKey) return
+    if (document.querySelector('script[src*="recaptcha/api.js"]')) {
+      renderCaptcha(); return
+    }
+    const script     = document.createElement('script')
+    script.src       = 'https://www.google.com/recaptcha/api.js?render=explicit'
+    script.async     = true
+    script.defer     = true
+    script.onload    = renderCaptcha
+    script.onerror   = () => setCaptchaReady(null)
+    document.head.appendChild(script)
+    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [siteKey])
+
+  function renderCaptcha() {
+    if (!siteKey || !captchaRef.current) return
+    window.grecaptcha?.ready(() => {
+      if (widgetIdRef.current !== null) return
+      try {
+        widgetIdRef.current = window.grecaptcha!.render(captchaRef.current!, { sitekey: siteKey })
+      } catch { /* render failed */ }
+
+      timerRef.current = setTimeout(() => {
+        if (captchaRef.current?.querySelector('iframe')) {
+          setCaptchaReady(true)
+        } else {
+          setCaptchaReady(null)
+        }
+      }, 3000)
+    })
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFields((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -71,20 +124,37 @@ export default function ContactBlock({ data }: { data: ContactData }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    const recaptchaToken = captchaReady === true
+      ? (window.grecaptcha?.getResponse(widgetIdRef.current ?? undefined) ?? '')
+      : captchaReady === null ? 'recaptcha-unavailable' : ''
+
+    if (captchaReady === false) {
+      setErrorMsg('Security check is still loading. Please wait a moment.')
+      setStatus('error')
+      return
+    }
+    if (captchaReady === true && !recaptchaToken) {
+      setErrorMsg('Please complete the reCAPTCHA.')
+      setStatus('error')
+      return
+    }
+
     setStatus('sending')
     setErrorMsg('')
 
     try {
-      const res = await fetch('/api/contact', {
+      const res  = await fetch('/api/contact', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(fields),
+        body:    JSON.stringify({ ...fields, recaptchaToken }),
       })
-      const data = await res.json()
+      const json = await res.json()
 
       if (!res.ok) {
-        setErrorMsg(data?.error ?? 'Something went wrong. Please try again.')
+        setErrorMsg(json?.error ?? 'Something went wrong. Please try again.')
         setStatus('error')
+        if (captchaReady === true) window.grecaptcha?.reset(widgetIdRef.current ?? undefined)
         return
       }
 
@@ -93,6 +163,7 @@ export default function ContactBlock({ data }: { data: ContactData }) {
     } catch {
       setErrorMsg('Network error. Please check your connection and try again.')
       setStatus('error')
+      if (captchaReady === true) window.grecaptcha?.reset(widgetIdRef.current ?? undefined)
     }
   }
 
@@ -197,8 +268,22 @@ export default function ContactBlock({ data }: { data: ContactData }) {
                   style={{ ...inputStyle, resize: 'none' }}
                 />
 
-                {status === 'error' && (
-                  <p style={{ color: '#f87171', fontSize: '14px', margin: 0 }}>{errorMsg}</p>
+                {siteKey && (
+                  <div ref={captchaRef} id={`recaptcha-${captchaId}`} />
+                )}
+
+                {status === 'error' && errorMsg && (
+                  <p style={{
+                    fontSize: '13px',
+                    color: '#ef4444',
+                    padding: '10px 14px',
+                    background: 'rgba(239,68,68,0.08)',
+                    borderRadius: 6,
+                    border: '1px solid rgba(239,68,68,0.2)',
+                    margin: 0,
+                  }}>
+                    {errorMsg}
+                  </p>
                 )}
 
                 <div>
@@ -206,7 +291,7 @@ export default function ContactBlock({ data }: { data: ContactData }) {
                     type="submit"
                     disabled={status === 'sending'}
                     className="px-8 py-3 rounded-lg text-base font-normal transition-opacity duration-200 hover:opacity-90 disabled:opacity-50"
-                    style={{ background: '#ffffff', color: '#000000', fontFamily: 'var(--font-work-sans, sans-serif)' }}
+                    style={{ background: '#ffffff', color: '#000000', fontFamily: 'var(--font-work-sans, sans-serif)', border: 'none', cursor: status === 'sending' ? 'not-allowed' : 'pointer' }}
                   >
                     {status === 'sending' ? 'Sending…' : form.submitLabel}
                   </button>

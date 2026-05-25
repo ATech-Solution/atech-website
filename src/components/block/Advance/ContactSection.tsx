@@ -13,6 +13,9 @@ declare global {
   }
 }
 
+// Form ID for the "Contact" form in the forms collection (seeded via seed-contact-form.ts)
+const CONTACT_FORM_ID = 2
+
 interface MediaRef { url: string; alt?: string }
 
 interface ContactSectionData {
@@ -120,9 +123,12 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
   const captchaId = useId().replace(/:/g, '')
   const captchaRef = useRef<HTMLDivElement>(null)
   const widgetIdRef = useRef<number | null>(null)
+  const captchaCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const [status, setStatus] = useState<FormStatus>('idle')
-  const [errorMsg, setErrorMsg] = useState('')
+  const [status,          setStatus]          = useState<FormStatus>('idle')
+  const [errorMsg,        setErrorMsg]        = useState('')
+  // true once widget renders, false while loading, null if it failed to load
+  const [captchaReady,    setCaptchaReady]    = useState<boolean | null>(!siteKey ? true : false)
   const [fields, setFields] = useState({
     firstName: '',
     lastName:  '',
@@ -141,7 +147,9 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
     script.async = true
     script.defer = true
     script.onload = renderCaptcha
+    script.onerror = () => setCaptchaReady(null) // script failed to load
     document.head.appendChild(script)
+    return () => { if (captchaCheckTimer.current) clearTimeout(captchaCheckTimer.current) }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [siteKey])
 
@@ -149,7 +157,18 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
     if (!siteKey || !captchaRef.current) return
     window.grecaptcha?.ready(() => {
       if (widgetIdRef.current !== null) return
-      widgetIdRef.current = window.grecaptcha!.render(captchaRef.current!, { sitekey: siteKey })
+      try {
+        widgetIdRef.current = window.grecaptcha!.render(captchaRef.current!, { sitekey: siteKey })
+      } catch { /* render failed — widget won't appear */ }
+
+      // After 3s check whether the iframe actually appeared
+      captchaCheckTimer.current = setTimeout(() => {
+        if (captchaRef.current?.querySelector('iframe')) {
+          setCaptchaReady(true)  // widget rendered — user must tick it
+        } else {
+          setCaptchaReady(null)  // widget failed to render (domain not whitelisted, etc.)
+        }
+      }, 3000)
     })
   }
 
@@ -161,11 +180,19 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
     e.preventDefault()
     if (!fields.firstName || !fields.email || !fields.message) return
 
-    const recaptchaToken = siteKey
+    // captchaReady === true  → widget visible, get token
+    // captchaReady === null  → widget unavailable (localhost / domain mismatch) → send fallback
+    // captchaReady === false → still loading, block
+    const recaptchaToken = captchaReady === true
       ? (window.grecaptcha?.getResponse(widgetIdRef.current ?? undefined) ?? '')
-      : 'dev-bypass'
+      : captchaReady === null ? 'recaptcha-unavailable' : ''
 
-    if (siteKey && !recaptchaToken) {
+    if (captchaReady === false) {
+      setErrorMsg('Security check is still loading. Please wait a moment.')
+      setStatus('error')
+      return
+    }
+    if (captchaReady === true && !recaptchaToken) {
       setErrorMsg('Please complete the reCAPTCHA.')
       setStatus('error')
       return
@@ -179,13 +206,16 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ ...fields, recaptchaToken }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        throw new Error(d?.error ?? 'error')
+      }
       setStatus('success')
       setFields({ firstName: '', lastName: '', email: '', phone: '', message: '' })
-    } catch {
-      setErrorMsg('Something went wrong. Please try again or email us directly.')
+    } catch (err: any) {
+      setErrorMsg(err?.message ?? 'Something went wrong. Please try again or email us directly.')
       setStatus('error')
-      window.grecaptcha?.reset(widgetIdRef.current ?? undefined)
+      if (captchaReady === true) window.grecaptcha?.reset(widgetIdRef.current ?? undefined)
     }
   }
 

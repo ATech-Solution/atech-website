@@ -9,6 +9,7 @@ const PLUGIN_PATHS: Record<string, { label: string; href: string }> = {
   'backup-restore':  { label: 'Backup & Restore', href: '/admin/plugins/backup' },
   'chatbot':         { label: 'Chatbot',           href: '/admin/globals/chatbot-settings' },
   'export-import':   { label: 'Export & Import',   href: '/admin/plugins/export-import' },
+  'form-builder':    { label: 'Form Builder',       href: '/admin/plugins/form-builder' },
   'multilanguage':   { label: 'Multilanguage',     href: '/admin/plugins/multilanguage' },
   'seo':             { label: 'SEO',               href: '/admin/globals/settings?tab=1' },
   'forms':           { label: 'Forms',             href: '/admin/collections/forms' },

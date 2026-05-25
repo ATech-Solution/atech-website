@@ -55,6 +55,8 @@ export {
   ServeHeroSection,
   ServeValueSection,
   ServeModelSection,
+  DynamicFormSection,
+  SurveySection,
 } from './Advance'
 
 // ── Service Page Sections ────────────────────────────────────────────────────

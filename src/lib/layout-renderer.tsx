@@ -60,6 +60,8 @@ import {
   ServeHeroSection,
   ServeValueSection,
   ServeModelSection,
+  DynamicFormSection,
+  SurveySection,
 } from '@/components/block'
 import { JobsListServerSection } from '@/components/block/Advance/JobsListServerSection'
 
@@ -963,6 +965,12 @@ export function LayoutBlockRenderer({
       return wrapAdvanced(<ServeValueSection data={data} />)
     case 'serve-model':
       return wrapAdvanced(<ServeModelSection data={data} />)
+
+    case 'dynamic-form':
+      return wrapAdvanced(<DynamicFormSection data={data} />)
+
+    case 'form':
+      return wrapAdvanced(<SurveySection data={data} />)
 
     default:
       return (

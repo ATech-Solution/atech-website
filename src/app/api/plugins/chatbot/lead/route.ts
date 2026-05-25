@@ -5,7 +5,12 @@ import config from '@payload-config'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, email, question, conversationPath, page } = body
+    const { name, email, question, conversationPath, page, _honey } = body
+
+    // Honeypot — bots fill hidden fields, humans don't
+    if (_honey) {
+      return NextResponse.json({ success: true }) // silent discard
+    }
 
     if (!name?.trim() || !email?.trim()) {
       return NextResponse.json({ error: 'Name and email are required' }, { status: 400 })

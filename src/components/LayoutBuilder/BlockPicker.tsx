@@ -26,6 +26,7 @@ const BLOCK_ICONS: Record<string, string> = {
   'locations': '📍',
   'featured-case-study': '🏆',
   'partnership': '🤝',
+  'form': '📋',
   'portfolio-hero': '🏆',
   'portfolio-statistics': '📊',
   'portfolio-main': '🗂',
@@ -76,6 +77,7 @@ const BLOCK_LABELS: Record<string, string> = {
   'breadcrumb': 'Breadcrumb',
   'faq-about': 'FAQ — About',
   'article-submit': 'Article Submit',
+  'form': 'Form',
 }
 
 export function BlockPicker({ onAdd }: BlockPickerProps) {

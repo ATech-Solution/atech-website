@@ -53,3 +53,5 @@ export { default as ArticleSubmitSection              } from './ArticleSubmitSec
 export { default as ServeHeroSection                  } from './ServeHeroSection'
 export { default as ServeValueSection                 } from './ServeValueSection'
 export { default as ServeModelSection                 } from './ServeModelSection'
+export { default as DynamicFormSection                } from './DynamicFormSection'
+export { default as SurveySection                     } from './SurveySection'

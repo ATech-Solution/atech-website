@@ -23,7 +23,10 @@ export function LayoutBuilderField({ path }: LayoutBuilderFieldProps) {
   const { value, setValue } = useField<LayoutTree>({ path })
   const { id: docId } = useDocumentInfo()
 
-  const tree: LayoutTree = Array.isArray(value) ? value : []
+  // Ensure every block node has children: [] so treeOps never sees undefined.children
+  const normalizeBlock = (node: any): LayoutBlock =>
+    ({ ...node, children: (node.children ?? []).map(normalizeBlock) })
+  const tree: LayoutTree = Array.isArray(value) ? value.map(normalizeBlock) : []
 
   // ── Wrap setValue to also sync tree to sessionStorage ─────────────────────
   const syncedSetValue = useCallback(

@@ -8,6 +8,7 @@ export const GENERAL_BLOCK_TYPES = [
   'tabs', 'accordion', 'image-box', 'icon-box', 'image-carousel',
   'basic-gallery', 'icon-list', 'counter', 'progress-bar',
   'testimonial', 'social-icons', 'alert', 'html',
+  'form',
 ] as const
 
 // All generic, page-agnostic sections from src/components/block/Advance/
@@ -366,6 +367,9 @@ export interface BlockOverrides {
       modelFeatured?:   boolean
       modelBadgeLabel?: string
     }>
+
+    // ── Form block ────────────────────────────────────────────────────────────
+    formRef?: string | null
   }
   style?: Partial<Pick<BlockTemplate,
     'textAlign' | 'fontFamily' | 'fontSize' | 'fontWeight' | 'lineHeight' |

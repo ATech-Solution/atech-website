@@ -85,6 +85,19 @@ import * as migration_20260522_114726 from './20260522_114726';
 import * as migration_20260522_115301 from './20260522_115301';
 import * as migration_20260522_120000_add_zh_cn_id_locales from './20260522_120000_add_zh_cn_id_locales';
 import * as migration_20260522_130000_localize_layout_builder from './20260522_130000_localize_layout_builder';
+import * as migration_20260525_015913 from './20260525_015913';
+import * as migration_20260525_020759 from './20260525_020759';
+import * as migration_20260525_052955 from './20260525_052955';
+import * as migration_20260525_060115 from './20260525_060115';
+import * as migration_20260525_061910 from './20260525_061910';
+import * as migration_20260525_071856 from './20260525_071856';
+import * as migration_20260525_081103 from './20260525_081103';
+import * as migration_20260525_100237 from './20260525_100237';
+import * as migration_20260525_104943 from './20260525_104943';
+import * as migration_20260525_115601 from './20260525_115601';
+import * as migration_20260525_115614 from './20260525_115614';
+import * as migration_20260525_120737 from './20260525_120737';
+import * as migration_20260525_122115 from './20260525_122115';
 
 export const migrations = [
   {
@@ -520,6 +533,71 @@ export const migrations = [
   {
     up: migration_20260522_130000_localize_layout_builder.up,
     down: migration_20260522_130000_localize_layout_builder.down,
-    name: '20260522_130000_localize_layout_builder'
+    name: '20260522_130000_localize_layout_builder',
+  },
+  {
+    up: migration_20260525_015913.up,
+    down: migration_20260525_015913.down,
+    name: '20260525_015913',
+  },
+  {
+    up: migration_20260525_020759.up,
+    down: migration_20260525_020759.down,
+    name: '20260525_020759',
+  },
+  {
+    up: migration_20260525_052955.up,
+    down: migration_20260525_052955.down,
+    name: '20260525_052955',
+  },
+  {
+    up: migration_20260525_060115.up,
+    down: migration_20260525_060115.down,
+    name: '20260525_060115',
+  },
+  {
+    up: migration_20260525_061910.up,
+    down: migration_20260525_061910.down,
+    name: '20260525_061910',
+  },
+  {
+    up: migration_20260525_071856.up,
+    down: migration_20260525_071856.down,
+    name: '20260525_071856',
+  },
+  {
+    up: migration_20260525_081103.up,
+    down: migration_20260525_081103.down,
+    name: '20260525_081103',
+  },
+  {
+    up: migration_20260525_100237.up,
+    down: migration_20260525_100237.down,
+    name: '20260525_100237',
+  },
+  {
+    up: migration_20260525_104943.up,
+    down: migration_20260525_104943.down,
+    name: '20260525_104943',
+  },
+  {
+    up: migration_20260525_115601.up,
+    down: migration_20260525_115601.down,
+    name: '20260525_115601',
+  },
+  {
+    up: migration_20260525_115614.up,
+    down: migration_20260525_115614.down,
+    name: '20260525_115614',
+  },
+  {
+    up: migration_20260525_120737.up,
+    down: migration_20260525_120737.down,
+    name: '20260525_120737',
+  },
+  {
+    up: migration_20260525_122115.up,
+    down: migration_20260525_122115.down,
+    name: '20260525_122115'
   },
 ];

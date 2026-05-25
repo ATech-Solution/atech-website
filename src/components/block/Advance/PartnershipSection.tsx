@@ -1,6 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
+
+declare global {
+  interface Window {
+    grecaptcha?: {
+      render:      (container: string | HTMLElement, params: Record<string, string>) => number
+      getResponse: (widgetId?: number) => string
+      reset:       (widgetId?: number) => void
+      ready:       (cb: () => void) => void
+    }
+  }
+}
 
 interface PartnershipData {
   heading?:         string
@@ -32,8 +43,50 @@ export default function PartnershipSection({ data }: { data: PartnershipData }) 
     submitLabel     = 'Send Message',
   } = data
 
-  const [status, setStatus] = useState<Status>('idle')
-  const [fields, setFields] = useState({ name: '', email: '', phone: '' })
+  const siteKey     = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? ''
+  const captchaId   = useId().replace(/:/g, '')
+  const captchaRef  = useRef<HTMLDivElement>(null)
+  const widgetIdRef = useRef<number | null>(null)
+  const timerRef    = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const [status,       setStatus]       = useState<Status>('idle')
+  const [fields,       setFields]       = useState({ name: '', email: '', phone: '' })
+  const [errorMsg,     setErrorMsg]     = useState('')
+  // true = widget rendered; false = still loading; null = failed to render
+  const [captchaReady, setCaptchaReady] = useState<boolean | null>(!siteKey ? true : false)
+
+  useEffect(() => {
+    if (!siteKey) return
+    if (document.querySelector('script[src*="recaptcha/api.js"]')) {
+      renderCaptcha(); return
+    }
+    const script   = document.createElement('script')
+    script.src     = 'https://www.google.com/recaptcha/api.js?render=explicit'
+    script.async   = true
+    script.defer   = true
+    script.onload  = renderCaptcha
+    script.onerror = () => setCaptchaReady(null)
+    document.head.appendChild(script)
+    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [siteKey])
+
+  function renderCaptcha() {
+    if (!siteKey || !captchaRef.current) return
+    window.grecaptcha?.ready(() => {
+      if (widgetIdRef.current !== null) return
+      try {
+        widgetIdRef.current = window.grecaptcha!.render(captchaRef.current!, { sitekey: siteKey })
+      } catch { /* render failed */ }
+      timerRef.current = setTimeout(() => {
+        if (captchaRef.current?.querySelector('iframe')) {
+          setCaptchaReady(true)
+        } else {
+          setCaptchaReady(null)
+        }
+      }, 3000)
+    })
+  }
 
   const set = (key: keyof typeof fields) =>
     (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -42,18 +95,40 @@ export default function PartnershipSection({ data }: { data: PartnershipData }) 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!fields.name || !fields.email) return
+
+    const recaptchaToken = captchaReady === true
+      ? (window.grecaptcha?.getResponse(widgetIdRef.current ?? undefined) ?? '')
+      : captchaReady === null ? 'recaptcha-unavailable' : ''
+
+    if (captchaReady === false) {
+      setErrorMsg('Security check is still loading. Please wait a moment.')
+      setStatus('error')
+      return
+    }
+    if (captchaReady === true && !recaptchaToken) {
+      setErrorMsg('Please complete the reCAPTCHA.')
+      setStatus('error')
+      return
+    }
+
     setStatus('loading')
+    setErrorMsg('')
     try {
       const res = await fetch('/api/partnership', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(fields),
+        body:    JSON.stringify({ ...fields, recaptchaToken }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        throw new Error(d?.error ?? 'error')
+      }
       setStatus('success')
       setFields({ name: '', email: '', phone: '' })
-    } catch {
+    } catch (err: any) {
+      setErrorMsg(err?.message ?? 'Something went wrong. Please try again.')
       setStatus('error')
+      if (captchaReady === true) window.grecaptcha?.reset(widgetIdRef.current ?? undefined)
     }
   }
 
@@ -225,7 +300,11 @@ export default function PartnershipSection({ data }: { data: PartnershipData }) 
                 style={inputStyle}
               />
 
-              {status === 'error' && (
+              {siteKey && (
+                <div ref={captchaRef} id={`recaptcha-${captchaId}`} />
+              )}
+
+              {status === 'error' && errorMsg && (
                 <p
                   style={{
                     fontFamily: 'var(--font-work-sans, sans-serif)',
@@ -236,7 +315,7 @@ export default function PartnershipSection({ data }: { data: PartnershipData }) 
                     borderRadius: '6px',
                   }}
                 >
-                  Something went wrong. Please try again.
+                  {errorMsg}
                 </p>
               )}
 

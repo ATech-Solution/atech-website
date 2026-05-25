@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import type { BlockOverrides, BlockType, MediaRef } from '../types'
 import { ADVANCE_BLOCK_TYPES } from '../types'
 
@@ -2330,6 +2330,60 @@ function BreadcrumbFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =
   )
 }
 
+// ── Form Block fields ─────────────────────────────────────────────────────────
+
+function FormBlockFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const [forms,  setForms]  = useState<{ id: string; title?: string }[]>([])
+  const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/forms?limit=100&depth=0', { credentials: 'include' })
+      .then(r => r.json())
+      .then(d => { setForms(d?.docs ?? []); setLoaded(true) })
+      .catch(() => setLoaded(true))
+  }, [])
+
+  return (
+    <>
+      <Field label="Form">
+        {!loaded ? (
+          <p style={{ fontSize: 12, color: '#9ca3af', padding: '4px 0' }}>Loading forms…</p>
+        ) : (
+          <select
+            className="lb-input lb-input--select"
+            value={(ov?.formRef as string) ?? ''}
+            onChange={(e) => set('formRef', e.target.value || null)}
+          >
+            <option value="">— Select a form —</option>
+            {forms.map(f => (
+              <option key={f.id} value={String(f.id)}>{f.title ?? `Form #${f.id}`}</option>
+            ))}
+          </select>
+        )}
+      </Field>
+
+      <Field label="Heading (optional)">
+        <input
+          className="lb-input"
+          value={ov?.title ?? ''}
+          onChange={(e) => set('title', e.target.value)}
+          placeholder="How are we doing?"
+        />
+      </Field>
+
+      <Field label="Subtitle (optional)">
+        <textarea
+          className="lb-input lb-input--textarea"
+          rows={3}
+          value={ov?.subtitle ?? ''}
+          onChange={(e) => set('subtitle', e.target.value)}
+          placeholder="Short description shown above the form"
+        />
+      </Field>
+    </>
+  )
+}
+
 // ── Main ContentFields ────────────────────────────────────────────────────────
 export function ContentFields({ blockType, overrides = {}, onChange }: ContentFieldsProps) {
   const ov  = overrides as any
@@ -2337,6 +2391,15 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
     onChange({ ...overrides, [key]: value } as BlockOverrides['content'])
 
   const isAdvanceType = (ADVANCE_BLOCK_TYPES as readonly string[]).includes(blockType)
+
+  // ── Form block: dedicated panel ───────────────────────────────────────────
+  if (blockType === 'form') {
+    return (
+      <div className="lb-fields">
+        <FormBlockFields ov={ov} set={set} />
+      </div>
+    )
+  }
 
   // ── Advance blocks: dedicated content panels ──────────────────────────────
   if (isAdvanceType) {

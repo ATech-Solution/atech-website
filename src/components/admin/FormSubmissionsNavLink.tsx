@@ -7,7 +7,7 @@ import { usePluginActive } from '@/hooks/usePluginActive'
 export function FormSubmissionsNavLink() {
   const { user } = useAuth()
   const [isActive, setIsActive] = useState(false)
-  const isPluginActive = usePluginActive('forms')
+  const isPluginActive = usePluginActive('form-builder')
 
   useEffect(() => {
     setIsActive(window.location.pathname.startsWith('/admin/collections/form-submissions'))

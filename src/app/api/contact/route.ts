@@ -4,6 +4,9 @@ import { verifyRecaptcha } from '@/lib/recaptcha'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 
+// ID of the "Contact" form in the forms collection (seeded via seed-contact-form.ts)
+const CONTACT_FORM_ID = 2
+
 export async function POST(request: Request) {
   try {
     const body = await request.json()
@@ -22,8 +25,9 @@ export async function POST(request: Request) {
 
     // Get admin notification email from settings
     let adminEmail = process.env.ADMIN_EMAIL ?? 'tan@atech.software'
+    let payload: Awaited<ReturnType<typeof getPayload>> | null = null
     try {
-      const payload = await getPayload({ config: configPromise })
+      payload = await getPayload({ config: configPromise })
       const settings = await payload.findGlobal({ slug: 'settings' }) as any
       if (settings?.adminNotificationEmail) {
         adminEmail = settings.adminNotificationEmail
@@ -88,6 +92,30 @@ export async function POST(request: Request) {
       html,
       replyTo: email,
     })
+
+    // Save to form-submissions (non-fatal if it fails)
+    if (!payload) {
+      try { payload = await getPayload({ config: configPromise }) } catch { /* ignore */ }
+    }
+    if (payload) {
+      try {
+        await payload.create({
+          collection: 'form-submissions',
+          data: {
+            form: CONTACT_FORM_ID,
+            submissionData: [
+              { field: 'firstName', value: firstName          },
+              { field: 'lastName',  value: lastName  ?? ''    },
+              { field: 'email',     value: email              },
+              { field: 'phone',     value: phone     ?? ''    },
+              { field: 'message',   value: message            },
+            ],
+          },
+        })
+      } catch (saveErr) {
+        console.error('[contact] form-submissions save failed:', saveErr)
+      }
+    }
 
     return NextResponse.json({ success: true })
   } catch (err) {

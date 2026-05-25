@@ -92,6 +92,11 @@ const ARTICLE_SECTION_TYPES = [
   { label: 'Article — Related',        value: 'article-related'        },
 ]
 
+const FORM_BLOCK_TYPES = [
+  { label: 'Dynamic Form', value: 'dynamic-form' },
+  { label: 'Form',         value: 'form'         },
+]
+
 const GENERAL_BLOCK_TYPES = [
   { label: 'Tabs',                 value: 'tabs' },
   { label: 'Accordion',            value: 'accordion' },
@@ -207,6 +212,11 @@ export const Blocks: CollectionConfig = {
               value: '__article_detail_header__',
             },
             ...ARTICLE_SECTION_TYPES,
+            {
+              label: '── Forms ──',
+              value: '__forms_header__',
+            },
+            ...FORM_BLOCK_TYPES,
           ],
         },
         {
@@ -227,6 +237,7 @@ export const Blocks: CollectionConfig = {
             { label: 'Who We Serve',       value: 'who-we-serve-sections' },
             { label: 'Portfolio Sections', value: 'portfolio-sections' },
             { label: 'Article Sections',   value: 'article-sections'   },
+            { label: 'Forms',              value: 'form-sections'       },
           ],
         },
       ],
@@ -1283,6 +1294,39 @@ export const Blocks: CollectionConfig = {
               description: 'Slug of the post to feature (e.g. "my-first-post").',
               condition: (data) =>
                 data.blockType === 'article-featured' && data.featContentSource === 'collection',
+            },
+          },
+
+          // ── DYNAMIC FORM fields ──────────────────────────────────────────
+          {
+            name: 'formRef',
+            type: 'relationship',
+            relationTo: 'forms',
+            label: 'Form',
+            admin: {
+              description: 'Select the form to render on this page.',
+              condition: (data) => data.blockType === 'dynamic-form',
+            },
+          },
+          {
+            name: 'formSubmitLabel',
+            type: 'text',
+            label: 'Submit Button Label',
+            admin: {
+              placeholder: 'Submit',
+              condition: (data) => data.blockType === 'dynamic-form',
+            },
+          },
+
+          // ── FORM block fields ──────────────────────────────────────────────
+          {
+            name: 'surveyFormRef',
+            type: 'relationship',
+            relationTo: 'forms',
+            label: 'Form',
+            admin: {
+              description: 'Select the form to display inside this styled section.',
+              condition: (data) => data.blockType === 'form',
             },
           },
           ],

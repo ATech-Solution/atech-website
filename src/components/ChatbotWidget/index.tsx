@@ -144,13 +144,15 @@ function ContactForm({
   conversationPath: string
   onSuccess: () => void
 }) {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
+  const [name,   setName]   = useState('')
+  const [email,  setEmail]  = useState('')
+  const [honey,  setHoney]  = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error,  setError]  = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (honey) return // honeypot triggered — silently discard
     if (!name.trim() || !email.trim()) { setError('Both fields are required.'); return }
     setLoading(true)
     setError('')
@@ -161,6 +163,7 @@ function ContactForm({
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
+          _honey: honey,
           question,
           conversationPath,
           page: window.location.pathname,
@@ -179,6 +182,16 @@ function ContactForm({
   return (
     <form className="cb-contact-form" onSubmit={handleSubmit} noValidate>
       <p className="cb-contact-title">{title}</p>
+      {/* Honeypot — invisible to humans, filled by bots */}
+      <input
+        type="text"
+        name="_honey"
+        value={honey}
+        onChange={(e) => setHoney(e.target.value)}
+        tabIndex={-1}
+        aria-hidden
+        style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }}
+      />
       <input
         className="cb-input"
         type="text"
