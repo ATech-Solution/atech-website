@@ -519,17 +519,40 @@ function MobileDrawer({
             <div key={item.label} style={{ borderBottom: '1px solid #f0f0f0' }}>
               {item.megaMenu ? (
                 <>
-                  <button
-                    onClick={() => setExpanded(expanded === item.label ? null : item.label)}
-                    style={{
-                      width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      padding: '14px 0', fontFamily: fontWorkSans, fontSize: 14, fontWeight: 500,
-                      color: '#171717', background: 'none', border: 'none', cursor: 'pointer',
-                    }}
-                  >
-                    {item.label}
-                    <ChevronDown rotated={expanded === item.label} color="#6b7280" />
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    {item.url ? (
+                      <Link
+                        href={item.url}
+                        onClick={onClose}
+                        style={{
+                          flex: 1, padding: '14px 0', fontFamily: fontWorkSans, fontSize: 14, fontWeight: 500,
+                          color: '#171717', textDecoration: 'none',
+                        }}
+                      >
+                        {item.label}
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() => setExpanded(expanded === item.label ? null : item.label)}
+                        style={{
+                          flex: 1, padding: '14px 0', fontFamily: fontWorkSans, fontSize: 14, fontWeight: 500,
+                          color: '#171717', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+                        }}
+                      >
+                        {item.label}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => setExpanded(expanded === item.label ? null : item.label)}
+                      aria-label={`${expanded === item.label ? 'Collapse' : 'Expand'} ${item.label}`}
+                      style={{
+                        padding: '14px 0 14px 16px', background: 'none', border: 'none',
+                        cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0,
+                      }}
+                    >
+                      <ChevronDown rotated={expanded === item.label} color="#6b7280" />
+                    </button>
+                  </div>
                   {expanded === item.label && (
                     <div style={{ paddingBottom: 12, paddingLeft: 16, display: 'flex', flexDirection: 'column', gap: 4 }}>
                       {(item.columns ?? []).flatMap((col) => col.links ?? []).map((link) => (
