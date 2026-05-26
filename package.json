@@ -20,7 +20,15 @@
     "payload": "NODE_OPTIONS='--import tsx' payload",
     "migrate:create": "NODE_OPTIONS='--import tsx' payload migrate:create",
     "migrate": "NODE_OPTIONS='--import tsx' payload migrate",
-    "test": "tsx src/scripts/test-article-featured-fields.ts"
+    "test": "tsx src/scripts/test-article-featured-fields.ts",
+    "test:smoke": "bash scripts/pre-deploy-check.sh",
+    "test:smoke:uat": "bash scripts/pre-deploy-check.sh --uat",
+    "test:smoke:prod": "bash scripts/pre-deploy-check.sh --prod",
+    "test:e2e": "playwright test --project=local",
+    "test:e2e:mobile": "playwright test --project=local-mobile",
+    "test:e2e:uat": "playwright test --project=uat",
+    "test:e2e:uat-mobile": "playwright test --project=uat-mobile",
+    "test:all": "npm run test:smoke && npm run test:e2e"
   },
   "sideEffects": [
     "*.css"
@@ -51,6 +59,7 @@
     "tsx": "^4.21.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/container-queries": "^0.1.1",
     "@types/archiver": "^7.0.0",
     "@types/node": "^20.0.0",

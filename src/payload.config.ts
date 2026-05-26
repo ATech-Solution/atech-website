@@ -37,6 +37,7 @@ import { securityPlugin } from './plugins/securityPlugin'
 import { AiContentFeature } from './features/aiContent/feature.server'
 import { exportImportPlugin } from './plugins/exportImportPlugin'
 import { multilanguagePlugin } from './plugins/multilanguagePlugin'
+import { siteTestingPlugin } from './plugins/siteTestingPlugin'
 import { AuditLogs } from './collections/AuditLogs'
 import { SecurityEvents } from './collections/SecurityEvents'
 
@@ -257,6 +258,9 @@ export default buildConfig({
 
     // Multilanguage — subdirectory locale routing, language switcher, translation manager
     multilanguagePlugin(),
+
+    // Site Testing — smoke tests, Playwright e2e, pre-deploy checklist
+    siteTestingPlugin(),
 
     // 1. SEO ─────────────────────────────────────────────────────────────────
     // Traditional SEO + LLM SEO bundle
