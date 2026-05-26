@@ -26,7 +26,7 @@ export function resolveDbPath(): string {
 }
 
 export function resolveMediaDir(): string {
-  return process.env.PAYLOAD_MEDIA_DIR || path.join(PROJECT_ROOT, 'public', 'media')
+  return process.env.PAYLOAD_MEDIA_DIR || path.join(PROJECT_ROOT, 'media')
 }
 
 export async function backupDatabase(): Promise<string> {
