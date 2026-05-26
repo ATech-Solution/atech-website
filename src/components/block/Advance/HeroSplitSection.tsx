@@ -5,6 +5,41 @@
 import Link from 'next/link'
 import type { CSSProperties, ReactNode } from 'react'
 
+const CSS = `
+  .herosplit { background: #ffffff; position: relative; display: flex; flex-direction: column; height: 625px; }
+  .herosplit__grid { flex: 1; }
+  .herosplit__img { position: relative; }
+
+  @media (max-width: 1023px) {
+    .herosplit { height: auto !important; }
+    .herosplit__grid {
+      display: flex !important;
+      flex-direction: column !important;
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+    }
+    .herosplit__content {
+      order: 1;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      padding-bottom: 40px !important;
+    }
+    .herosplit__img {
+      order: 2;
+      display: block !important;
+      height: 280px;
+      position: relative;
+      width: calc(100% + 40px);
+      margin-left: -20px;
+      margin-right: -20px;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .herosplit__img { height: 380px; }
+  }
+`
+
 function CtaWrap({ href, className, style, children }: { href?: string; className?: string; style?: CSSProperties; children: ReactNode }) {
   if (href) return <Link href={href} className={className} style={style}>{children}</Link>
   return <span className={className} style={style}>{children}</span>
@@ -51,8 +86,7 @@ export default function HeroSplitSection({ data }: { data: HeroSplitSectionData 
   // both columns stretch to fill the full section height.
   const ImagePanel = (
     <div
-      className="hidden lg:block"
-      style={{ position: 'relative' }}
+      className="herosplit__img"
     >
       <div
         style={{
@@ -79,17 +113,18 @@ export default function HeroSplitSection({ data }: { data: HeroSplitSectionData 
   )
 
   return (
-    <section style={{ background: '#ffffff', position: 'relative', display: 'flex', flexDirection: 'column', height: '625px' }}>
+    <>
+      <style dangerouslySetInnerHTML={{ __html: CSS }} />
+      <section className="herosplit">
       {/* ── Main 2-column grid ── */}
       <div
-        className={`grid grid-cols-1 lg:grid-cols-2 items-stretch 
+        className={`herosplit__grid grid grid-cols-1 lg:grid-cols-2 items-stretch
           ${imageOnLeft ? 'pr-[40px] md:pr-[104px]' : 'pl-[40px] md:pl-[104px]'}`}
-        style={{ flex: 1 }}
       >
         {imageOnLeft && ImagePanel}
 
         {/* ── Content column ── */}
-        <div style={{
+        <div className="herosplit__content" style={{
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -271,5 +306,6 @@ export default function HeroSplitSection({ data }: { data: HeroSplitSectionData 
         {!imageOnLeft && ImagePanel}
       </div>
     </section>
+    </>
   )
 }
