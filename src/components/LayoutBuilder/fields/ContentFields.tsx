@@ -561,7 +561,12 @@ function HomeServicesFields({ ov, set }: { ov: any; set: (k: string, v: unknown)
               </div>
               <MediaField label="Icon" value={s.serviceIcon?.url ?? ''} onChange={(ref) => { const a = [...items]; a[i] = { ...a[i], serviceIcon: ref }; set('serviceItems', a) }} />
               <input className="lb-input" placeholder="Title" value={s.serviceTitle ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], serviceTitle: e.target.value }; set('serviceItems', a) }} />
-              <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Description" value={s.serviceDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], serviceDesc: e.target.value }; set('serviceItems', a) }} />
+              <Field label="Description (HTML supported)">
+                <textarea className="lb-input lb-input--textarea" rows={3} placeholder="Short description… (HTML tags like <strong>, <em> allowed)" value={s.serviceDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], serviceDesc: e.target.value }; set('serviceItems', a) }} />
+              </Field>
+              <Field label="Features (one per line)">
+                <textarea className="lb-input lb-input--textarea" rows={4} placeholder={"Selenium & Cypress frameworks\nAPI automation testing\nCI/CD pipeline integration"} value={s.serviceFeatures ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], serviceFeatures: e.target.value }; set('serviceItems', a) }} />
+              </Field>
               <LinkField label="Link URL" value={s.serviceHref ?? ''} onChange={(v) => { const a = [...items]; a[i] = { ...a[i], serviceHref: v }; set('serviceItems', a) }} placeholder="/services/web-dev" />
             </div>
           ))}

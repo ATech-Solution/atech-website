@@ -148,7 +148,7 @@ export interface BlockOverrides {
 
     // ── Home Services ────────────────────────────────────────────────────
     subheading?: string
-    serviceItems?: Array<{ serviceIcon?: MediaRef | null; serviceTitle?: string; serviceDesc?: string; serviceHref?: string }>
+    serviceItems?: Array<{ serviceIcon?: MediaRef | null; serviceTitle?: string; serviceDesc?: string; serviceFeatures?: string; serviceHref?: string }>
     customSolutionHeading?: string
     customSolutionBody?: string
     customSolutionCtaLabel?: string

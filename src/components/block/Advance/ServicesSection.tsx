@@ -10,10 +10,11 @@ function CtaWrap({ href, className, style, children }: { href?: string; classNam
 }
 
 interface ServiceItem {
-  serviceIcon?:  { url: string; alt?: string }
-  serviceTitle?: string
-  serviceDesc?:  string
-  serviceHref?:  string
+  serviceIcon?:     { url: string; alt?: string }
+  serviceTitle?:    string
+  serviceDesc?:     string
+  serviceFeatures?: string
+  serviceHref?:     string
 }
 
 interface ServicesSectionData {
@@ -37,7 +38,19 @@ function Arrow() {
   )
 }
 
+function CheckIcon() {
+  return (
+    <svg width="11" height="9" viewBox="0 0 11 9" fill="none" aria-hidden style={{ flexShrink: 0 }}>
+      <path d="M1 4.5L4 7.5L10 1" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 function ServiceCard({ item }: { item: ServiceItem }) {
+  const features = item.serviceFeatures
+    ? item.serviceFeatures.split('\n').map(f => f.trim()).filter(Boolean)
+    : []
+
   const content = (
     <div
       className="group flex flex-col items-start rounded-[12px] h-full transition-all duration-200"
@@ -68,17 +81,37 @@ function ServiceCard({ item }: { item: ServiceItem }) {
       )}
 
       {item.serviceDesc && (
-        <p
-          className="leading-[24px] flex-1 mb-3"
+        <div
+          className="leading-[24px] mb-4"
           style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '16px', fontWeight: 400, color: '#525252' }}
-        >
-          {item.serviceDesc}
-        </p>
+          dangerouslySetInnerHTML={{ __html: item.serviceDesc }}
+        />
+      )}
+
+      {features.length > 0 && (
+        <ul className="flex flex-col gap-2.5 mt-auto w-full">
+          {features.map((feat, idx) => (
+            <li key={idx} className="flex items-center gap-2.5">
+              <CheckIcon />
+              <span
+                style={{
+                  fontFamily: 'var(--font-work-sans, sans-serif)',
+                  fontSize: '14px',
+                  fontWeight: 400,
+                  color: '#525252',
+                  lineHeight: '20px',
+                }}
+              >
+                {feat}
+              </span>
+            </li>
+          ))}
+        </ul>
       )}
 
       {item.serviceHref && (
         <span
-          className="inline-flex items-center gap-2 group-hover:gap-3 transition-all duration-200"
+          className="inline-flex items-center gap-2 group-hover:gap-3 transition-all duration-200 mt-5"
           style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '16px', fontWeight: 400, color: '#171717' }}
         >
           Learn More <Arrow />
