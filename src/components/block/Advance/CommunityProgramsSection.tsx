@@ -18,7 +18,7 @@ export default function CommunityProgramsSection({ data }: { data: CommunityProg
   const { programItems = [] } = data
 
   return (
-    <section className="pb-24 px-6 md:px-10" style={{ background: '#171717' }}>
+    <section className="pb-24 px-6 md:px-10" style={{ background: 'var(--section-bg, #171717)' }}>
       <div className="mx-auto" style={{ maxWidth: '1280px' }}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {programItems.map((p, i) => (

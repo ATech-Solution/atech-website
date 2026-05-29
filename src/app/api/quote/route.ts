@@ -18,6 +18,10 @@ export async function POST(request: Request) {
       developmentTime,
       projectDetails,
       recaptchaToken,
+      // Calculated fields from the client-side calculator
+      itemsCount,
+      calculatedCost,
+      maintenanceFee,
     } = body
 
     if (!firstName || !email || !projectDetails) {
@@ -31,10 +35,35 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'reCAPTCHA verification failed.' }, { status: 400 })
     }
 
-    // Get admin notification email from settings
+    // ── Persist to Payload collection ─────────────────────────────────────────
+    const payload = await getPayload({ config: configPromise })
+    try {
+      await payload.create({
+        collection: 'quote-requests',
+        data: {
+          firstName,
+          lastName:        lastName   ?? '',
+          email,
+          phone:           phone      ?? '',
+          company:         company    ?? '',
+          serviceType:     serviceType     ?? '',
+          serviceSelected: serviceSelected ?? '',
+          developmentTime: developmentTime ?? '',
+          itemsCount:      itemsCount     ? Number(itemsCount)     : undefined,
+          calculatedCost:  calculatedCost  ? Number(calculatedCost)  : undefined,
+          maintenanceFee:  maintenanceFee  ? Number(maintenanceFee)  : undefined,
+          projectDetails,
+          status: 'new',
+        },
+      })
+    } catch (saveErr) {
+      console.warn('[quote] Could not save to DB:', saveErr)
+      // Non-fatal — continue to send email anyway
+    }
+
+    // ── Get admin notification email from settings ──────────────────────────
     let adminEmail = process.env.ADMIN_EMAIL ?? 'tan@atech.software'
     try {
-      const payload = await getPayload({ config: configPromise })
       const settings = await payload.findGlobal({ slug: 'settings' }) as any
       if (settings?.adminNotificationEmail) {
         adminEmail = settings.adminNotificationEmail
@@ -96,6 +125,16 @@ export async function POST(request: Request) {
                       <tr>
                         <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;color:#6b7280;font-size:14px;">Timeline</td>
                         <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;color:#0d1117;font-size:14px;">${developmentTime}</td>
+                      </tr>
+                      ` : ''}
+                      ${(itemsCount || calculatedCost || maintenanceFee) ? `
+                      <tr>
+                        <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;color:#6b7280;font-size:14px;">Estimate</td>
+                        <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;color:#0d1117;font-size:14px;">
+                          Items: ${itemsCount ?? '—'} &nbsp;|&nbsp;
+                          Cost: HKD ${calculatedCost ? Number(calculatedCost).toLocaleString() : '—'} &nbsp;|&nbsp;
+                          Maintenance: HKD ${maintenanceFee ? Number(maintenanceFee).toLocaleString() : '—'}/mo
+                        </td>
                       </tr>
                       ` : ''}
                       <tr>

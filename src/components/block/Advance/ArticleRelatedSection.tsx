@@ -29,36 +29,59 @@ function formatDate(dateStr: string | undefined): string {
 }
 
 async function fetchRelatedByCategory(articleItem: any): Promise<RelatedPost[]> {
+  // getPostItem fetches with depth:2, so categories are populated objects {id, slug, name}
   const cats: any[] = Array.isArray(articleItem?.categories) ? articleItem.categories : []
-  const catIds      = cats.map((c: any) => c?.id).filter(Boolean)
-  if (!catIds.length) return []
+
+  // Collect slugs — fall back to name-derived slug if slug field is absent
+  const catSlugs = cats
+    .map((c: any) => c?.slug ?? c?.name?.toLowerCase().replace(/\s+/g, '-'))
+    .filter(Boolean) as string[]
+
+  if (!catSlugs.length) return []
 
   try {
-    const base = process.env.PAYLOAD_PUBLIC_SERVER_URL ?? process.env.NEXT_PUBLIC_DOMAIN ?? 'http://localhost:3000'
-    const url  = new URL('/api/posts', base)
-    url.searchParams.set('where[status][equals]', 'published')
-    url.searchParams.set('where[categories][in]', catIds.join(','))
-    if (articleItem?.id) {
-      url.searchParams.set('where[id][not_equals]', String(articleItem.id))
+    const base      = process.env.PAYLOAD_PUBLIC_SERVER_URL ?? process.env.NEXT_PUBLIC_DOMAIN ?? 'http://localhost:3000'
+    const currentId = articleItem?.id ? String(articleItem.id) : ''
+
+    // Build one request per category slug then merge, dedup, and cap at 3.
+    // Using where[categories.slug][equals] — the same pattern used throughout the codebase.
+    const requests = catSlugs.map(async (slug) => {
+      const url = new URL('/api/posts', base)
+      url.searchParams.set('where[status][equals]',          'published')
+      url.searchParams.set('where[categories.slug][equals]', slug)
+      if (currentId) url.searchParams.set('where[id][not_equals]', currentId)
+      url.searchParams.set('sort',  '-publishedAt')
+      url.searchParams.set('limit', '6')
+      url.searchParams.set('depth', '1')
+      const res  = await fetch(url.toString(), { next: { revalidate: 60 } })
+      const json = await res.json()
+      return json.docs ?? []
+    })
+
+    const results = await Promise.all(requests)
+
+    // Flatten, deduplicate by id, exclude current article, take first 3
+    const seen = new Set<string>()
+    const merged: RelatedPost[] = []
+    for (const docs of results) {
+      for (const post of docs) {
+        if (!post?.id || seen.has(post.id) || post.id === currentId) continue
+        seen.add(post.id)
+        merged.push({
+          id:           post.id,
+          slug:         post.slug,
+          title:        post.title,
+          excerpt:      post.excerpt,
+          publishedAt:  post.publishedAt,
+          featuredImage: post.featuredImage?.url
+            ? { url: post.featuredImage.url, alt: post.featuredImage.alt ?? post.title ?? '' }
+            : null,
+          categories: post.categories ?? [],
+        })
+        if (merged.length === 3) return merged
+      }
     }
-    url.searchParams.set('sort',  '-publishedAt')
-    url.searchParams.set('limit', '3')
-    url.searchParams.set('depth', '1')
-
-    const res  = await fetch(url.toString(), { next: { revalidate: 60 } })
-    const json = await res.json()
-
-    return (json.docs ?? []).map((post: any): RelatedPost => ({
-      id:           post.id,
-      slug:         post.slug,
-      title:        post.title,
-      excerpt:      post.excerpt,
-      publishedAt:  post.publishedAt,
-      featuredImage: post.featuredImage?.url
-        ? { url: post.featuredImage.url, alt: post.featuredImage.alt ?? post.title ?? '' }
-        : null,
-      categories: post.categories ?? [],
-    }))
+    return merged
   } catch {
     return []
   }
@@ -73,7 +96,7 @@ export default async function ArticleRelatedSection({ data, articleItem }: Artic
   return (
     <div
       style={{
-        background: '#ffffff',
+        background: 'var(--section-bg, #ffffff)',
         borderTop:  '1px solid #e5e5e5',
         padding:    '80px 104px',
       }}
@@ -92,14 +115,8 @@ export default async function ArticleRelatedSection({ data, articleItem }: Artic
         {heading}
       </h2>
 
-      {/* 3-col grid */}
-      <div
-        style={{
-          display:             'grid',
-          gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-          gap:                 '32px',
-        }}
-      >
+      {/* 3-col grid — responsive via Tailwind */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" style={{ gap: '32px' }}>
         {related.map((post, i) => {
           const postUrl  = post.slug ? `/article/${post.slug}` : '#'
           const category = post.categories?.[0]?.title ?? post.categories?.[0]?.name ?? ''
@@ -148,12 +165,15 @@ export default async function ArticleRelatedSection({ data, articleItem }: Artic
                   {category && (
                     <span
                       style={{
-                        background:  '#f5f5f5',
-                        border:      '1px solid #e5e5e5',
-                        padding:     '4px 12px',
-                        fontSize:    '12px',
-                        color:       '#525252',
-                        fontFamily:  'var(--font-work-sans, sans-serif)',
+                        background:    '#f5f5f5',
+                        padding:       '4px 10px',
+                        fontSize:      '12px',
+                        fontWeight:    400,
+                        color:         '#171717',
+                        fontFamily:    'var(--font-work-sans, sans-serif)',
+                        letterSpacing: '0.6px',
+                        textTransform: 'uppercase',
+                        lineHeight:    '16px',
                       }}
                     >
                       {category}

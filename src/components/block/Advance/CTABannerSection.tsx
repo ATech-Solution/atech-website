@@ -42,7 +42,7 @@ export default function CTABannerSection({ data }: { data: CTABannerSectionData 
   return (
     <section
       className="py-20 px-6"
-      style={{ background: '#171717' }}
+      style={{ background: 'var(--section-bg, #171717)' }}
     >
       <div
         className="mx-auto flex flex-col items-center text-center gap-4 px-6"

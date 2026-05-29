@@ -17,7 +17,7 @@ export default function ServeValueSection({ data }: { data: ServeValueSectionDat
   const items = data.serveValueItems ?? []
 
   return (
-    <section style={{ background: '#ffd369', position: 'relative' }}>
+    <section style={{ background: 'var(--section-bg, #ffd369)', position: 'relative' }}>
       <div
         style={{
           display: 'flex',

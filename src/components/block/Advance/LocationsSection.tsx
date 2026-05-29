@@ -27,7 +27,7 @@ export default function LocationsSection({ data }: { data: LocationsData }) {
     : officeItems.map((o) => ({ cardOffices: [o] }))
 
   return (
-    <section style={{ background: '#ffffff', padding: '80px 0' }}>
+    <section style={{ background: 'var(--section-bg, #ffffff)', padding: '80px 0' }}>
       <div
         className="mx-auto px-8 flex flex-col"
         style={{ maxWidth: '1280px', gap: '64px' }}

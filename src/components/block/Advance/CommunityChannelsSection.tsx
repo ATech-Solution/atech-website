@@ -24,7 +24,7 @@ export default function CommunityChannelsSection({ data }: { data: CommunityChan
   const { channelItems = [] } = data
 
   return (
-    <section className="pb-16 px-6 md:px-10" style={{ background: '#171717' }}>
+    <section className="pb-16 px-6 md:px-10" style={{ background: 'var(--section-bg, #171717)' }}>
       <div className="mx-auto" style={{ maxWidth: '1280px' }}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {channelItems.map((ch, i) => (

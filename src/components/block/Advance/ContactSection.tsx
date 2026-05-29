@@ -238,7 +238,7 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
                 style={{
                   fontFamily: 'var(--font-work-sans, sans-serif)',
                   fontSize: 'clamp(1.75rem, 3vw, 2.25rem)',
-                  fontWeight: 700,
+                  fontWeight: 400,
                   color: 'var(--color-text, #fff)',
                   letterSpacing: '-0.01em',
                 }}

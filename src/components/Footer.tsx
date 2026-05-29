@@ -83,7 +83,7 @@ export default async function Footer({ theme, settings, navigation }: FooterProp
     )
 
   return (
-    <footer style={{ background: '#171717' }}>
+    <footer style={{ background: '#171717' }} id="footer">
       <div
         className="mx-auto px-6 md:px-[80px] pt-16 pb-8"
         style={{ maxWidth: '1280px' }}

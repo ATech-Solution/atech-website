@@ -143,7 +143,7 @@ export default function ArticleSubmitSection({ data }: { data: ArticleSubmitData
 
   if (status === 'success') {
     return (
-      <section style={{ background: '#ffffff', padding: '96px clamp(24px, 7vw, 104px)' }}>
+      <section style={{ background: 'var(--section-bg, #ffffff)', padding: '96px clamp(24px, 7vw, 104px)' }}>
         <div style={{ maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
           <div style={{
             width: '56px',
@@ -197,7 +197,7 @@ export default function ArticleSubmitSection({ data }: { data: ArticleSubmitData
   // ── Form ───────────────────────────────────────────────────────────────────
 
   return (
-    <section style={{ background: '#ffffff', padding: '96px clamp(24px, 7vw, 104px)' }}>
+    <section style={{ background: 'var(--section-bg, #ffffff)', padding: '96px clamp(24px, 7vw, 104px)' }}>
       <div style={{ maxWidth: '720px', margin: '0 auto' }}>
 
         {/* Header */}

@@ -33,7 +33,7 @@ export default function BreadcrumbSection({ data }: { data: BreadcrumbData }) {
   return (
     <section
       style={{
-        background: '#fafafa',
+        background: 'var(--section-bg, #fafafa)',
         borderBottom: '1px solid #e5e5e5',
         paddingTop: '32px',
         paddingBottom: '33px',

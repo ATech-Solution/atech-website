@@ -21,7 +21,7 @@ export default function ServeModelSection({ data }: { data: ServeModelSectionDat
   const items = data.serveModelItems ?? []
 
   return (
-    <section style={{ background: '#fafafa', position: 'relative' }}>
+    <section style={{ background: 'var(--section-bg, #fafafa)', position: 'relative' }}>
       <div
         style={{
           display: 'flex',

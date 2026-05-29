@@ -23,7 +23,7 @@ export default function TeamSection({ data }: TeamSectionProps) {
   const is2Col = teamColumns === 2
 
   return (
-    <section style={{ background: '#292929', padding: '80px 0' }}>
+    <section style={{ background: 'var(--section-bg, #292929)', padding: '80px 0' }}>
       <div
         className="mx-auto px-8 flex flex-col"
         style={{ maxWidth: '1280px', gap: '64px' }}

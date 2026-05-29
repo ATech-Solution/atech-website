@@ -80,7 +80,7 @@ export function FAQAboutClient({ badge = 'FAQ', badgeIconUrl, heading, subheadin
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   return (
-    <section style={{ background: '#ffffff', padding: '112px 32px' }}>
+    <section style={{ background: 'var(--section-bg, #ffffff)', padding: '112px 32px' }}>
       <div
         style={{
           maxWidth: '1033px',

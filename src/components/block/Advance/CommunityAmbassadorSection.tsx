@@ -14,13 +14,14 @@ interface CommunityAmbassadorData {
   ambassadorBenefits?: AmbassadorBenefit[]
   ambassadorCta?:      string
   ambassadorUrl?:      string
+  ambassadorImage?:    { url: string; alt?: string } | null
 }
 
 export default function CommunityAmbassadorSection({ data }: { data: CommunityAmbassadorData }) {
-  const { heading, description, ambassadorBenefits = [], ambassadorCta, ambassadorUrl } = data
+  const { heading, description, ambassadorBenefits = [], ambassadorCta, ambassadorUrl, ambassadorImage } = data
 
   return (
-    <section className="py-16 px-6 md:px-10" style={{ background: '#171717' }}>
+    <section className="py-16 px-6 md:px-10" style={{ background: 'var(--section-bg, #171717)' }}>
       <div className="mx-auto" style={{ maxWidth: '1280px' }}>
         <div className="p-12" style={{ background: '#ffffff' }}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -73,11 +74,25 @@ export default function CommunityAmbassadorSection({ data }: { data: CommunityAm
               )}
             </div>
 
-            {/* Illustration placeholder */}
-            <div className="flex items-center justify-center" style={{ height: '400px', background: '#f5f5f5' }}>
-              <span style={{ color: '#525252', fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.125rem' }}>
-                Ambassador Program
-              </span>
+            {/* Right: image */}
+            <div className="flex items-center justify-center" style={{ minHeight: '360px' }}>
+              {ambassadorImage?.url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={ambassadorImage.url}
+                  alt={ambassadorImage.alt ?? heading ?? 'Ambassador Program'}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', maxHeight: '480px', display: 'block' }}
+                />
+              ) : (
+                <div
+                  className="flex items-center justify-center w-full"
+                  style={{ height: '360px', background: '#f5f5f5' }}
+                >
+                  <span style={{ color: '#a3a3a3', fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '0.875rem' }}>
+                    Add image →
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>

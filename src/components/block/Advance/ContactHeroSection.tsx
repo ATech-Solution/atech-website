@@ -2,17 +2,25 @@
 
 const FONT = 'var(--font-work-sans, "Work Sans", sans-serif)'
 
+interface ContactCardSocialIcon {
+  socialIconSrc?: string
+  socialIcon?:    { url: string } | null
+  socialIconUrl?: string
+}
+
 interface ContactCard {
-  cardIconSrc?: string
-  cardIcon?: { url: string; alt?: string } | null
-  cardTitle?: string
-  cardDesc?: string
-  cardValue?: string
+  cardIconSrc?:     string
+  cardIcon?:        { url: string; alt?: string } | null
+  cardTitle?:       string
+  cardDesc?:        string
+  cardValue?:       string
+  cardSocialIcons?: ContactCardSocialIcon[]
 }
 
 interface ContactHeroData {
   badge?:        string
   badgeIconUrl?: string
+  badgeIcon?:    { url: string } | null
   heading?:      string
   subheading?:   string
   contactCards?: ContactCard[]
@@ -20,11 +28,12 @@ interface ContactHeroData {
 
 export default function ContactHeroSection({ data }: { data: ContactHeroData }) {
   const { badge, heading, subheading, contactCards = [] } = data
+  const badgeIconUrl = data.badgeIcon?.url ?? data.badgeIconUrl
 
   return (
     <>
       {/* ── White hero ───────────────────────────────────────────────────── */}
-      <section style={{ background: '#ffffff', padding: '128px 0' }}>
+      <section style={{ background: 'var(--section-bg, #ffffff)', padding: '128px 0' }}>
         <div
           className="mx-auto px-6 md:px-[80px]"
           style={{ maxWidth: '1280px' }}
@@ -35,11 +44,11 @@ export default function ContactHeroSection({ data }: { data: ContactHeroData }) 
             {badge && (
               <div style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
-                background: 'rgba(0,0,0,0.08)', padding: '8px 16px', width: 'fit-content',
+                background: 'rgba(0,0,0,0.25)', padding: '8px 16px', width: 'fit-content',
               }}>
-                {data.badgeIconUrl && (
+                {badgeIconUrl && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={data.badgeIconUrl} alt="" style={{ width: 14, height: 14, objectFit: 'contain', flexShrink: 0 }} />
+                  <img src={badgeIconUrl} alt="" style={{ width: 14, height: 14, objectFit: 'contain', flexShrink: 0 }} />
                 )}
                 <span style={{
                   fontFamily: FONT, fontSize: '14px', fontWeight: 400,
@@ -81,7 +90,7 @@ export default function ContactHeroSection({ data }: { data: ContactHeroData }) 
 
       {/* ── Gold info cards ──────────────────────────────────────────────── */}
       {contactCards.length > 0 && (
-        <section style={{ background: '#ffd369', padding: '112px 0' }}>
+        <section style={{ background: 'var(--section-bg, #ffd369)', padding: '112px 0' }}>
           <div
             className="mx-auto px-6 md:px-[80px]"
             style={{ maxWidth: '1280px' }}
@@ -151,6 +160,32 @@ export default function ContactHeroSection({ data }: { data: ContactHeroData }) 
                       }}>
                         {card.cardValue}
                       </span>
+                    )}
+
+                    {/* Social Icons */}
+                    {card.cardSocialIcons && card.cardSocialIcons.length > 0 && (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', paddingTop: '8px' }}>
+                        {card.cardSocialIcons.map((si, j) => {
+                          const siUrl = si.socialIcon?.url ?? si.socialIconSrc
+                          if (!siUrl) return null
+                          const img = (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={siUrl}
+                              alt=""
+                              style={{ width: 35, height: 35, objectFit: 'contain', display: 'block', flexShrink: 0 }}
+                            />
+                          )
+                          return si.socialIconUrl ? (
+                            <a key={j} href={si.socialIconUrl} target="_blank" rel="noopener noreferrer"
+                              style={{ display: 'block', flexShrink: 0 }}>
+                              {img}
+                            </a>
+                          ) : (
+                            <span key={j} style={{ display: 'block', flexShrink: 0 }}>{img}</span>
+                          )
+                        })}
+                      </div>
                     )}
                   </div>
                 )

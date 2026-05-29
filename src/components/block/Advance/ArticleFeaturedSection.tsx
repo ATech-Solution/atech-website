@@ -71,7 +71,7 @@ function FeaturedArticleLayout({ data, post }: { data: ArticleFeaturedData; post
   const views    = data.featViews    ?? ''
 
   return (
-    <section className="py-16 px-6 md:px-10" style={{ background: '#ffffff' }}>
+    <section className="py-16 px-6 md:px-10" style={{ background: 'var(--section-bg, #ffffff)' }}>
       <div className="mx-auto" style={{ maxWidth: '1280px' }}>
         {data.sectionLabel && (
           <div className="flex items-center gap-3 mb-8">

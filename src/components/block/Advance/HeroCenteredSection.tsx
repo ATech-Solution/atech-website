@@ -30,7 +30,7 @@ export default function HeroCenteredSection({ data }: HeroCenteredSectionProps) 
   const showImage = mediaType === 'image' && aboutHeroImage?.url
 
   return (
-    <section style={{ background: '#ffffff', padding: '80px 0' }}>
+    <section style={{ background: 'var(--section-bg, #ffffff)', padding: '80px 0' }}>
       {/* Outer container — full 1280px, centers everything */}
       <div
         className="mx-auto flex flex-col items-center gap-6 px-8"

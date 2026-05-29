@@ -7,6 +7,7 @@ import ChunkErrorRecovery from '@/components/ChunkErrorRecovery'
 import AdminBar from '@/components/AdminBar'
 import { ChatbotWidget } from '@/components/ChatbotWidget'
 import { ScrollToTop } from '@/components/ScrollToTop'
+import HashScrollHandler from '@/components/HashScrollHandler'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import {
   getTheme,
@@ -148,6 +149,7 @@ export default async function LocaleLayout({
           <Footer theme={theme} settings={settings} navigation={navigation} />
           <AdminBar />
           <ScrollToTop />
+          <HashScrollHandler />
           {isChatbotActive && <ChatbotWidget />}
         </ThemeProvider>
       </body>

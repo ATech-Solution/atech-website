@@ -15,6 +15,7 @@ import { fileURLToPath } from 'url'
 // import { withPruning } from '../src/utils/injectPruneButton'
 
 import { Media } from './collections/Media'
+import { QuoteRequests } from './collections/QuoteRequests'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Categories } from './collections/Categories'
@@ -173,7 +174,7 @@ export default buildConfig({
   csrf: allowedOrigins,
 
   // ── Collections ────────────────────────────────────────────────────────────
-  collections: [Users, Pages, Posts, Categories, Portfolio, PortfolioCategories, FAQCategories, FAQs, Testimonials, JobVacancies, Media, Plugins, Blocks, AuditLogs, SecurityEvents],
+  collections: [Users, Pages, Posts, Categories, Portfolio, PortfolioCategories, FAQCategories, FAQs, Testimonials, JobVacancies, QuoteRequests, Media, Plugins, Blocks, AuditLogs, SecurityEvents],
 
   // ── Globals ────────────────────────────────────────────────────────────────
   globals: [Navigation, Settings, Theme],

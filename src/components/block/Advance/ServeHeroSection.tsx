@@ -21,7 +21,7 @@ export default function ServeHeroSection({ data }: { data: ServeHeroSectionData 
   const statIconBg = data.serveHeroStatIconBg ?? '#ffd369'
 
   return (
-    <section style={{ background: '#ffffff', position: 'relative' }}>
+    <section style={{ background: 'var(--section-bg, #ffffff)', position: 'relative' }}>
       <div
         style={{
           display: 'flex',

@@ -132,6 +132,16 @@ export const Posts: CollectionConfig = {
               required: true,
               label: 'Status',
             },
+            {
+              name: 'featured',
+              type: 'checkbox',
+              label: 'Featured Article',
+              defaultValue: false,
+              admin: {
+                description:
+                  'Mark this post as featured. The Article Feature block (in Collection mode) shows the featured post for the active category filter.',
+              },
+            },
           ],
         },
       ],

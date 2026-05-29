@@ -16,7 +16,7 @@ export default function SectionHeader({
   align = 'center',
   headingColor = 'var(--color-text, #fafafa)',
   subheadingColor = 'var(--color-muted, #525252)',
-  headingFontWeight = 700,
+  headingFontWeight = 400,
 }: SectionHeaderProps) {
   const textAlign = align === 'center' ? 'text-center' : 'text-left'
   const itemsAlign = align === 'center' ? 'items-center' : 'items-start'
