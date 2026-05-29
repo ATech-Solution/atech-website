@@ -45,7 +45,7 @@ export async function fetchPortfolioItems(data: ProjectGridData): Promise<Projec
         projectTag:           cats[0] ?? '',
         projectType:          cats[1] ?? '',
         projectCta:           'View Case Study',
-        projectUrl:           `/static/portfolio/${item.slug}`,
+        projectUrl:           `/portfolio/${item.slug}`,
         projectImage:         item.featuredImage?.url
           ? { url: item.featuredImage.url, alt: item.featuredImage.alt ?? item.title ?? '' }
           : null,
