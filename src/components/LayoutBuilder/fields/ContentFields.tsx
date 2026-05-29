@@ -1075,9 +1075,7 @@ function ServeModelFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =
               <Field label="Title">
                 <input className="lb-input" placeholder="Project-Based" value={item.modelTitle ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], modelTitle: e.target.value }; set('serveModelItems', a) }} />
               </Field>
-              <Field label="Icon URL">
-                <input className="lb-input" placeholder="https://…/icon.svg" value={item.modelIconSrc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], modelIconSrc: e.target.value }; set('serveModelItems', a) }} />
-              </Field>
+              <MediaField label="Icon" value={item.modelIconSrc ?? ''} onChange={(ref) => { const a = [...items]; a[i] = { ...a[i], modelIconSrc: ref?.url ?? '' }; set('serveModelItems', a) }} />
               <Field label="Description">
                 <textarea className="lb-input lb-input--textarea" rows={2} placeholder="Fixed scope and timeline…" value={item.modelDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], modelDesc: e.target.value }; set('serveModelItems', a) }} />
               </Field>
@@ -1450,9 +1448,7 @@ function ServeValueFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =
                 <span>Item {i + 1}</span>
                 <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); set('serveValueItems', a) }}>✕</button>
               </div>
-              <Field label="Icon URL">
-                <input className="lb-input" placeholder="https://…/icon.svg" value={item.valueIconSrc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], valueIconSrc: e.target.value }; set('serveValueItems', a) }} />
-              </Field>
+              <MediaField label="Icon" value={item.valueIconSrc ?? ''} onChange={(ref) => { const a = [...items]; a[i] = { ...a[i], valueIconSrc: ref?.url ?? '' }; set('serveValueItems', a) }} />
               <Field label="Title">
                 <input className="lb-input" placeholder="Fast MVP Development" value={item.valueTitle ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], valueTitle: e.target.value }; set('serveValueItems', a) }} />
               </Field>
@@ -1510,9 +1506,7 @@ function ServeHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =>
       <Field label="Stat Badge Label">
         <input className="lb-input" value={ov.serveHeroStatLabel ?? ''} onChange={(e) => set('serveHeroStatLabel', e.target.value)} placeholder="From Seed to Series B" />
       </Field>
-      <Field label="Stat Badge Icon URL">
-        <input className="lb-input" value={ov.serveHeroStatIconSrc ?? ''} onChange={(e) => set('serveHeroStatIconSrc', e.target.value)} placeholder="https://…/icon.svg" />
-      </Field>
+      <MediaField label="Stat Badge Icon" value={ov.serveHeroStatIconSrc ?? ''} onChange={(ref) => set('serveHeroStatIconSrc', ref?.url ?? '')} />
       <Field label="Stat Badge Icon Background">
         <input className="lb-input" value={ov.serveHeroStatIconBg ?? '#ffd369'} onChange={(e) => set('serveHeroStatIconBg', e.target.value)} placeholder="#ffd369" />
       </Field>
