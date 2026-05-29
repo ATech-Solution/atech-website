@@ -21,14 +21,13 @@ export interface ProjectGridData {
 
 export async function fetchPortfolioItems(data: ProjectGridData): Promise<ProjectItem[]> {
   try {
-    const limit   = data.projectLimit ?? 9
     const orderBy = data.projectOrderBy ?? 'publishedAt_desc'
     const sort    = orderBy === 'publishedAt_asc' ? 'publishedAt' : '-publishedAt'
 
     const base = process.env.PAYLOAD_PUBLIC_SERVER_URL ?? process.env.NEXT_PUBLIC_DOMAIN ?? 'http://localhost:3000'
     const url  = new URL('/api/portfolio', base)
     url.searchParams.set('where[status][equals]', 'published')
-    url.searchParams.set('limit', String(limit))
+    url.searchParams.set('limit', '200') // fetch all — page size is handled client-side
     url.searchParams.set('sort', sort)
     url.searchParams.set('depth', '2')
     if (data.projectCategory) {
@@ -79,7 +78,8 @@ export default function ProjectGridSection({ data }: { data: ProjectGridData }) 
       subheading={data.projectSubheading}
       items={normalizeManualItems(data.projectItems ?? [])}
       showCategoryFilter={(data.showCategoryFilter ?? 'no') !== 'no'}
-      loadMoreType={data.projectLoadMoreType ?? 'load-more'}
+      pageSize={data.projectLimit ?? 6}
+      loadMoreType={data.projectLoadMoreType ?? 'pagination'}
       loadMoreLabel={data.projectLoadMoreLabel}
       loadMoreUrl={data.projectLoadMoreUrl}
     />
@@ -101,7 +101,8 @@ export async function ProjectGridServerSection({ data }: { data: ProjectGridData
         subheading={data.projectSubheading}
         items={items}
         showCategoryFilter={(data.showCategoryFilter ?? 'yes') !== 'no'}
-        loadMoreType={data.projectLoadMoreType ?? 'load-more'}
+        pageSize={data.projectLimit ?? 6}
+        loadMoreType={data.projectLoadMoreType ?? 'pagination'}
         loadMoreLabel={data.projectLoadMoreLabel}
         loadMoreUrl={data.projectLoadMoreUrl}
       />

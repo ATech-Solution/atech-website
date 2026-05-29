@@ -1915,15 +1915,15 @@ function ProjectGridFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
       {source === 'collection' ? (
         <>
           <Row>
-            <Field label="Limit">
+            <Field label="Items per Page">
               <input
                 className="lb-input"
                 type="number"
                 min={1}
                 max={24}
-                value={ov.projectLimit ?? 9}
+                value={ov.projectLimit ?? 6}
                 onChange={(e) => set('projectLimit', Number(e.target.value))}
-                placeholder="9"
+                placeholder="6"
               />
             </Field>
             <Field label="Sort">
@@ -1977,11 +1977,11 @@ function ProjectGridFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
       <Field label="Bottom Button">
         <select
           className="lb-input lb-input--select"
-          value={ov.projectLoadMoreType ?? 'load-more'}
+          value={ov.projectLoadMoreType ?? 'pagination'}
           onChange={(e) => set('projectLoadMoreType', e.target.value)}
         >
-          <option value="load-more">Load More (append cards)</option>
           <option value="pagination">Pagination (numbered pages)</option>
+          <option value="load-more">Load More (append cards)</option>
           <option value="link">Link to URL</option>
         </select>
       </Field>

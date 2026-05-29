@@ -93,6 +93,7 @@ interface ProjectGridFilterProps {
   subheading?:       string
   items:             ProjectItem[]
   showCategoryFilter?: boolean
+  pageSize?:         number
   loadMoreType?:     'pagination' | 'load-more' | 'link'
   loadMoreLabel?:    string
   loadMoreUrl?:      string
@@ -201,19 +202,18 @@ function ProjectCard({ item }: { item: ProjectItem }) {
   )
 }
 
-const PAGE_SIZE = 6
-
 export function ProjectGridFilter({
   heading,
   subheading,
   items,
   showCategoryFilter = true,
-  loadMoreType  = 'load-more',
+  pageSize      = 6,
+  loadMoreType  = 'pagination',
   loadMoreLabel,
   loadMoreUrl,
 }: ProjectGridFilterProps) {
   const [activeCategory, setActiveCategory] = useState<string>('all')
-  const [visibleCount,   setVisibleCount]   = useState(PAGE_SIZE)
+  const [visibleCount,   setVisibleCount]   = useState(pageSize)
   const [page,           setPage]           = useState(1)
 
   const categories = showCategoryFilter
@@ -236,7 +236,7 @@ export function ProjectGridFilter({
 
   function handleCategoryChange(cat: string) {
     setActiveCategory(cat)
-    setVisibleCount(PAGE_SIZE)
+    setVisibleCount(pageSize)
     setPage(1)
   }
 
@@ -245,10 +245,10 @@ export function ProjectGridFilter({
     loadMoreType === 'load-more'
       ? filtered.slice(0, visibleCount)
       : loadMoreType === 'pagination'
-        ? filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+        ? filtered.slice((page - 1) * pageSize, page * pageSize)
         : filtered  // link mode: show all (or the initial set)
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const hasMore    = visibleCount < filtered.length
   const pageList   = buildPages(page, totalPages)
 
@@ -303,7 +303,7 @@ export function ProjectGridFilter({
         {loadMoreType === 'load-more' && hasMore && (
           <div className="flex items-center justify-center mt-16">
             <button
-              onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+              onClick={() => setVisibleCount((n) => n + pageSize)}
               className="inline-flex items-center gap-2 cursor-pointer transition-opacity duration-200 hover:opacity-70"
               style={{ border: '2px solid #171717', borderRadius: '8px', padding: '18px 34px', background: '#ffffff', fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1rem', color: '#171717' }}
             >
