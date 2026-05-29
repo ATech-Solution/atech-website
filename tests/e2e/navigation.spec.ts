@@ -23,10 +23,8 @@ test.describe('Mobile Navigation', () => {
 
   test('Burger menu button is visible on mobile', async ({ page }) => {
     await page.goto('/en')
-    // Look for burger/hamburger button
-    const burgerBtn = page.locator('button[aria-label*="menu"], button[aria-label*="Menu"]')
-      .or(page.locator('button').filter({ hasText: /☰|≡|menu/i }))
-      .first()
+    // Hamburger has aria-label="Open menu" (exact) — avoid matching submenu chevrons
+    const burgerBtn = page.locator('button[aria-label="Open menu"]')
     await expect(burgerBtn).toBeVisible()
   })
 
