@@ -19,6 +19,7 @@ export const ADVANCE_BLOCK_TYPES = [
   'company-stats', 'mission-vision', 'team-section', 'faq-section',
   'page-hero', 'project-grid', 'article-grid', 'article-featured',
   'jobs-list', 'involved-hero', 'quote-form', 'culture-values',
+  'community-hero',
   'community-channels', 'community-ambassador', 'community-programs',
   'contact-hero', 'contact-stats', 'locations',
   'featured-case-study',
@@ -33,6 +34,13 @@ export const ADVANCE_BLOCK_TYPES = [
   'serve-hero',
   'serve-value',
   'serve-model',
+  'insights-advantages',
+  'insights-tech-guide',
+  'article-hero',
+  'article-filter',
+  'article-feature',
+  'article-main-grid',
+  'subscribe',
 ] as const
 
 export type BasicBlockType   = typeof BASIC_BLOCK_TYPES[number]
@@ -213,6 +221,61 @@ export interface BlockOverrides {
     // ── Expertise Tiles ───────────────────────────────────────────────────
     expertiseTiles?: Array<{ tileIconSrc?: string; tileLabel?: string; tileImage?: MediaRef | null }>
 
+    // ── Insights Advantages ───────────────────────────────────────────────────
+    advSectionBg?: 'yellow' | 'white' | 'dark'
+    advantageItems?: Array<{ advIcon?: MediaRef | null; advTitle?: string; advDesc?: string }>
+
+    // ── Insights Tech Guide ───────────────────────────────────────────────────
+    guideItems?: Array<{ guideIcon?: MediaRef | null; guideTitle?: string; guideDesc?: string; guideTags?: string; guideCtaLabel?: string; guideCtaUrl?: string }>
+
+    // ── Article Hero ──────────────────────────────────────────────────────────
+    heroBg?: 'white' | 'dark'
+
+    // ── Subscribe ─────────────────────────────────────────────────────────────
+    subBadgeLabel?:       string
+    subBadgeIcon?:        MediaRef | null
+    subHeading?:          string
+    subSubheading?:       string
+    subInputPlaceholder?: string
+    subButtonLabel?:      string
+    subNote?:             string
+    subSuccessMessage?:   string
+    subApiEndpoint?:      string
+
+    // ── Article Main Grid ─────────────────────────────────────────────────────
+    mainGridSectionLabel?:  string
+    mainGridContentSource?: 'collection' | 'manual'
+    mainGridLimit?:         number
+    mainGridPageSize?:      number
+    mainGridCategory?:      string
+    mainGridOrderBy?:       'publishedAt_desc' | 'publishedAt_asc'
+    mainGridItems?:         Array<{ mgImage?: MediaRef | null; mgCategory?: string; mgDate?: string; mgTitle?: string; mgExcerpt?: string; mgCtaLabel?: string; mgCtaUrl?: string }>
+    mainGridLoadMoreType?:  'pagination' | 'load-more' | 'link'
+    mainGridLoadMoreLabel?: string
+    mainGridLoadMoreUrl?:   string
+
+    // ── Community Hero ────────────────────────────────────────────────────────
+    communityHeroTitle?:     string
+    communityHeroDesc?:      string
+    communityHeroBackLabel?: string
+    communityHeroBackUrl?:   string
+
+    // ── Article Filter ────────────────────────────────────────────────────────
+    artFilterAllLabel?: string
+
+    // ── Article Feature ───────────────────────────────────────────────────────
+    artFeatSectionLabel?:  string
+    artFeatContentSource?: 'collection' | 'manual'
+    artFeatImage?:         MediaRef | null
+    artFeatCategory?:      string
+    artFeatDate?:          string
+    artFeatTitle?:         string
+    artFeatDesc?:          string
+    artFeatReadTime?:      string
+    artFeatViews?:         string
+    artFeatCtaLabel?:      string
+    artFeatCtaUrl?:        string
+
     // ── About Hero ────────────────────────────────────────────────────────
     aboutHeroHeading?: string
     aboutHeroSubheading?: string
@@ -265,8 +328,9 @@ export interface BlockOverrides {
     articleSubmitSuccessMessage?: string
 
     // ── Page Hero (portfolio, insight, article, faq, community) ───────────
-    pageHeroAlign?: 'left' | 'center'
-    pageHeroDark?:  boolean
+    pageHeroAlign?:    'left' | 'center'
+    pageHeroDark?:     boolean
+    pageHeroCtaStyle?: 'rounded' | 'square'
 
     // ── Project Grid ──────────────────────────────────────────────────────
     projectHeading?: string
@@ -300,16 +364,19 @@ export interface BlockOverrides {
     jobItems?: Array<{ jobTitle?: string; jobType?: string; jobDesc?: string; jobCta?: string; jobUrl?: string }>
 
     // ── Involved Hero ─────────────────────────────────────────────────────
-    ctaArrowSrc?: string
+    ctaArrowSrc?:       string
+    involvedHeroImage?: MediaRef | null
 
     // ── Culture Values ────────────────────────────────────────────────────
     cultureValues?: Array<{ valueTitle?: string; valueDesc?: string; valueIcon?: string }>
+    cultureImage?:  MediaRef | null
 
     // ── Community Channels ────────────────────────────────────────────────
     channelItems?: Array<{ channelIcon?: string; channelTitle?: string; channelDesc?: string; channelStats?: Array<{ statIcon?: string; statLabel?: string }>; channelCta?: string; channelUrl?: string }>
 
     // ── Community Ambassador ──────────────────────────────────────────────
     ambassadorBenefits?: Array<{ benefitIcon?: string; benefitTitle?: string; benefitDesc?: string }>
+    ambassadorImage?:    MediaRef | null
     ambassadorCta?: string
     ambassadorUrl?: string
 

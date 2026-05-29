@@ -43,6 +43,14 @@ import {
   ServeHeroSection,
   ServeValueSection,
   ServeModelSection,
+  InsightsAdvantagesSection,
+  InsightsTechGuideSection,
+  CommunityHeroSection,
+  ArticleFilterSection,
+  ArticleHeroSection,
+  ArticleFeatureSection,
+  ArticleMainGridSection,
+  SubscribeSection,
 } from '@/components/block'
 
 // ── CSS custom property injection ─────────────────────────────────────────────
@@ -198,6 +206,8 @@ export function resolvePreviewComponent(
       return withStyle(<QuoteFormSection data={data as any} />, blockStyle)
     case 'culture-values':
       return withStyle(<CultureValuesSection data={data as any} />, blockStyle)
+    case 'community-hero':
+      return withStyle(<CommunityHeroSection data={data as any} />, blockStyle)
     case 'community-channels':
       return withStyle(<CommunityChannelsSection data={data as any} />, blockStyle)
     case 'community-ambassador':
@@ -228,6 +238,20 @@ export function resolvePreviewComponent(
       return withStyle(<ServeValueSection data={data as any} />, blockStyle)
     case 'serve-model':
       return withStyle(<ServeModelSection data={data as any} />, blockStyle)
+    case 'insights-advantages':
+      return withStyle(<InsightsAdvantagesSection data={data as any} />, blockStyle)
+    case 'insights-tech-guide':
+      return withStyle(<InsightsTechGuideSection data={data as any} />, blockStyle)
+    case 'article-filter':
+      return withStyle(<ArticleFilterSection data={data as any} />, blockStyle)
+    case 'article-hero':
+      return withStyle(<ArticleHeroSection data={data as any} />, blockStyle)
+    case 'article-feature':
+      return withStyle(<ArticleFeatureSection data={data as any} />, blockStyle)
+    case 'article-main-grid':
+      return withStyle(<ArticleMainGridSection data={data as any} />, blockStyle)
+    case 'subscribe':
+      return withStyle(<SubscribeSection data={data as any} />, blockStyle)
 
     // ── Basic blocks — inline previews ────────────────────────────────────────
     case 'heading':

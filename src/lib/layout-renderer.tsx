@@ -60,6 +60,16 @@ import {
   ServeHeroSection,
   ServeValueSection,
   ServeModelSection,
+  InsightsAdvantagesSection,
+  InsightsTechGuideSection,
+  CommunityHeroSection,
+  ArticleFilterSection,
+  ArticleHeroSection,
+  ArticleFeatureSection,
+  ArticleFeatureClientSection,
+  ArticleMainGridSection,
+  ArticleMainGridServerSection,
+  SubscribeSection,
   DynamicFormSection,
   SurveySection,
 } from '@/components/block'
@@ -108,8 +118,8 @@ export function buildCSSVarsFromBlockStyle(style: Record<string, unknown>): Reac
   const vars: Record<string, string> = {}
   const str = (v: unknown) => String(v)
 
-  if (style.heroBgColor)   vars['--color-bg']       = str(style.heroBgColor)
-  if (style.sectionBg)     vars['--color-bg']       = str(style.sectionBg)
+  if (style.heroBgColor)   { vars['--color-bg'] = str(style.heroBgColor); vars['--section-bg'] = str(style.heroBgColor) }
+  if (style.sectionBg)     { vars['--color-bg'] = str(style.sectionBg);   vars['--section-bg'] = str(style.sectionBg) }
   if (style.gradientFrom)  vars['--gradient-from']  = str(style.gradientFrom)
   if (style.gradientTo)    vars['--gradient-to']    = str(style.gradientTo)
   if (style.heroBgImage || style.sectionBgImage)
@@ -229,8 +239,13 @@ export function LayoutBlockRenderer({
   const wrapStyle = { ...inlineStyle }
 
   // blockStyle → CSS custom properties (section-level theming vars)
-  const blockStyle   = (node.overrides?.blockStyle ?? {}) as Record<string, unknown>
-  const cssVars      = buildCSSVarsFromBlockStyle(blockStyle)
+  const blockStyle = (node.overrides?.blockStyle ?? {}) as Record<string, unknown>
+  const cssVars    = {
+    ...buildCSSVarsFromBlockStyle(blockStyle),
+    // Expose Style-tab backgroundColor as --section-bg so Advance block <section>s
+    // that use background: var(--section-bg, <default>) pick it up via CSS cascade.
+    ...(data.backgroundColor ? { '--section-bg': data.backgroundColor as string } : {}),
+  }
   const sectionStyle = { ...cssVars, ...inlineStyle } as React.CSSProperties
 
   const wrapAdvanced = (content: React.ReactNode): React.ReactNode => {
@@ -909,6 +924,8 @@ export function LayoutBlockRenderer({
       return wrapAdvanced(<QuoteFormSection data={data} />)
     case 'culture-values':
       return wrapAdvanced(<CultureValuesSection data={data} />)
+    case 'community-hero':
+      return wrapAdvanced(<CommunityHeroSection data={data as any} />)
     case 'community-channels':
       return wrapAdvanced(<CommunityChannelsSection data={data} />)
     case 'community-ambassador':
@@ -965,6 +982,28 @@ export function LayoutBlockRenderer({
       return wrapAdvanced(<ServeValueSection data={data} />)
     case 'serve-model':
       return wrapAdvanced(<ServeModelSection data={data} />)
+    case 'insights-advantages':
+      return wrapAdvanced(<InsightsAdvantagesSection data={data} />)
+    case 'insights-tech-guide':
+      return wrapAdvanced(<InsightsTechGuideSection data={data} />)
+    case 'article-filter':
+      return wrapAdvanced(<ArticleFilterSection data={data} />)
+    case 'article-hero':
+      return wrapAdvanced(<ArticleHeroSection data={data} />)
+    case 'article-feature':
+      return wrapAdvanced(
+        (data as any).artFeatContentSource === 'collection'
+          ? <ArticleFeatureClientSection data={data as any} />
+          : <ArticleFeatureSection data={data} />
+      )
+    case 'subscribe':
+      return wrapAdvanced(<SubscribeSection data={data} />)
+    case 'article-main-grid':
+      return wrapAdvanced(
+        (data as any).mainGridContentSource === 'collection'
+          ? <ArticleMainGridServerSection data={data as any} />
+          : <ArticleMainGridSection data={data as any} />
+      )
 
     case 'dynamic-form':
       return wrapAdvanced(<DynamicFormSection data={data} />)
