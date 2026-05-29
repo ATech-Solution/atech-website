@@ -1,5 +1,8 @@
 // ── Advance (generic, page-agnostic sections) ────────────────────────────────
 export {
+  CommunityHeroSection,
+  ArticleFilterSection,
+  ArticleFeatureClientSection,
   HeroSection,
   FeaturesSection,
   ServicesSection,
@@ -55,6 +58,13 @@ export {
   ServeHeroSection,
   ServeValueSection,
   ServeModelSection,
+  InsightsAdvantagesSection,
+  InsightsTechGuideSection,
+  ArticleHeroSection,
+  ArticleFeatureSection,
+  ArticleMainGridSection,
+  ArticleMainGridServerSection,
+  SubscribeSection,
   DynamicFormSection,
   SurveySection,
 } from './Advance'
