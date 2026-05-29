@@ -4,14 +4,17 @@
 import { ProjectGridFilter, type ProjectItem } from './ProjectGridFilter'
 
 export interface ProjectGridData {
-  projectHeading?: string
-  projectSubheading?: string
+  projectHeading?:       string
+  projectSubheading?:    string
   projectContentSource?: 'collection' | 'manual'
-  projectLimit?: number
-  projectCategory?: string
-  projectOrderBy?: 'publishedAt_desc' | 'publishedAt_asc'
-  projectItems?: ProjectItem[]
-  showCategoryFilter?: 'yes' | 'no'
+  projectLimit?:         number
+  projectCategory?:      string
+  projectOrderBy?:       'publishedAt_desc' | 'publishedAt_asc'
+  projectItems?:         ProjectItem[]
+  showCategoryFilter?:   'yes' | 'no'
+  projectLoadMoreType?:  'pagination' | 'load-more' | 'link'
+  projectLoadMoreLabel?: string
+  projectLoadMoreUrl?:   string
 }
 
 // ── Collection fetch ──────────────────────────────────────────────────────────
@@ -43,7 +46,7 @@ export async function fetchPortfolioItems(data: ProjectGridData): Promise<Projec
         projectTag:           cats[0] ?? '',
         projectType:          cats[1] ?? '',
         projectCta:           'View Case Study',
-        projectUrl:           `/portfolio/${item.slug}`,
+        projectUrl:           `/static/portfolio/${item.slug}`,
         projectImage:         item.featuredImage?.url
           ? { url: item.featuredImage.url, alt: item.featuredImage.alt ?? item.title ?? '' }
           : null,
@@ -76,6 +79,9 @@ export default function ProjectGridSection({ data }: { data: ProjectGridData }) 
       subheading={data.projectSubheading}
       items={normalizeManualItems(data.projectItems ?? [])}
       showCategoryFilter={(data.showCategoryFilter ?? 'no') !== 'no'}
+      loadMoreType={data.projectLoadMoreType ?? 'load-more'}
+      loadMoreLabel={data.projectLoadMoreLabel}
+      loadMoreUrl={data.projectLoadMoreUrl}
     />
   )
 }
@@ -95,6 +101,9 @@ export async function ProjectGridServerSection({ data }: { data: ProjectGridData
         subheading={data.projectSubheading}
         items={items}
         showCategoryFilter={(data.showCategoryFilter ?? 'yes') !== 'no'}
+        loadMoreType={data.projectLoadMoreType ?? 'load-more'}
+        loadMoreLabel={data.projectLoadMoreLabel}
+        loadMoreUrl={data.projectLoadMoreUrl}
       />
     )
   } catch {

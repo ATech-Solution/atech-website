@@ -1,9 +1,9 @@
-// Article Grid Section — heading + subheading + 3×N article cards
+// Article Grid Section — heading + subheading + 3×N article cards with Load More
 // Supports two content modes: 'collection' (auto-fetch Posts) and 'manual' (static items)
+// Interactive Load More handled by ArticleGridClient (client component).
 
 import Link from 'next/link'
-
-const ARROW_ICON = 'https://www.figma.com/api/mcp/asset/45a54d06-5558-4992-9e87-c9de50d83829'
+import { ArticleGridClient } from './ArticleGridClient'
 
 interface MediaRef { url: string; alt?: string }
 
@@ -26,6 +26,9 @@ export interface ArticleGridData {
   articlePostsCategory?:  string
   articlePostsOrderBy?:   'publishedAt_desc' | 'publishedAt_asc'
   articleItems?:          ArticleItem[]
+  articleLoadMoreType?:   'none' | 'link'
+  articleLoadMoreUrl?:    string
+  articleLoadMoreLabel?:  string
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -38,7 +41,7 @@ function formatDate(iso: string): string {
   }
 }
 
-export async function fetchCollectionPosts(data: ArticleGridData): Promise<ArticleItem[]> {
+async function fetchCollectionPosts(data: ArticleGridData): Promise<{ items: ArticleItem[]; totalDocs: number }> {
   try {
     const limit    = data.articlePostsLimit ?? 6
     const orderBy  = data.articlePostsOrderBy ?? 'publishedAt_desc'
@@ -57,7 +60,7 @@ export async function fetchCollectionPosts(data: ArticleGridData): Promise<Artic
     const res  = await fetch(url.toString(), { next: { revalidate: 60 } })
     const json = await res.json()
 
-    return (json.docs ?? []).map((post: any): ArticleItem => ({
+    const items: ArticleItem[] = (json.docs ?? []).map((post: any): ArticleItem => ({
       articleCategory: post.categories?.[0]?.name ?? '',
       articleDate:     post.publishedAt ? formatDate(post.publishedAt) : '',
       articleTitle:    post.title ?? '',
@@ -68,89 +71,58 @@ export async function fetchCollectionPosts(data: ArticleGridData): Promise<Artic
         ? { url: post.featuredImage.url, alt: post.featuredImage.alt ?? post.title ?? '' }
         : null,
     }))
+
+    return { items, totalDocs: json.totalDocs ?? items.length }
   } catch {
-    return []
+    return { items: [], totalDocs: 0 }
   }
 }
 
-// ── Article card ──────────────────────────────────────────────────────────────
+// ── Fallback shell — used only by previewResolver (admin preview, no Load More) ─
 
-function ArticleCard({ item }: { item: ArticleItem }) {
+function ArrowSmIcon() {
   return (
-    <div
-      className="flex flex-col overflow-hidden"
-      style={{ background: '#ffffff', border: '1px solid #e5e5e5' }}
-    >
-      {/* Cover image */}
-      <div className="relative w-full shrink-0" style={{ height: '192px', background: '#d4d4d4' }}>
-        {item.articleImage?.url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={item.articleImage.url}
-            alt={item.articleImage.alt ?? item.articleTitle ?? ''}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        ) : null}
-      </div>
+    <svg width="11" height="12" viewBox="0 0 11 12" fill="none" aria-hidden="true">
+      <path d="M1 6h9M5 1.5l4.5 4.5L5 10.5" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
 
-      {/* Content */}
+function PreviewCard({ item }: { item: ArticleItem }) {
+  return (
+    <div className="flex flex-col overflow-hidden" style={{ background: '#ffffff', border: '1px solid #e5e5e5' }}>
+      <div className="relative w-full shrink-0" style={{ height: '192px', background: '#d4d4d4' }}>
+        {item.articleImage?.url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={item.articleImage.url} alt={item.articleImage.alt ?? ''} className="absolute inset-0 w-full h-full object-cover" />
+        )}
+      </div>
       <div className="flex flex-col gap-3 p-6">
-        {/* Category + date */}
         <div className="flex items-center gap-2">
           {item.articleCategory && (
-            <span
-              className="px-3 py-1 text-xs"
-              style={{
-                background: '#f5f5f5',
-                border: '1px solid #e5e5e5',
-                color: '#171717',
-                fontFamily: 'var(--font-work-sans, sans-serif)',
-                borderRadius: 0,
-              }}
-            >
+            <span className="px-3 py-1 text-xs" style={{ background: '#f5f5f5', border: '1px solid #e5e5e5', color: '#171717', fontFamily: 'var(--font-work-sans, sans-serif)' }}>
               {item.articleCategory}
             </span>
           )}
           {item.articleDate && (
-            <span style={{ color: '#737373', fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '0.75rem' }}>
-              {item.articleDate}
-            </span>
+            <span style={{ color: '#737373', fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '0.75rem' }}>{item.articleDate}</span>
           )}
         </div>
-
-        {/* Title */}
         {item.articleTitle && (
-          <h3
-            className="pt-1"
-            style={{
-              fontFamily: 'var(--font-work-sans, sans-serif)',
-              fontSize: '1.25rem',
-              fontWeight: 400,
-              color: '#171717',
-              lineHeight: '1.4',
-            }}
-          >
+          <h3 style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.25rem', fontWeight: 400, color: '#171717', lineHeight: '1.4' }}>
             {item.articleTitle}
           </h3>
         )}
-
-        {/* Short description */}
         {item.articleDesc && (
           <p style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '0.875rem', color: '#525252', lineHeight: '1.625' }}>
             {item.articleDesc}
           </p>
         )}
-
-        {/* Read More link */}
         {item.articleCta && item.articleUrl && (
-          <Link
-            href={item.articleUrl}
-            className="inline-flex items-center gap-2 mt-1 transition-opacity duration-200 hover:opacity-70"
-            style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '0.875rem', color: '#171717' }}
-          >
+          <Link href={item.articleUrl} className="inline-flex items-center gap-2 mt-1 hover:opacity-70 transition-opacity"
+            style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '0.875rem', color: '#171717' }}>
             {item.articleCta}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={ARROW_ICON} alt="" style={{ width: '10.5px', height: '12px', objectFit: 'contain' }} />
+            <ArrowSmIcon />
           </Link>
         )}
       </div>
@@ -158,63 +130,63 @@ function ArticleCard({ item }: { item: ArticleItem }) {
   )
 }
 
-// ── Shared layout shell (sync — safe for both server and client contexts) ─────
-
 export function ArticleGridShell({ data, items }: { data: ArticleGridData; items: ArticleItem[] }) {
   const { heading, subheading, sectionLabel } = data
-
   return (
     <section id="articles" className="py-24 px-6 md:px-10" style={{ background: '#ffffff' }}>
       <div className="mx-auto" style={{ maxWidth: '1280px' }}>
-        {/* Section label */}
         {sectionLabel && (
           <div className="flex items-center gap-3 mb-8">
             <div style={{ width: '4px', height: '32px', background: '#171717' }} />
-            <span
-              className="text-xs tracking-[0.7px] uppercase"
-              style={{ color: '#171717', fontFamily: 'var(--font-work-sans, sans-serif)' }}
-            >
+            <span className="text-xs tracking-[0.7px] uppercase" style={{ color: '#171717', fontFamily: 'var(--font-work-sans, sans-serif)' }}>
               {sectionLabel}
             </span>
           </div>
         )}
-
-        {/* Heading block */}
         {(heading || subheading) && (
-          <div
-            className="flex flex-col items-center gap-4 text-center"
-            style={{ maxWidth: '768px', margin: '0 auto 4rem' }}
-          >
+          <div className="flex flex-col items-center gap-4 text-center" style={{ maxWidth: '768px', margin: '0 auto 4rem' }}>
             {heading && (
-              <h2
-                style={{
-                  fontFamily: 'var(--font-work-sans, sans-serif)',
-                  fontSize: 'clamp(2rem, 3vw, 3rem)',
-                  fontWeight: 400,
-                  color: '#171717',
-                  lineHeight: '1',
-                }}
-              >
+              <h2 style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: 'clamp(2rem, 3vw, 3rem)', fontWeight: 400, color: '#171717', lineHeight: '1' }}>
                 {heading}
               </h2>
             )}
             {subheading && (
-              <p
-                className="max-w-2xl"
-                style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.125rem', color: '#525252', lineHeight: '1.556' }}
-              >
+              <p className="max-w-2xl" style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.125rem', color: '#525252', lineHeight: '1.556' }}>
                 {subheading}
               </p>
             )}
           </div>
         )}
-
-        {/* Grid */}
         {items.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
-            {items.map((item, i) => (
-              <ArticleCard key={i} item={item} />
-            ))}
+            {items.map((item, i) => <PreviewCard key={i} item={item} />)}
+          </div>
+        )}
+
+        {data.articleLoadMoreType === 'link' && data.articleLoadMoreUrl && (
+          <div className="flex justify-center mt-12">
+            <Link
+              href={data.articleLoadMoreUrl}
+              style={{
+                display:    'inline-flex',
+                alignItems: 'center',
+                gap:        '8px',
+                padding:    '18px 34px',
+                background: '#ffffff',
+                border:     '2px solid #171717',
+                color:      '#171717',
+                fontFamily: 'var(--font-work-sans, sans-serif)',
+                fontSize:   '16px',
+                fontWeight: 400,
+                lineHeight: '24px',
+                textDecoration: 'none',
+              }}
+            >
+              {data.articleLoadMoreLabel || 'Load More Articles'}
+              <svg width="12" height="16" viewBox="0 0 12 16" fill="none" aria-hidden="true">
+                <path d="M1 8h10M6 2l5 6-5 6" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
           </div>
         )}
       </div>
@@ -222,22 +194,24 @@ export function ArticleGridShell({ data, items }: { data: ArticleGridData; items
   )
 }
 
-// ── Default export: sync component for preview (manual mode only) ─────────────
+// ── Default export: sync for preview / manual mode ────────────────────────────
 
 export default function ArticleGridSection({ data }: { data: ArticleGridData }) {
-  return <ArticleGridShell data={data} items={data.articleItems ?? []} />
+  const items = data.articleItems ?? []
+  // Manual mode: no Load More (all items are already configured)
+  return <ArticleGridShell data={data} items={items} />
 }
 
-// ── Async server component for layout-renderer (supports collection mode) ─────
+// ── Async server component — collection mode with Load More ───────────────────
 
 export async function ArticleGridServerSection({ data }: { data: ArticleGridData }) {
   try {
-    const items =
-      (data.articleContentSource ?? 'manual') === 'collection'
-        ? await fetchCollectionPosts(data)
-        : (data.articleItems ?? [])
-
-    return <ArticleGridShell data={data} items={items} />
+    if ((data.articleContentSource ?? 'manual') === 'collection') {
+      const { items, totalDocs } = await fetchCollectionPosts(data)
+      return <ArticleGridClient data={data} initialItems={items} totalDocs={totalDocs} />
+    }
+    // Manual mode: use simple shell (no load more)
+    return <ArticleGridShell data={data} items={data.articleItems ?? []} />
   } catch {
     return <ArticleGridShell data={data} items={[]} />
   }

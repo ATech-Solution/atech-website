@@ -660,31 +660,59 @@ export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark'
             onMouseLeave={() => item.megaMenu && closeMenu()}
           >
             {item.megaMenu ? (
-              <button
-                onClick={() => {
-                  if (!item.url) return
-                  if (item.openInNewTab) {
-                    window.open(item.url, '_blank', 'noopener,noreferrer')
-                  } else {
-                    window.location.href = item.url
-                  }
-                }}
-                onFocus={() => openMenu(item.label)}
-                aria-expanded={activeMenu === item.label}
-                aria-haspopup="true"
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '8px 12px', borderRadius: 8,
-                  fontSize: 14, fontWeight: 400,
-                  fontFamily: fontWorkSans,
-                  color: activeMenu === item.label ? navHoverColor : navTextColor,
-                  background: 'transparent', border: 'none', cursor: 'pointer',
-                  transition: 'color 0.15s',
-                }}
-              >
-                {item.label}
-                <ChevronDown rotated={activeMenu === item.label} color={chevronColor} />
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                {/* Label — navigates to URL on click/Enter */}
+                {item.url ? (
+                  <Link
+                    href={item.url}
+                    target={item.openInNewTab ? '_blank' : undefined}
+                    rel={item.openInNewTab ? 'noopener noreferrer' : undefined}
+                    onFocus={() => openMenu(item.label)}
+                    style={{
+                      display: 'flex', alignItems: 'center',
+                      padding: '8px 4px 8px 12px', borderRadius: '8px 0 0 8px',
+                      fontSize: 14, fontWeight: 400,
+                      fontFamily: fontWorkSans,
+                      color: activeMenu === item.label ? navHoverColor : navTextColor,
+                      textDecoration: 'none',
+                      transition: 'color 0.15s',
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = navHoverColor }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = activeMenu === item.label ? navHoverColor : navTextColor }}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <span
+                    style={{
+                      display: 'flex', alignItems: 'center',
+                      padding: '8px 4px 8px 12px',
+                      fontSize: 14, fontWeight: 400,
+                      fontFamily: fontWorkSans,
+                      color: activeMenu === item.label ? navHoverColor : navTextColor,
+                    }}
+                  >
+                    {item.label}
+                  </span>
+                )}
+                {/* Chevron — toggles submenu only, no navigation */}
+                <button
+                  onClick={() => setActiveMenu(activeMenu === item.label ? null : item.label)}
+                  onFocus={() => openMenu(item.label)}
+                  aria-expanded={activeMenu === item.label}
+                  aria-haspopup="true"
+                  aria-label={`${activeMenu === item.label ? 'Close' : 'Open'} ${item.label} submenu`}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    padding: '8px 10px 8px 2px', borderRadius: '0 8px 8px 0',
+                    background: 'transparent', border: 'none', cursor: 'pointer',
+                    color: activeMenu === item.label ? navHoverColor : navTextColor,
+                    transition: 'color 0.15s',
+                  }}
+                >
+                  <ChevronDown rotated={activeMenu === item.label} color={chevronColor} />
+                </button>
+              </div>
             ) : (
               <Link
                 href={item.url ?? '#'}

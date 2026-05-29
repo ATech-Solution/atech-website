@@ -41,12 +41,17 @@ export default function PortfolioDetailOverviewSection({ data, portfolioItem }: 
     : (data.pdContent ?? '').split(/\n\n+/).map((p: string) => p.trim()).filter(Boolean)
 
   // Metrics: from portfolio keyMetrics, or block CMS pdMetrics array
-  const metrics: MetricItem[] = portfolioItem?.keyMetrics?.length
-    ? portfolioItem.keyMetrics.map((m: any) => ({
-        pdMetricValue: m.metricValue ?? '',
-        pdMetricLabel: m.metricLabel ?? '',
-      }))
-    : (data.pdMetrics ?? [])
+  // Only include items that have at least a value or a label
+  const metrics: MetricItem[] = (
+    portfolioItem?.keyMetrics?.length
+      ? portfolioItem.keyMetrics.map((m: any) => ({
+          pdMetricValue: m.metricValue ?? '',
+          pdMetricLabel: m.metricLabel ?? '',
+        }))
+      : (data.pdMetrics ?? [])
+  ).filter((m: MetricItem) => m.pdMetricValue || m.pdMetricLabel)
+
+  const hasMetrics = metrics.length > 0
 
   return (
     <div
@@ -61,12 +66,12 @@ export default function PortfolioDetailOverviewSection({ data, portfolioItem }: 
       <div
         style={{
           display:             'grid',
-          gridTemplateColumns: 'repeat(12, minmax(0, 1fr))',
+          gridTemplateColumns: hasMetrics ? 'repeat(12, minmax(0, 1fr))' : '1fr',
           gap:                 '48px',
         }}
       >
-        {/* Left — 8/12 */}
-        <div style={{ gridColumn: '1 / span 8', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        {/* Left — 8/12 when metrics present, full-width otherwise */}
+        <div style={{ gridColumn: hasMetrics ? '1 / span 8' : '1 / -1', display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <h2
             style={{
               fontFamily: 'var(--font-work-sans, sans-serif)',
@@ -99,74 +104,76 @@ export default function PortfolioDetailOverviewSection({ data, portfolioItem }: 
           </div>
         </div>
 
-        {/* Right — 4/12 Key Metrics */}
-        <div
-          style={{
-            gridColumn:    '9 / span 4',
-            background:    '#fafafa',
-            border:        '1px solid #e5e5e5',
-            padding:       '33px',
-            display:       'flex',
-            flexDirection: 'column',
-            gap:           '24px',
-            alignSelf:     'start',
-          }}
-        >
-          <h3
+        {/* Right — 4/12 Key Metrics (hidden when no metrics) */}
+        {hasMetrics && (
+          <div
             style={{
-              fontFamily: 'var(--font-work-sans, sans-serif)',
-              fontSize:   '20px',
-              fontWeight: 400,
-              color:      '#171717',
-              lineHeight: '28px',
-              margin:     0,
+              gridColumn:    '9 / span 4',
+              background:    '#fafafa',
+              border:        '1px solid #e5e5e5',
+              padding:       '33px',
+              display:       'flex',
+              flexDirection: 'column',
+              gap:           '24px',
+              alignSelf:     'start',
             }}
           >
-            {metricsTitle}
-          </h3>
+            <h3
+              style={{
+                fontFamily: 'var(--font-work-sans, sans-serif)',
+                fontSize:   '20px',
+                fontWeight: 400,
+                color:      '#171717',
+                lineHeight: '28px',
+                margin:     0,
+              }}
+            >
+              {metricsTitle}
+            </h3>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            {metrics.map((m, i) => (
-              <div
-                key={i}
-                style={{
-                  borderTop:     i === 0 ? 'none' : '1px solid #e5e5e5',
-                  paddingTop:    i === 0 ? '0' : '25px',
-                  display:       'flex',
-                  flexDirection: 'column',
-                  gap:           '4px',
-                }}
-              >
-                {m.pdMetricValue && (
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-work-sans, sans-serif)',
-                      fontSize:   '30px',
-                      fontWeight: 400,
-                      color:      '#171717',
-                      lineHeight: '36px',
-                    }}
-                  >
-                    {m.pdMetricValue}
-                  </span>
-                )}
-                {m.pdMetricLabel && (
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-work-sans, sans-serif)',
-                      fontSize:   '14px',
-                      fontWeight: 400,
-                      color:      '#525252',
-                      lineHeight: '20px',
-                    }}
-                  >
-                    {m.pdMetricLabel}
-                  </span>
-                )}
-              </div>
-            ))}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              {metrics.map((m, i) => (
+                <div
+                  key={i}
+                  style={{
+                    borderTop:     i === 0 ? 'none' : '1px solid #e5e5e5',
+                    paddingTop:    i === 0 ? '0' : '25px',
+                    display:       'flex',
+                    flexDirection: 'column',
+                    gap:           '4px',
+                  }}
+                >
+                  {m.pdMetricValue && (
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-work-sans, sans-serif)',
+                        fontSize:   '30px',
+                        fontWeight: 400,
+                        color:      '#171717',
+                        lineHeight: '36px',
+                      }}
+                    >
+                      {m.pdMetricValue}
+                    </span>
+                  )}
+                  {m.pdMetricLabel && (
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-work-sans, sans-serif)',
+                        fontSize:   '14px',
+                        fontWeight: 400,
+                        color:      '#525252',
+                        lineHeight: '20px',
+                      }}
+                    >
+                      {m.pdMetricLabel}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

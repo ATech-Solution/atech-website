@@ -36,7 +36,7 @@ export default function FeaturedCaseStudySection({ data }: { data: FeaturedCaseS
     ctaPrimaryLabel   = '',
     ctaPrimaryUrl     = '#',
     imagePosition     = 'right',
-    sectionBg         = '#ffffff',
+    sectionBg,
   } = data
 
   const features = caseFeatures
@@ -215,8 +215,8 @@ export default function FeaturedCaseStudySection({ data }: { data: FeaturedCaseS
         <div
           className="absolute flex items-center"
           style={isImageLeft
-            ? { right: '24px', top: '-24px', background: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', gap: '16px', width: '260px', boxShadow: '0px 1px 2px 0px rgba(0,0,0,0.05)' }
-            : { left: '24px', bottom: '-20px', background: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', gap: '16px', width: '279px', boxShadow: '0px 10px 15px -3px rgba(0,0,0,0.1), 0px 4px 6px -4px rgba(0,0,0,0.1)' }
+            ? { right: '24px', top: '-24px', background: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', gap: '16px', width: 'auto', boxShadow: '0px 1px 2px 0px rgba(0,0,0,0.05)' }
+            : { left: '24px', bottom: '-20px', background: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', gap: '16px', width: 'auto', boxShadow: '0px 10px 15px -3px rgba(0,0,0,0.1), 0px 4px 6px -4px rgba(0,0,0,0.1)' }
           }
         >
           {/* Icon circle */}
@@ -274,7 +274,7 @@ export default function FeaturedCaseStudySection({ data }: { data: FeaturedCaseS
   )
 
   return (
-    <section className="py-[100px] px-6 md:px-10" style={{ background: sectionBg || '#ffffff' }}>
+    <section className="py-[100px] px-6 md:px-10" style={{ background: sectionBg || '#ffffff' /* '' → white default */ }}>
       <div
         className="mx-auto flex flex-col lg:flex-row items-center"
         style={{ maxWidth: '1200px', gap: '80px' }}

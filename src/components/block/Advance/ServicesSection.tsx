@@ -18,6 +18,8 @@ interface ServiceItem {
 }
 
 interface ServicesSectionData {
+  serviceBadgeText?:         string
+  serviceBadgeIcon?:         { url: string; alt?: string } | null
   heading?:                  string
   subheading?:               string
   serviceItems?:             ServiceItem[]
@@ -147,8 +149,45 @@ export default function ServicesSection({ data }: { data: ServicesSectionData })
       }}
     >
       <div className="mx-auto px-6 md:px-10" style={{ maxWidth: 'var(--content-max-width, 1280px)' }}>
-        {(data.heading || data.subheading) && (
+        {(data.serviceBadgeText || data.heading || data.subheading) && (
           <div className="flex flex-col gap-6 items-center w-full mb-16">
+            {/* Badge — Figma node 291:9666 */}
+            {data.serviceBadgeText && (
+              <div
+                style={{
+                  display:      'inline-flex',
+                  alignItems:   'center',
+                  gap:          '8px',
+                  background:   '#f5f5f5',
+                  border:       '1px solid #e5e5e5',
+                  borderRadius: '9999px',
+                  padding:      '8px 16px',
+                }}
+              >
+                {data.serviceBadgeIcon?.url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={data.serviceBadgeIcon.url}
+                    alt={data.serviceBadgeIcon.alt ?? ''}
+                    style={{ width: '18px', height: '16px', objectFit: 'contain', flexShrink: 0 }}
+                  />
+                )}
+                <span
+                  style={{
+                    fontFamily:    'var(--font-work-sans, sans-serif)',
+                    fontSize:      '12px',
+                    fontWeight:    600,
+                    color:         '#171717',
+                    letterSpacing: '0.6px',
+                    textTransform: 'uppercase',
+                    lineHeight:    '16px',
+                  }}
+                >
+                  {data.serviceBadgeText}
+                </span>
+              </div>
+            )}
+
             {data.heading && (
               <h2
                 className="text-center w-full"
@@ -159,9 +198,8 @@ export default function ServicesSection({ data }: { data: ServicesSectionData })
                   color: 'var(--color-accent, #ffd369)',
                   lineHeight: '40px',
                 }}
-              >
-                {data.heading}
-              </h2>
+                dangerouslySetInnerHTML={{ __html: data.heading }}
+              />
             )}
             {data.subheading && (
               <p
