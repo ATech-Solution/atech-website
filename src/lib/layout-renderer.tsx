@@ -74,6 +74,7 @@ import {
   SurveySection,
 } from '@/components/block'
 import { JobsListServerSection } from '@/components/block/Advance/JobsListServerSection'
+import { SuspenseSection } from '@/plugins/performance/components'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -859,7 +860,7 @@ export function LayoutBlockRenderer({
     case 'testimonials':
       return wrapAdvanced(
         (data as any).testimonialsContentSource === 'collection'
-          ? <TestimonialsSectionServerSection data={data} />
+          ? <SuspenseSection><TestimonialsSectionServerSection data={data} /></SuspenseSection>
           : <TestimonialsSection data={data} />
       )
     case 'contact':
@@ -885,37 +886,37 @@ export function LayoutBlockRenderer({
     case 'faq-section':
       return wrapAdvanced(
         (data as any).faqContentSource === 'collection'
-          ? <FAQSectionServerSection data={data} />
+          ? <SuspenseSection><FAQSectionServerSection data={data} /></SuspenseSection>
           : <FAQSection data={data} />
       )
     case 'faq-main':
-      return wrapAdvanced(<FAQMainServerSection data={data} />)
+      return wrapAdvanced(<SuspenseSection><FAQMainServerSection data={data} /></SuspenseSection>)
     case 'faq-about':
       return wrapAdvanced(
         (data as any).faqContentSource === 'collection'
-          ? <FAQAboutServerSection data={data as any} />
+          ? <SuspenseSection><FAQAboutServerSection data={data as any} /></SuspenseSection>
           : <FAQAboutSection data={data as any} />
       )
 
     case 'home-testimonials':
       return wrapAdvanced(
         (data as any).testimonialsContentSource === 'collection'
-          ? <TestimonialsSectionServerSection data={data} />
+          ? <SuspenseSection><TestimonialsSectionServerSection data={data} /></SuspenseSection>
           : <TestimonialsSection data={data} />
       )
 
     case 'page-hero':
       return wrapAdvanced(<PageHeroSection data={data} />)
     case 'project-grid':
-      return wrapAdvanced(<ProjectGridServerSection data={data} />)
+      return wrapAdvanced(<SuspenseSection><ProjectGridServerSection data={data} /></SuspenseSection>)
     case 'article-grid':
-      return wrapAdvanced(<ArticleGridServerSection data={data} />)
+      return wrapAdvanced(<SuspenseSection><ArticleGridServerSection data={data} /></SuspenseSection>)
     case 'article-featured':
-      return wrapAdvanced(<ArticleFeaturedServerSection data={data} />)
+      return wrapAdvanced(<SuspenseSection><ArticleFeaturedServerSection data={data} /></SuspenseSection>)
     case 'jobs-list':
       return wrapAdvanced(
         (data as any).jobSource === 'collection'
-          ? <JobsListServerSection data={data} />
+          ? <SuspenseSection><JobsListServerSection data={data} /></SuspenseSection>
           : <JobsListSection data={data} />
       )
     case 'involved-hero':
@@ -949,7 +950,7 @@ export function LayoutBlockRenderer({
     case 'portfolio-statistics':
       return wrapAdvanced(<PortfolioStatisticsSection data={data} />)
     case 'portfolio-main':
-      return wrapAdvanced(<PortfolioMainServerSection data={data} />)
+      return wrapAdvanced(<SuspenseSection><PortfolioMainServerSection data={data} /></SuspenseSection>)
 
     // ── Portfolio Detail Sections ────────────────────────────────────────────
     case 'portfolio-detail-top':
@@ -1001,7 +1002,7 @@ export function LayoutBlockRenderer({
     case 'article-main-grid':
       return wrapAdvanced(
         (data as any).mainGridContentSource === 'collection'
-          ? <ArticleMainGridServerSection data={data as any} />
+          ? <SuspenseSection><ArticleMainGridServerSection data={data as any} /></SuspenseSection>
           : <ArticleMainGridSection data={data as any} />
       )
 
