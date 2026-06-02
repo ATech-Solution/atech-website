@@ -73,6 +73,11 @@ export const PerformanceSettingsGlobal: GlobalConfig = {
           type: 'text',
           label: 'Device Sizes (px, comma-separated)',
           defaultValue: '360,640,750,828,1080,1200,1920',
+          validate: (value: string | null | undefined) => {
+            if (!value) return true
+            const valid = /^\d+(,\s*\d+)*$/.test(value.trim())
+            return valid || 'Must be comma-separated integers, e.g. 360,640,1200'
+          },
           admin: {
             condition: (data) => !!data.imageOptimizationEnabled,
             description: 'Breakpoints used when generating responsive image srcsets.',
@@ -104,6 +109,7 @@ export const PerformanceSettingsGlobal: GlobalConfig = {
           type: 'number',
           label: 'HTML Cache TTL (seconds)',
           defaultValue: 60,
+          min: 1,
           admin: {
             condition: (data) => !!data.cacheHeadersEnabled,
             description: 's-maxage value. nginx/CDN serves cached HTML for this many seconds before revalidating.',
@@ -114,6 +120,7 @@ export const PerformanceSettingsGlobal: GlobalConfig = {
           type: 'number',
           label: 'Stale-While-Revalidate (seconds)',
           defaultValue: 600,
+          min: 1,
           admin: {
             condition: (data) => !!data.cacheHeadersEnabled,
             description: 'How long the proxy serves stale content while fetching fresh in the background.',
@@ -145,6 +152,7 @@ export const PerformanceSettingsGlobal: GlobalConfig = {
           type: 'number',
           label: 'Skeleton Rows',
           defaultValue: 3,
+          min: 1,
           admin: {
             condition: (data) => !!data.streamingEnabled,
             description: 'Number of animated grey bars shown while a streamed block loads.',
@@ -176,6 +184,7 @@ export const PerformanceSettingsGlobal: GlobalConfig = {
           type: 'number',
           label: 'Query Cache TTL (seconds)',
           defaultValue: 60,
+          min: 1,
           admin: {
             condition: (data) => !!data.queryCacheEnabled,
             description: 'How long page queries are cached before Payload is re-queried.',
