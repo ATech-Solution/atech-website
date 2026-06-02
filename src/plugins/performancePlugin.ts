@@ -1,5 +1,5 @@
 // src/plugins/performancePlugin.ts
-import type { Config, Plugin } from 'payload'
+import type { Config, Plugin, Field } from 'payload'
 import { PerformanceSettingsGlobal } from './performance/PerformanceSettingsGlobal'
 
 export { withPerformance } from './performance/withPerformance'
@@ -10,10 +10,10 @@ export {
   SectionSkeleton,
 } from './performance/components'
 
-const PLUGIN_NAME        = 'Performance Plugin'
-const PLUGIN_SLUG        = 'performance'
-const PLUGIN_VERSION     = '1.0.0'
-const PLUGIN_AUTHOR      = 'ATech'
+const PLUGIN_NAME = 'Performance Plugin'
+const PLUGIN_SLUG = 'performance'
+const PLUGIN_VERSION = '1.0.0'
+const PLUGIN_AUTHOR = 'ATech'
 const PLUGIN_DESCRIPTION =
   'Full-stack performance bundle: SQLite auto-indexing, dual-layer query caching, ' +
   'smart HTML cache headers, Next.js image optimization, and streaming SSR via SuspenseSection.'
@@ -23,7 +23,36 @@ export interface PerformancePluginOptions {
   indexedCollections?: string[]
 }
 
-const INDEX_FIELDS = new Set(['slug', 'updatedAt', 'locale', '_status'])
+// Only 'slug' is a user-defined field that benefits from explicit indexing.
+// updatedAt / locale / _status are adapter-managed — not present in col.fields.
+const INDEX_FIELDS = new Set(['slug'])
+
+function injectIndexesRecursive(fields: Field[]): Field[] {
+  return fields.map((field): Field => {
+    if (field.type === 'tabs') {
+      return {
+        ...field,
+        tabs: field.tabs.map((tab) => ({
+          ...tab,
+          fields: injectIndexesRecursive((tab.fields ?? []) as Field[]),
+        })),
+      } as Field
+    }
+    if (
+      (field.type === 'group' || field.type === 'collapsible' || field.type === 'array') &&
+      Array.isArray((field as any).fields)
+    ) {
+      return { ...field, fields: injectIndexesRecursive((field as any).fields as Field[]) } as Field
+    }
+    if (field.type === 'row' && Array.isArray((field as any).fields)) {
+      return { ...field, fields: injectIndexesRecursive((field as any).fields as Field[]) } as Field
+    }
+    if ('name' in field && INDEX_FIELDS.has((field as any).name) && !(field as any).index) {
+      return { ...field, index: true } as Field
+    }
+    return field
+  })
+}
 
 export const performancePlugin =
   (options: PerformancePluginOptions = {}): Plugin =>
@@ -32,18 +61,18 @@ export const performancePlugin =
       indexedCollections = ['pages', 'posts', 'portfolio', 'media', 'categories'],
     } = options
 
+    // NOTE: The PerformanceSettingsGlobal's sqliteIndexesEnabled and indexedCollections
+    // fields are informational — they show the active index config in the admin UI.
+    // Actual indexing is driven by the plugin's code-level options (resolved at server start)
+    // because Payload reads the full config before the DB is available.
+
     // ── Build-time: inject SQLite indexes ──────────────────────────────────────
     // Runs at config-construction time — no runtime overhead.
     const collections = (incomingConfig.collections ?? []).map((col) => {
       if (!indexedCollections.includes(col.slug)) return col
       return {
         ...col,
-        fields: col.fields.map((field: any) => {
-          if ('name' in field && INDEX_FIELDS.has(field.name) && !field.index) {
-            return { ...field, index: true }
-          }
-          return field
-        }),
+        fields: injectIndexesRecursive(col.fields as Field[]),
       }
     })
 
