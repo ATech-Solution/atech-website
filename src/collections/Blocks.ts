@@ -140,6 +140,19 @@ export const Blocks: CollectionConfig = {
     update: ({ req }) => req.user?.role === 'admin' || req.user?.role === 'editor',
     delete: ({ req }) => req.user?.role === 'admin',
   },
+  hooks: {
+    afterChange: [
+      async () => {
+        try {
+          const { revalidateTag } = await import('next/cache')
+          revalidateTag('perf:block-templates')
+          revalidateTag('perf:pages')
+        } catch {
+          // Ignore in non-Next.js contexts
+        }
+      },
+    ],
+  },
   fields: [
     // ── Identity ───────────────────────────────────────────────────────────
     {

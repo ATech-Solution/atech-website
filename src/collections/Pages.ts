@@ -461,5 +461,15 @@ export const Pages: CollectionConfig = {
         return data
       },
     ],
+    afterChange: [
+      async () => {
+        try {
+          const { revalidateTag } = await import('next/cache')
+          revalidateTag('perf:pages')
+        } catch {
+          // Ignore in non-Next.js contexts
+        }
+      },
+    ],
   },
 }

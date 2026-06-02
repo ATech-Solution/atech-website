@@ -12,6 +12,18 @@ export const Navigation: GlobalConfig = {
     drafts: true,
     max: 3,
   },
+  hooks: {
+    afterChange: [
+      async () => {
+        try {
+          const { revalidateTag } = await import('next/cache')
+          revalidateTag('perf:navigation')
+        } catch {
+          // Ignore in non-Next.js contexts
+        }
+      },
+    ],
+  },
   fields: [
     // ── Main Menu Items ──────────────────────────────────────────────────────
     {

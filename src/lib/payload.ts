@@ -270,14 +270,15 @@ export async function getFaviconUrl(): Promise<string> {
 /** Fetch block templates by IDs (cached; bust with revalidateTag('perf:block-templates')) */
 export const getBlockTemplates = withPerfCache(
   async (ids: string[], locale: string = 'en'): Promise<Record<string, any>> => {
-    if (!ids.length) return {}
+    const sortedIds = [...ids].sort()
+    if (!sortedIds.length) return {}
     try {
       const payload = await getPayloadClient()
       const result = await payload.find({
         collection: 'blocks',
-        where: { id: { in: ids } },
+        where: { id: { in: sortedIds } },
         locale: locale as any,
-        limit: ids.length,
+        limit: sortedIds.length,
       })
       return Object.fromEntries(result.docs.map((doc) => [String(doc.id), doc]))
     } catch {
