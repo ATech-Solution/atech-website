@@ -21,11 +21,11 @@ export async function SuspenseSection({
 }: SuspenseSectionProps) {
   const settings = await getPerformanceSettings()
   const enabled =
-    settings?.pluginEnabled !== false && (settings as any)?.streamingEnabled !== false
+    settings?.pluginEnabled !== false && settings?.streamingEnabled !== false
 
   if (!enabled) return <>{children}</>
 
-  const skeletonRows = (settings as any)?.skeletonRows ?? 3
+  const skeletonRows = settings?.skeletonRows ?? 3
 
   return (
     <div className={className}>
