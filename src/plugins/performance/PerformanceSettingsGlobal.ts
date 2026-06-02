@@ -65,7 +65,7 @@ export const PerformanceSettingsGlobal: GlobalConfig = {
           ],
           admin: {
             condition: (data) => !!data.imageOptimizationEnabled,
-            description: 'Formats Next.js will generate. AVIF gives better compression but slower encoding.',
+            description: 'Formats Next.js will generate. AVIF gives better compression but slower encoding. Changes take effect only after a server restart.',
           },
         },
         {
@@ -80,7 +80,7 @@ export const PerformanceSettingsGlobal: GlobalConfig = {
           },
           admin: {
             condition: (data) => !!data.imageOptimizationEnabled,
-            description: 'Breakpoints used when generating responsive image srcsets.',
+            description: 'Breakpoints used when generating responsive image srcsets. Changes take effect only after a server restart.',
           },
         },
       ],
@@ -101,7 +101,7 @@ export const PerformanceSettingsGlobal: GlobalConfig = {
           label: 'Enable Smart Cache Headers',
           defaultValue: true,
           admin: {
-            description: 'Replaces no-store with no-cache + s-maxage for proxy caching. Apply via withPerformance.',
+            description: 'Replaces no-store with no-cache + s-maxage for proxy caching. Applied via withPerformance at server start — changes take effect after restart.',
           },
         },
         {
@@ -112,7 +112,7 @@ export const PerformanceSettingsGlobal: GlobalConfig = {
           min: 1,
           admin: {
             condition: (data) => !!data.cacheHeadersEnabled,
-            description: 's-maxage value. nginx/CDN serves cached HTML for this many seconds before revalidating.',
+            description: 's-maxage value. nginx/CDN serves cached HTML for this many seconds. Changes take effect after server restart.',
           },
         },
         {
@@ -123,7 +123,7 @@ export const PerformanceSettingsGlobal: GlobalConfig = {
           min: 1,
           admin: {
             condition: (data) => !!data.cacheHeadersEnabled,
-            description: 'How long the proxy serves stale content while fetching fresh in the background.',
+            description: 'How long the proxy serves stale content while fetching fresh. Changes take effect after server restart.',
           },
         },
       ],
@@ -176,7 +176,7 @@ export const PerformanceSettingsGlobal: GlobalConfig = {
           label: 'Enable Query Caching',
           defaultValue: true,
           admin: {
-            description: 'Caches page/navigation Payload queries across requests using unstable_cache.',
+            description: 'Caches page/navigation Payload queries across requests using unstable_cache. Changes take effect after server restart.',
           },
         },
         {
@@ -187,7 +187,7 @@ export const PerformanceSettingsGlobal: GlobalConfig = {
           min: 1,
           admin: {
             condition: (data) => !!data.queryCacheEnabled,
-            description: 'How long page queries are cached before Payload is re-queried.',
+            description: 'How long page queries are cached before Payload is re-queried. Changes take effect after server restart.',
           },
         },
         {
@@ -218,7 +218,7 @@ export const PerformanceSettingsGlobal: GlobalConfig = {
           label: 'Enable SQLite Auto-Indexing',
           defaultValue: true,
           admin: {
-            description: 'Adds index: true to slug/updatedAt/locale/_status fields at config-build time. Requires restart.',
+            description: 'Adds index: true to slug fields of configured collections. Requires server restart and schema sync to take effect.',
           },
         },
         {

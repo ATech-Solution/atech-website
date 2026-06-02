@@ -69,9 +69,10 @@ const nextConfig: NextConfig = {
   },
 
   // ── Cache headers ────────────────────────────────────────────────────────────
-  // HTML pages: never cache — ensures the browser always fetches fresh HTML with
-  // current chunk hashes, preventing ChunkLoadError after a new deployment.
-  // _next/static chunks: cache forever — safe because filenames are content-hashed.
+  // withPerformance (below) overrides the HTML cache rule with:
+  //   no-cache + s-maxage=60 (proxy cache 60s, browser always revalidates)
+  // _next/static chunks remain immutable — safe because filenames are content-hashed.
+  // API routes keep no-store via the exclusion in withPerformance's regex.
   async headers() {
     return [
       // Security headers on all routes

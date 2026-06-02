@@ -106,17 +106,17 @@ export const getLanguageSettings = unstable_cache(
 )
 
 /** Fetch performance plugin settings (cached; bust with revalidateTag('perf-settings')) */
-export const getPerformanceSettings = unstable_cache(
+export const getPerformanceSettings = withPerfCache(
   async () => {
     try {
       const payload = await getPayloadClient()
-      return payload.findGlobal({ slug: 'performance-settings' as any }).catch(() => null)
+      return payload.findGlobal({ slug: 'performance-settings' }).catch(() => null)
     } catch {
       return null
     }
   },
   ['perf-settings'],
-  { tags: ['perf-settings'], revalidate: 60 },
+  { revalidate: 60, tags: ['perf-settings'] },
 )
 
 /** Fetch a single portfolio item by slug, with categories and featuredImage populated */
