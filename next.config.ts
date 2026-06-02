@@ -1,6 +1,7 @@
 import { withPayload } from '@payloadcms/next/withPayload'
 import type { NextConfig } from 'next'
 import { defaultSecurityHeaders } from './src/plugins/security/headers'
+import { withPerformance } from './src/plugins/performance/withPerformance'
 
 // ── Resolve server URL based on NODE_ENV (mirrors payload.config.ts) ────────
 const serverURL =
@@ -139,4 +140,12 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withPayload(nextConfig)
+export default withPayload(
+  withPerformance(nextConfig, {
+    enabled: process.env.PERFORMANCE_PLUGIN !== 'false',
+    imageOptimization: true,
+    fixCacheHeaders: true,
+    htmlCacheTtl: 60,
+    staleWhileRevalidate: 600,
+  })
+)
