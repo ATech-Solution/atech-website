@@ -6,6 +6,7 @@ import { getPayload } from 'payload'
 import { unstable_cache } from 'next/cache'
 import { cookies } from 'next/headers'
 import config from '@payload-config'
+import { withPerfCache } from '@/plugins/performance/createCachedFetch'
 
 // Singleton so the connection is reused across requests during dev
 let payloadInstance: Awaited<ReturnType<typeof getPayload>> | null = null
@@ -17,47 +18,59 @@ export async function getPayloadClient() {
   return payloadInstance
 }
 
-/** Fetch the page marked as the site frontpage (isFrontpage: true) */
-export async function getFrontpage(locale: string = 'en') {
-  try {
-    const payload = await getPayloadClient()
-    const result = await payload.find({
-      collection: 'pages',
-      where: { isFrontpage: { equals: true }, status: { equals: 'published' } },
-      locale: locale as any,
-      limit: 1,
-    })
-    return result.docs[0] ?? null
-  } catch {
-    return null
-  }
-}
+/** Fetch the page marked as the site frontpage (cached; bust with revalidateTag('perf:frontpage')) */
+export const getFrontpage = withPerfCache(
+  async (locale: string = 'en') => {
+    try {
+      const payload = await getPayloadClient()
+      const result = await payload.find({
+        collection: 'pages',
+        where: { isFrontpage: { equals: true }, status: { equals: 'published' } },
+        locale: locale as any,
+        limit: 1,
+      })
+      return result.docs[0] ?? null
+    } catch {
+      return null
+    }
+  },
+  ['perf:frontpage'],
+  { revalidate: 60, tags: ['perf:frontpage', 'perf:pages'] },
+)
 
-/** Fetch a single page by its slug */
-export async function getPage(slug: string, locale: string = 'en') {
-  try {
-    const payload = await getPayloadClient()
-    const result = await payload.find({
-      collection: 'pages',
-      where: { slug: { equals: slug } },
-      locale: locale as any,
-      limit: 1,
-    })
-    return result.docs[0] ?? null
-  } catch {
-    return null
-  }
-}
+/** Fetch a single page by its slug (cached; bust with revalidateTag('perf:pages')) */
+export const getPage = withPerfCache(
+  async (slug: string, locale: string = 'en') => {
+    try {
+      const payload = await getPayloadClient()
+      const result = await payload.find({
+        collection: 'pages',
+        where: { slug: { equals: slug } },
+        locale: locale as any,
+        limit: 1,
+      })
+      return result.docs[0] ?? null
+    } catch {
+      return null
+    }
+  },
+  ['perf:page'],
+  { revalidate: 60, tags: ['perf:page', 'perf:pages'] },
+)
 
-/** Fetch the global navigation config */
-export async function getNavigation(locale: string = 'en') {
-  try {
-    const payload = await getPayloadClient()
-    return payload.findGlobal({ slug: 'navigation', locale: locale as any })
-  } catch {
-    return null
-  }
-}
+/** Fetch the global navigation config (cached; bust with revalidateTag('perf:navigation')) */
+export const getNavigation = withPerfCache(
+  async (locale: string = 'en') => {
+    try {
+      const payload = await getPayloadClient()
+      return payload.findGlobal({ slug: 'navigation', locale: locale as any })
+    } catch {
+      return null
+    }
+  },
+  ['perf:navigation'],
+  { revalidate: 60, tags: ['perf:navigation'] },
+)
 
 /** Fetch the site theme global (cached; busted by revalidateTag('theme') in Theme afterChange hook) */
 export const getTheme = unstable_cache(
@@ -90,6 +103,20 @@ export const getLanguageSettings = unstable_cache(
   },
   ['language-settings'],
   { tags: ['multilang-settings'], revalidate: 60 },
+)
+
+/** Fetch performance plugin settings (cached; bust with revalidateTag('perf-settings')) */
+export const getPerformanceSettings = unstable_cache(
+  async () => {
+    try {
+      const payload = await getPayloadClient()
+      return payload.findGlobal({ slug: 'performance-settings' as any }).catch(() => null)
+    } catch {
+      return null
+    }
+  },
+  ['perf-settings'],
+  { tags: ['perf-settings'], revalidate: 60 },
 )
 
 /** Fetch a single portfolio item by slug, with categories and featuredImage populated */
@@ -240,18 +267,23 @@ export async function getFaviconUrl(): Promise<string> {
  * Batch-fetch block templates by ID.
  * Returns a map of { [id]: blockDoc } for merging with layoutBuilder overrides.
  */
-export async function getBlockTemplates(ids: string[], locale: string = 'en'): Promise<Record<string, any>> {
-  if (!ids.length) return {}
-  try {
-    const payload = await getPayloadClient()
-    const result = await payload.find({
-      collection: 'blocks',
-      where: { id: { in: ids } },
-      locale: locale as any,
-      limit: ids.length,
-    })
-    return Object.fromEntries(result.docs.map((doc) => [String(doc.id), doc]))
-  } catch {
-    return {}
-  }
-}
+/** Fetch block templates by IDs (cached; bust with revalidateTag('perf:block-templates')) */
+export const getBlockTemplates = withPerfCache(
+  async (ids: string[], locale: string = 'en'): Promise<Record<string, any>> => {
+    if (!ids.length) return {}
+    try {
+      const payload = await getPayloadClient()
+      const result = await payload.find({
+        collection: 'blocks',
+        where: { id: { in: ids } },
+        locale: locale as any,
+        limit: ids.length,
+      })
+      return Object.fromEntries(result.docs.map((doc) => [String(doc.id), doc]))
+    } catch {
+      return {}
+    }
+  },
+  ['perf:block-templates'],
+  { revalidate: 60, tags: ['perf:block-templates', 'perf:pages'] },
+)
