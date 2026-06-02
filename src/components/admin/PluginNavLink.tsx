@@ -11,6 +11,7 @@ const PLUGIN_PATHS: Record<string, { label: string; href: string }> = {
   'export-import':   { label: 'Export & Import',   href: '/admin/plugins/export-import' },
   'form-builder':    { label: 'Form Builder',       href: '/admin/plugins/form-builder' },
   'multilanguage':   { label: 'Multilanguage',     href: '/admin/plugins/multilanguage' },
+  'performance':     { label: 'Performance',       href: '/admin/globals/performance-settings' },
   'seo':             { label: 'SEO',               href: '/admin/globals/settings?tab=1' },
   'forms':           { label: 'Forms',             href: '/admin/collections/forms' },
   'redirects':       { label: 'Redirects',         href: '/admin/collections/redirects' },

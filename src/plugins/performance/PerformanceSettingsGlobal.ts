@@ -4,7 +4,7 @@ export const PerformanceSettingsGlobal: GlobalConfig = {
   slug: 'performance-settings',
   label: 'Performance',
   admin: {
-    group: 'Plugins',
+    group: 'System',
     description: 'Full-stack performance optimization. All toggles take effect immediately on save.',
   },
   access: {
