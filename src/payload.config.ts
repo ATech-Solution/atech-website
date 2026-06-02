@@ -39,6 +39,7 @@ import { AiContentFeature } from './features/aiContent/feature.server'
 import { exportImportPlugin } from './plugins/exportImportPlugin'
 import { multilanguagePlugin } from './plugins/multilanguagePlugin'
 import { siteTestingPlugin } from './plugins/siteTestingPlugin'
+import { performancePlugin } from './plugins/performancePlugin'
 import { AuditLogs } from './collections/AuditLogs'
 import { SecurityEvents } from './collections/SecurityEvents'
 
@@ -262,6 +263,9 @@ export default buildConfig({
 
     // Site Testing — smoke tests, Playwright e2e, pre-deploy checklist
     siteTestingPlugin(),
+    performancePlugin({
+      indexedCollections: ['pages', 'posts', 'portfolio', 'media', 'categories'],
+    }),
 
     // 1. SEO ─────────────────────────────────────────────────────────────────
     // Traditional SEO + LLM SEO bundle
