@@ -23,7 +23,7 @@ export function withPerfCache<TArgs extends readonly unknown[], TReturn>(
   const tags       = options.tags ?? keyPrefix
 
   const crossRequestCached = unstable_cache(fn, keyPrefix, { revalidate, tags })
-  return cache(crossRequestCached as (...args: TArgs) => Promise<TReturn>)
+  return cache(crossRequestCached)
 }
 
 // Alias for backwards-compat with spec reference

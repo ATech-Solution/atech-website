@@ -263,9 +263,6 @@ export default buildConfig({
 
     // Site Testing — smoke tests, Playwright e2e, pre-deploy checklist
     siteTestingPlugin(),
-    performancePlugin({
-      indexedCollections: ['pages', 'posts', 'portfolio', 'media', 'categories'],
-    }),
 
     // 1. SEO ─────────────────────────────────────────────────────────────────
     // Traditional SEO + LLM SEO bundle
@@ -308,6 +305,11 @@ export default buildConfig({
         // Handle Stripe events here, e.g.:
         // 'customer.subscription.created': ({ event, payload }) => { ... }
       },
+    }),
+
+    // Performance Plugin — MUST be last to process final config state (SQLite indexing, cache headers, streaming SSR)
+    performancePlugin({
+      indexedCollections: ['pages', 'posts', 'portfolio', 'media', 'categories'],
     }),
 
   ],

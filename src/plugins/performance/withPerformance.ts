@@ -26,7 +26,7 @@ export function withPerformance(
     staleWhileRevalidate = 600,
   } = options
 
-  if (!enabled) return config
+  if (!enabled) return { ...config }
 
   let patched: NextConfig = { ...config }
 
@@ -56,8 +56,8 @@ export function withPerformance(
         return [
           ...existing,
           {
-            // Matches all routes EXCEPT _next/static, _next/image, and /api/
-            source: '/((?!_next/static|_next/image|api/).*)',
+            // Matches all routes EXCEPT _next/static, _next/image, /api/, and /admin
+            source: '/((?!_next/static|_next/image|api/|admin(?:/|$)).*)',
             headers: [
               {
                 key: 'Cache-Control',

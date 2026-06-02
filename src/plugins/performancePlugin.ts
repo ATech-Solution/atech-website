@@ -111,7 +111,7 @@ export const performancePlugin =
                   { featureName: 'Smart Cache Headers',       featureDescription: 'no-cache + s-maxage for nginx proxy, immutable for static chunks', featureType: 'hook' },
                   { featureName: 'Streaming SSR',             featureDescription: 'SuspenseSection wraps data-heavy blocks for chunked HTML delivery', featureType: 'hook' },
                   { featureName: 'Payload Query Caching',     featureDescription: 'unstable_cache + React cache() deduplication on all page queries', featureType: 'hook' },
-                  { featureName: 'SQLite Auto-Indexing',      featureDescription: 'Injects index:true on slug/updatedAt/locale/_status at config time', featureType: 'collection' },
+                  { featureName: 'SQLite Auto-Indexing',      featureDescription: 'Injects index:true on the slug field of configured collections at config time', featureType: 'collection' },
                   { featureName: 'OptimizedHero Component',   featureDescription: 'next/image wrapper with priority+preload for LCP images', featureType: 'field' },
                   { featureName: 'nginx Config Template',     featureDescription: 'Brotli/gzip/proxy-cache snippet at src/plugins/performance/nginx/', featureType: 'script' },
                 ],
