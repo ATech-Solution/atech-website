@@ -13,12 +13,20 @@ const SKIP_KEYS = new Set([
   'createdAt', 'updatedAt', 'publishedAt', '_status', 'locale',
   '_locale', 'code', 'version', 'format', 'indent', 'direction',
   'relationTo', 'value', 'uploadedTo',
+  // Nested-docs relationship pointer (breadcrumb items: { doc, url, label }).
+  // Skip so we never recurse into a fully-populated related document.
+  'doc',
   // Non-localized fields — stored in the main collection table (shared across all locales).
-  'breadcrumbs', 'parent', 'seoTopics',
+  'parent', 'seoTopics',
   'isFrontpage', 'portfolioDetailTemplate', 'articleDetailTemplate',
   // Layout Builder block structural fields (not user-visible content)
   'blockStyle', 'advanced', 'templateSnapshot', 'blockId', 'blockTemplateName', 'order',
 ])
+// NOTE: `breadcrumbs` is intentionally NOT skipped here. Layout Builder breadcrumb
+// blocks store visible labels at overrides.content.breadcrumbs[].bcLabel, which must
+// be translatable (bcHref/url stay excluded via SKIP_KEYS + URL_KEY_RE). The auto-
+// generated, non-localized Pages.breadcrumbs field is still protected from being
+// *saved* per-locale by NON_LOCALIZED_KEYS in the translate route.
 
 // UUID / numeric ID pattern — skip these strings
 const ID_RE = /^[0-9a-f]{8}-[0-9a-f-]{27,}$/i

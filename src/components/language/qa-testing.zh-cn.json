@@ -1,0 +1,129 @@
+{
+  "qa-testing": {
+    "hero": {
+      "badge": "质量保证测试服务",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/f1348945-7fb6-469d-bd3c-b68ca629b407",
+      "breadcrumb": [
+        { "label": "首页",       "href": "/"           },
+        { "label": "我们的服务", "href": "/what-we-do" },
+        { "label": "质量保证测试服务", "href": null    }
+      ],
+      "heading": "全面的质量保证\n与测试\n解决方案",
+      "body": "通过我们严谨的自动化及手动测试流程，确保软件运行完美无瑕。从功能测试到安全审计，我们提供全面的质量保证解决方案，保证您的应用程序达到最高的质量标准。",
+      "cta": {
+        "primary":   { "label": "预约咨询",     "url": "/static/contact" },
+        "secondary": { "label": "查看案例研究", "url": "/case-studies"   }
+      },
+      "image": {
+        "src": "https://www.figma.com/api/mcp/asset/67d281f2-0486-43fa-b02b-93e5bdfae7c4",
+        "alt": "笔记本电脑上的质量保证测试仪表板"
+      }
+    },
+    "services": {
+      "heading":    "我们的质量保证测试服务",
+      "subheading": "全面的测试方法，确保您的软件在各种环境及使用场景下运行完美无瑕。",
+      "items": [
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/54e7e051-7265-40d1-8c42-689c1ac8bd99",
+          "title":       "自动化测试",
+          "description": "通过自动化测试套件进行持续集成测试，涵盖回归测试、单元测试及集成测试。",
+          "features":    ["Selenium 与 Cypress 框架", "API 自动化测试", "CI/CD 流程集成"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/e7177bde-8ca1-4058-a281-d5097aab6a7d",
+          "title":       "手动测试",
+          "description": "由专家进行手动测试，涵盖用户体验、可用性及自动化测试可能遗漏的边缘情况。",
+          "features":    ["探索性测试", "用户验收测试", "跨浏览器兼容性"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/9f5edfab-6095-44ad-89f4-a8cbc3170eb3",
+          "title":       "性能测试",
+          "description": "进行负载、压力及容量测试，确保在各种流量情况下都能达到最佳性能。",
+          "features":    ["JMeter 与 LoadRunner", "可扩展性分析", "瓶颈识别"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/6c4785f4-d91a-4293-81b7-13db42c968d5",
+          "title":       "安全测试",
+          "description": "全面的安全审计及渗透测试，识别漏洞并确保数据受到保护。",
+          "features":    ["OWASP 合规测试", "漏洞评估", "数据加密验证"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/8e3cadd8-7e10-4738-8b06-dcd54ec7b46b",
+          "title":       "移动应用程序测试",
+          "description": "针对 iOS 及 Android 应用程序进行专业测试，涵盖多种设备及操作系统。",
+          "features":    ["设备兼容性测试", "应用商店指南", "性能优化"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/33b560d1-a26a-4655-8047-167fd578b63d",
+          "title":       "API 测试",
+          "description": "彻底的 API 测试，确保数据完整性、性能以及系统间的正确集成。",
+          "features":    ["REST 与 GraphQL 测试", "数据验证", "响应时间分析"]
+        }
+      ]
+    },
+    "process": {
+      "heading":    "我们的测试流程",
+      "subheading": "系统化的质量保证方法，确保全面覆盖并取得可靠的结果。",
+      "steps": [
+        {
+          "number":      "1",
+          "title":       "需求分析",
+          "description": "深入分析项目需求并进行测试规划。"
+        },
+        {
+          "number":      "2",
+          "title":       "测试策略设计",
+          "description": "建立全面的测试用例及自动化框架。"
+        },
+        {
+          "number":      "3",
+          "title":       "测试执行",
+          "description": "在所有环境中执行自动化及手动测试。"
+        },
+        {
+          "number":      "4",
+          "title":       "报告与分析",
+          "description": "提供详尽报告，附带可行的见解与建议。"
+        }
+      ]
+    },
+    "caseStudy": {
+      "label":       "精选案例研究",
+      "company":     "英皇金融集团 (EFSG)",
+      "description": "英皇金融集团在拓展其数字生态系统的过程中，需要一个更可靠稳定的交易系统，其中一致的质量与性能至关重要。ATech 组建了一支来自香港及印尼的完整 Scrum 团队，为其各个平台提供全面的质量保证及测试服务，确保在整个开发过程中彻底验证系统功能、稳定性及性能。最终，英皇金融集团获得了更稳健可靠的交易环境，软件质量显著提升，并大幅减少了生产环境的问题。",
+      "logoSrc":      "https://www.figma.com/api/mcp/asset/63d9e461-a2c1-45e5-9d97-61c4bf6bd29a",
+      "logoAlt":      "英皇金融集团标志",
+      "imageSrc":     "https://www.figma.com/api/mcp/asset/51f9f69c-6792-4b96-ab65-b7e51568c9be",
+      "imageAlt":     "EFSG 交易平台仪表板",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/f6db6159-c967-4ea0-8057-122a94d2100d",
+      "badge": {
+        "title":    "深度质量保证测试",
+        "subtitle": "确保软件可靠运行"
+      }
+    },
+    "cta": {
+      "heading":    "准备好确保您的软件质量了吗？",
+      "subheading": "让我们的质量保证专家为您提供量身定制的全面测试解决方案，助您交付完美无瑕的软件。",
+      "button":     { "label": "开启您的质量保证项目", "url": "/static/contact" },
+      "stats": [
+        { "value": "90%",  "label": "缺陷检测率" },
+        { "value": "50+",  "label": "已交付项目" },
+        { "value": "24/7", "label": "测试支持"   }
+      ]
+    },
+    "contact": {
+      "heading":    "联系我们",
+      "subheading": "准备好开启您的下一个项目了吗？让我们一起探讨如何为您提供帮助。",
+      "form": {
+        "heading":     "给我们发送消息",
+        "submitLabel": "发送消息"
+      },
+      "info": {
+        "heading":  "联系信息",
+        "email":    "hello@atech.software",
+        "phone":    "+852 1234 5678",
+        "location": "香港"
+      }
+    }
+  }
+}

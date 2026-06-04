@@ -13,7 +13,10 @@ import {
   QACTABlock,
   ContactBlock,
 } from '@/components/Blocks'
-import content from '@/components/language/qa-testing.json'
+import en from '@/components/language/qa-testing.json'
+import zhHk from '@/components/language/qa-testing.zh-hk.json'
+import zhCn from '@/components/language/qa-testing.zh-cn.json'
+import id from '@/components/language/qa-testing.id.json'
 
 export const metadata: Metadata = {
   title:       'QA Testing Services',
@@ -21,7 +24,21 @@ export const metadata: Metadata = {
     'Ensure flawless software performance with our rigorous automated and manual testing protocols. Comprehensive QA solutions that guarantee your applications meet the highest quality standards.',
 }
 
-export default function QATestingPage() {
+// Per-locale content; falls back to English when a locale has no translation.
+const dictionaries = {
+  'en':    en,
+  'zh-hk': zhHk,
+  'zh-cn': zhCn,
+  'id':    id,
+} as const
+
+export default async function QATestingPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  const content = dictionaries[locale as keyof typeof dictionaries] ?? en
   const { hero, services, process, caseStudy, cta, contact } = content['qa-testing']
 
   return (

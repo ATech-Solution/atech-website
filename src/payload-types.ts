@@ -3512,23 +3512,23 @@ export interface PerformanceSetting {
    */
   imageOptimizationEnabled?: boolean | null;
   /**
-   * Formats Next.js will generate. AVIF gives better compression but slower encoding.
+   * Formats Next.js will generate. AVIF gives better compression but slower encoding. Changes take effect only after a server restart.
    */
   imageFormats?: ('webp' | 'avif')[] | null;
   /**
-   * Breakpoints used when generating responsive image srcsets.
+   * Breakpoints used when generating responsive image srcsets. Changes take effect only after a server restart.
    */
   imageDeviceSizes?: string | null;
   /**
-   * Replaces no-store with no-cache + s-maxage for proxy caching. Apply via withPerformance.
+   * Replaces no-store with no-cache + s-maxage for proxy caching. Applied via withPerformance at server start — changes take effect after restart.
    */
   cacheHeadersEnabled?: boolean | null;
   /**
-   * s-maxage value. nginx/CDN serves cached HTML for this many seconds before revalidating.
+   * s-maxage value. nginx/CDN serves cached HTML for this many seconds. Changes take effect after server restart.
    */
   htmlCacheTtl?: number | null;
   /**
-   * How long the proxy serves stale content while fetching fresh in the background.
+   * How long the proxy serves stale content while fetching fresh. Changes take effect after server restart.
    */
   staleWhileRevalidate?: number | null;
   /**
@@ -3540,11 +3540,11 @@ export interface PerformanceSetting {
    */
   skeletonRows?: number | null;
   /**
-   * Caches page/navigation Payload queries across requests using unstable_cache.
+   * Caches page/navigation Payload queries across requests using unstable_cache. Changes take effect after server restart.
    */
   queryCacheEnabled?: boolean | null;
   /**
-   * How long page queries are cached before Payload is re-queried.
+   * How long page queries are cached before Payload is re-queried. Changes take effect after server restart.
    */
   queryCacheTtl?: number | null;
   /**
@@ -3552,7 +3552,7 @@ export interface PerformanceSetting {
    */
   queryCacheTags?: string | null;
   /**
-   * Adds index: true to slug/updatedAt/locale/_status fields at config-build time. Requires restart.
+   * Adds index: true to slug fields of configured collections. Requires server restart and schema sync to take effect.
    */
   sqliteIndexesEnabled?: boolean | null;
   /**
