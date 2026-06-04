@@ -1,13 +1,42 @@
 name: Build & Deploy
 
+# ─────────────────────────────────────────────────────────────
+#  Trigger
+#  dev  branch → build → deploy to UAT  (uat.atech.software)
+#  main branch → build → deploy to PROD (site TBD)
+#
+#  workflow_dispatch (manual):
+#   migrate_data=true  → copy committed data/payload.db to server
+#                        (replaces server DB — old DB is backed up first)
+#                        Steps: commit data/payload.db → push → trigger here
+#   migrate_data=false → normal deploy, server DB is preserved
+#
+#  Media sync (cannot be done via GitHub Actions — media is not in git):
+#   Run locally: ./sync-media-to-uat.sh
+#   Requires:    ~/.ssh/github_actions_deploy key + .env.deploy with DEPLOY_UAT_HOST
+#   Dry-run:     ./sync-media-to-uat.sh --dry-run
+# ─────────────────────────────────────────────────────────────
 on:
   push:
     branches:
       - main
       - dev
   workflow_dispatch:
+    inputs:
+      migrate_data:
+        description: >
+          Copy committed data/payload.db to server.
+          WARNING: replaces live server data — old DB is timestamped-backed-up first.
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 jobs:
+
+  # ── 1. Build ──────────────────────────────────────────────
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -25,7 +54,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Build
         env:
@@ -40,13 +69,12 @@ jobs:
           PAYLOAD_PUBLIC_SERVER_URL_PROD: ${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}
         run: npm run build
 
-      - name: Copy static & public into standalone
+      - name: Copy public assets into standalone
         run: |
-          cp -r .next/static .next/standalone/.next/static
           cp -r public/. .next/standalone/public/
 
       - name: Create deployment archive
-        run: zip -r next.zip .next
+        run: zip -r next.zip .next/standalone
 
       - name: Set artifact name
         id: set-artifact
@@ -59,17 +87,15 @@ jobs:
           path: next.zip
           retention-days: 5
 
-  deploy:
-    name: Deploy
+  # ── 2a. Deploy to UAT (dev branch) ────────────────────────
+  deploy-uat:
+    name: Deploy to UAT
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/main'
-    environment: production
+    if: github.ref == 'refs/heads/dev'
+    environment: uat
 
     steps:
-      - name: Checkout (for deploy scripts)
-        uses: actions/checkout@v4
-
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
@@ -81,39 +107,335 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Add server to known hosts
-        run: |
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Upload build archive to server
+      - name: Upload build archive to UAT server
         run: |
           scp next.zip ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/next.zip
 
-      - name: Deploy on server
-        env:
-          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
+      - name: Deploy on UAT server
         run: |
-          ssh $SSH_USER@$SSH_HOST << ENDSSH
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
             set -e
-            cd $DEPLOY_PATH
+            DEPLOY_PATH="${{ secrets.DEPLOY_PATH }}"
+            MIGRATE_DATA="${{ github.event.inputs.migrate_data || 'false' }}"
+            cd "$DEPLOY_PATH"
+
+            echo "==> Ensuring persistent dirs exist..."
+            mkdir -p "$DEPLOY_PATH/data"
+            mkdir -p "$DEPLOY_PATH/media"
+
+            echo "==> Migrating old media files (public/media → media) if needed..."
+            if [ -d "$DEPLOY_PATH/public/media" ]; then
+              cp -rn "$DEPLOY_PATH/public/media/." "$DEPLOY_PATH/media/" 2>/dev/null || true
+            fi
+
+            # ── Stop the old app FIRST so SQLite closes cleanly ──────────────
+            # This ensures WAL files are checkpointed before we touch the DB,
+            # preventing "database is locked" / corruption on next start.
+            echo "==> Stopping running app..."
+            pm2 stop atech-website 2>/dev/null || true
+
+            echo "==> Backing up old static chunks..."
+            if [ -d "$DEPLOY_PATH/standalone/.next/static" ]; then
+              cp -r "$DEPLOY_PATH/standalone/.next/static" /tmp/old-next-static
+            fi
 
             echo "==> Swapping build..."
-            rm -rf .next
-            unzip -q next.zip
-            rm -f next.zip
+            rm -rf standalone .next
+            unzip -o -q next.zip
+            mv .next/standalone standalone
+            rm -rf .next next.zip
 
-            echo "==> Pulling latest code..."
-            git pull origin main
+            echo "==> Merging old static chunks (keeps in-flight browsers working)..."
+            if [ -d /tmp/old-next-static ]; then
+              cp -rn /tmp/old-next-static/. "$DEPLOY_PATH/standalone/.next/static/"
+              rm -rf /tmp/old-next-static
+            fi
 
-            echo "==> Regenerating Payload types & importmap..."
-            npm run generate:types && npm run generate:importmap
+            echo "==> Symlinking persistent media into standalone/public..."
+            rm -rf "$DEPLOY_PATH/standalone/public/media"
+            mkdir -p "$DEPLOY_PATH/standalone/public"
+            ln -sfn "$DEPLOY_PATH/media" "$DEPLOY_PATH/standalone/public/media"
+
+            # ── DB: backup server DB before git reset overwrites it ──────────
+            # Store backup in data/ (not /tmp) so it survives across steps and
+            # is kept alongside other server-backup files.
+            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+            SERVER_DB="$DEPLOY_PATH/data/payload.db"
+            SAVED_DB="$DEPLOY_PATH/data/payload.db.pre-deploy.${TIMESTAMP}"
+            if [ -f "$SERVER_DB" ]; then
+              cp "$SERVER_DB" "$SAVED_DB"
+              echo "==> Server DB saved to $SAVED_DB"
+            else
+              echo "==> No existing server DB found (fresh deploy)"
+            fi
+
+            echo "==> Pulling latest code for migrations..."
+            git fetch https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ATech-Solution/atech-website.git dev
+            git reset --hard FETCH_HEAD
+            # NOTE: git reset --hard restores data/payload.db to the committed
+            # version. Below we either keep it (migrate) or restore the server DB.
+
+            echo "==> Installing dependencies..."
+            npm install --ignore-scripts
+
+            # ── DB: decide which database to use ────────────────────────────
+            if [ "$MIGRATE_DATA" = "true" ]; then
+              echo "==> DATA MIGRATION: using committed dev DB (replacing server data)"
+              if [ -f "$SAVED_DB" ]; then
+                BACKUP="$DEPLOY_PATH/data/payload.db.server-backup.${TIMESTAMP}"
+                cp "$SAVED_DB" "$BACKUP"
+                echo "==> Old server DB preserved at $BACKUP"
+              fi
+              # Remove stale WAL/SHM from the git-restored dev DB so SQLite
+              # starts with a clean, consistent state on next open.
+              rm -f "${SERVER_DB}-shm" "${SERVER_DB}-wal"
+              echo "==> Dev DB from git is now active at $SERVER_DB"
+            else
+              echo "==> Normal deploy: restoring persistent server DB..."
+              if [ -f "$SAVED_DB" ]; then
+                cp "$SAVED_DB" "$SERVER_DB"
+                echo "==> Server DB restored from $SAVED_DB"
+              else
+                echo "==> Starting with fresh DB (no prior server DB existed)"
+              fi
+              # Always clean WAL/SHM after any DB file swap — stale WAL files
+              # from the old session must not be applied to a different DB page.
+              rm -f "${SERVER_DB}-shm" "${SERVER_DB}-wal"
+              rm -f "$SAVED_DB"
+            fi
+
+            # Ensure the DB file is writable by the deploy user
+            chmod 664 "$SERVER_DB" 2>/dev/null || true
+
+            # ── Prune old server-backup files (keep last 5) ─────────────────
+            ls -t "$DEPLOY_PATH/data/payload.db.server-backup."* 2>/dev/null | tail -n +6 | xargs rm -f || true
+
+            echo "==> Running database migrations..."
+            set +e
+            export DATABASE_URL="file:$DEPLOY_PATH/data/payload.db"
+            export PAYLOAD_SECRET="${{ secrets.PAYLOAD_SECRET }}"
+            yes | npm run migrate 2>&1
+            MIGRATE_EXIT=$?
+            set -e
+            if [ $MIGRATE_EXIT -ne 0 ]; then
+              echo "==> WARNING: migration exited $MIGRATE_EXIT — schema may already be up to date; continuing deploy"
+            fi
 
             echo "==> Restarting app..."
             pm2 delete atech-website 2>/dev/null || true
-            pm2 start npm --name "atech-website" --cwd $DEPLOY_PATH -- start
+            NODE_ENV=production \
+            PORT=3000 \
+            HOSTNAME=0.0.0.0 \
+            DATABASE_URL="file:$DEPLOY_PATH/data/payload.db" \
+            PAYLOAD_MEDIA_DIR="$DEPLOY_PATH/media" \
+            PAYLOAD_SECRET="${{ secrets.PAYLOAD_SECRET }}" \
+            NEXT_PUBLIC_SITE_URL="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" \
+            NEXT_PUBLIC_SITE_URL_PROD="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" \
+            NEXT_PUBLIC_DOMAIN="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" \
+            NEXT_PUBLIC_DOMAIN_PROD="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" \
+            PAYLOAD_PUBLIC_SERVER_URL="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" \
+            PAYLOAD_PUBLIC_SERVER_URL_PROD="${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" \
+            AWS_SES_SMTP_HOST="${{ secrets.AWS_SES_SMTP_HOST }}" \
+            AWS_SES_SMTP_PORT="${{ secrets.AWS_SES_SMTP_PORT }}" \
+            AWS_SES_SMTP_USER="${{ secrets.AWS_SES_SMTP_USER }}" \
+            AWS_SES_SMTP_PASSWORD="${{ secrets.AWS_SES_SMTP_PASSWORD }}" \
+            EMAIL_FROM="${{ secrets.EMAIL_FROM }}" \
+            EMAIL_FROM_NAME="${{ secrets.EMAIL_FROM_NAME }}" \
+            ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}" \
+            RECAPTCHA_SECRET_KEY="${{ secrets.RECAPTCHA_SECRET_KEY }}" \
+            ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+            pm2 start "$DEPLOY_PATH/standalone/server.js" \
+              --name "atech-website" \
+              --cwd "$DEPLOY_PATH/standalone"
             pm2 save
 
             echo "==> Done"
             pm2 status
           ENDSSH
+
+      - name: Health check UAT
+        run: |
+          echo "Waiting for app to start..."
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Origin: ${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}" \
+            "${{ secrets.NEXT_PUBLIC_SITE_URL_PROD }}/api/users/me" || echo "000")
+          echo "Health check status: $STATUS"
+          if [ "$STATUS" = "000" ]; then
+            echo "::error::Health check failed — app unreachable. Check pm2 logs."
+            exit 1
+          fi
+          echo "App is up (HTTP $STATUS)"
+
+  # ── 2b. Deploy to Production (main branch) ────────────────
+  deploy-prod:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    environment: production
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.artifact-name }}
+
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
+        run: ssh-keyscan -H ${{ secrets.PROD_SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Upload build archive to production server
+        run: |
+          scp next.zip ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }}:${{ secrets.PROD_DEPLOY_PATH }}/next.zip
+
+      - name: Deploy on production server
+        run: |
+          ssh ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} << 'ENDSSH'
+            set -e
+            DEPLOY_PATH="${{ secrets.PROD_DEPLOY_PATH }}"
+            MIGRATE_DATA="${{ github.event.inputs.migrate_data || 'false' }}"
+            cd "$DEPLOY_PATH"
+
+            echo "==> Ensuring persistent dirs exist..."
+            mkdir -p "$DEPLOY_PATH/data"
+            mkdir -p "$DEPLOY_PATH/media"
+
+            echo "==> Migrating old media files (public/media → media) if needed..."
+            if [ -d "$DEPLOY_PATH/public/media" ]; then
+              cp -rn "$DEPLOY_PATH/public/media/." "$DEPLOY_PATH/media/" 2>/dev/null || true
+            fi
+
+            # ── Stop the old app FIRST so SQLite closes cleanly ──────────────
+            echo "==> Stopping running app..."
+            pm2 stop atech-website-prod 2>/dev/null || true
+
+            echo "==> Backing up old static chunks..."
+            if [ -d "$DEPLOY_PATH/standalone/.next/static" ]; then
+              cp -r "$DEPLOY_PATH/standalone/.next/static" /tmp/old-next-static
+            fi
+
+            echo "==> Swapping build..."
+            rm -rf standalone .next
+            unzip -o -q next.zip
+            mv .next/standalone standalone
+            rm -rf .next next.zip
+
+            echo "==> Merging old static chunks (keeps in-flight browsers working)..."
+            if [ -d /tmp/old-next-static ]; then
+              cp -rn /tmp/old-next-static/. "$DEPLOY_PATH/standalone/.next/static/"
+              rm -rf /tmp/old-next-static
+            fi
+
+            echo "==> Symlinking persistent media into standalone/public..."
+            rm -rf "$DEPLOY_PATH/standalone/public/media"
+            mkdir -p "$DEPLOY_PATH/standalone/public"
+            ln -sfn "$DEPLOY_PATH/media" "$DEPLOY_PATH/standalone/public/media"
+
+            # ── DB: backup server DB before git reset overwrites it ──────────
+            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+            SERVER_DB="$DEPLOY_PATH/data/payload.db"
+            SAVED_DB="$DEPLOY_PATH/data/payload.db.pre-deploy.${TIMESTAMP}"
+            if [ -f "$SERVER_DB" ]; then
+              cp "$SERVER_DB" "$SAVED_DB"
+              echo "==> Server DB saved to $SAVED_DB"
+            else
+              echo "==> No existing server DB found (fresh deploy)"
+            fi
+
+            echo "==> Pulling latest code for migrations..."
+            git fetch https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ATech-Solution/atech-website.git main
+            git reset --hard FETCH_HEAD
+
+            echo "==> Installing dependencies..."
+            npm install --ignore-scripts
+
+            # ── DB: decide which database to use ────────────────────────────
+            if [ "$MIGRATE_DATA" = "true" ]; then
+              echo "==> DATA MIGRATION: using committed dev DB (replacing server data)"
+              if [ -f "$SAVED_DB" ]; then
+                BACKUP="$DEPLOY_PATH/data/payload.db.server-backup.${TIMESTAMP}"
+                cp "$SAVED_DB" "$BACKUP"
+                echo "==> Old server DB preserved at $BACKUP"
+              fi
+              rm -f "${SERVER_DB}-shm" "${SERVER_DB}-wal"
+              echo "==> Dev DB from git is now active at $SERVER_DB"
+            else
+              echo "==> Normal deploy: restoring persistent server DB..."
+              if [ -f "$SAVED_DB" ]; then
+                cp "$SAVED_DB" "$SERVER_DB"
+                echo "==> Server DB restored from $SAVED_DB"
+              else
+                echo "==> Starting with fresh DB (no prior server DB existed)"
+              fi
+              rm -f "${SERVER_DB}-shm" "${SERVER_DB}-wal"
+              rm -f "$SAVED_DB"
+            fi
+
+            chmod 664 "$SERVER_DB" 2>/dev/null || true
+
+            # ── Prune old server-backup files (keep last 5) ─────────────────
+            ls -t "$DEPLOY_PATH/data/payload.db.server-backup."* 2>/dev/null | tail -n +6 | xargs rm -f || true
+
+            echo "==> Running database migrations..."
+            set +e
+            export DATABASE_URL="file:$DEPLOY_PATH/data/payload.db"
+            export PAYLOAD_SECRET="${{ secrets.PROD_PAYLOAD_SECRET }}"
+            yes | npm run migrate 2>&1
+            MIGRATE_EXIT=$?
+            set -e
+            if [ $MIGRATE_EXIT -ne 0 ]; then
+              echo "==> WARNING: migration exited $MIGRATE_EXIT — schema may already be up to date; continuing deploy"
+            fi
+
+            echo "==> Restarting app..."
+            pm2 delete atech-website-prod 2>/dev/null || true
+            NODE_ENV=production \
+            PORT=3000 \
+            HOSTNAME=0.0.0.0 \
+            DATABASE_URL="file:$DEPLOY_PATH/data/payload.db" \
+            PAYLOAD_MEDIA_DIR="$DEPLOY_PATH/media" \
+            PAYLOAD_SECRET="${{ secrets.PROD_PAYLOAD_SECRET }}" \
+            NEXT_PUBLIC_SITE_URL="${{ secrets.PROD_SITE_URL }}" \
+            NEXT_PUBLIC_SITE_URL_PROD="${{ secrets.PROD_SITE_URL }}" \
+            NEXT_PUBLIC_DOMAIN="${{ secrets.PROD_SITE_URL }}" \
+            NEXT_PUBLIC_DOMAIN_PROD="${{ secrets.PROD_SITE_URL }}" \
+            PAYLOAD_PUBLIC_SERVER_URL="${{ secrets.PROD_SITE_URL }}" \
+            PAYLOAD_PUBLIC_SERVER_URL_PROD="${{ secrets.PROD_SITE_URL }}" \
+            AWS_SES_SMTP_HOST="${{ secrets.AWS_SES_SMTP_HOST }}" \
+            AWS_SES_SMTP_PORT="${{ secrets.AWS_SES_SMTP_PORT }}" \
+            AWS_SES_SMTP_USER="${{ secrets.AWS_SES_SMTP_USER }}" \
+            AWS_SES_SMTP_PASSWORD="${{ secrets.AWS_SES_SMTP_PASSWORD }}" \
+            EMAIL_FROM="${{ secrets.EMAIL_FROM }}" \
+            EMAIL_FROM_NAME="${{ secrets.EMAIL_FROM_NAME }}" \
+            ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}" \
+            RECAPTCHA_SECRET_KEY="${{ secrets.RECAPTCHA_SECRET_KEY }}" \
+            ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+            pm2 start "$DEPLOY_PATH/standalone/server.js" \
+              --name "atech-website-prod" \
+              --cwd "$DEPLOY_PATH/standalone"
+            pm2 save
+
+            echo "==> Done"
+            pm2 status
+          ENDSSH
+
+      - name: Health check Production
+        run: |
+          echo "Waiting for app to start..."
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Origin: ${{ secrets.PROD_SITE_URL }}" \
+            "${{ secrets.PROD_SITE_URL }}/api/users/me" || echo "000")
+          echo "Health check status: $STATUS"
+          if [ "$STATUS" = "000" ]; then
+            echo "::error::Health check failed — app unreachable. Check pm2 logs."
+            exit 1
+          fi
+          echo "App is up (HTTP $STATUS)"

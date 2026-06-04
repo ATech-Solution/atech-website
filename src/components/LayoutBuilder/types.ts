@@ -8,6 +8,7 @@ export const GENERAL_BLOCK_TYPES = [
   'tabs', 'accordion', 'image-box', 'icon-box', 'image-carousel',
   'basic-gallery', 'icon-list', 'counter', 'progress-bar',
   'testimonial', 'social-icons', 'alert', 'html',
+  'form',
 ] as const
 
 // All generic, page-agnostic sections from src/components/block/Advance/
@@ -18,8 +19,28 @@ export const ADVANCE_BLOCK_TYPES = [
   'company-stats', 'mission-vision', 'team-section', 'faq-section',
   'page-hero', 'project-grid', 'article-grid', 'article-featured',
   'jobs-list', 'involved-hero', 'quote-form', 'culture-values',
+  'community-hero',
   'community-channels', 'community-ambassador', 'community-programs',
   'contact-hero', 'contact-stats', 'locations',
+  'featured-case-study',
+  'partnership',
+  'portfolio-hero', 'portfolio-statistics', 'portfolio-main',
+  'portfolio-detail-top', 'portfolio-featured-image', 'portfolio-detail-overview',
+  'article-detail-hero', 'article-detail-content', 'article-related',
+  'faq-main',
+  'breadcrumb',
+  'faq-about',
+  'article-submit',
+  'serve-hero',
+  'serve-value',
+  'serve-model',
+  'insights-advantages',
+  'insights-tech-guide',
+  'article-hero',
+  'article-filter',
+  'article-feature',
+  'article-main-grid',
+  'subscribe',
 ] as const
 
 export type BasicBlockType   = typeof BASIC_BLOCK_TYPES[number]
@@ -119,6 +140,7 @@ export interface BlockOverrides {
     // ── Home Hero ────────────────────────────────────────────────────────
     badge?: string
     heading?: string
+    headingSub?: string
     body?: string
     ctaPrimaryLabel?: string
     ctaPrimaryUrl?: string
@@ -134,13 +156,16 @@ export interface BlockOverrides {
 
     // ── Home Services ────────────────────────────────────────────────────
     subheading?: string
-    serviceItems?: Array<{ serviceIcon?: MediaRef | null; serviceTitle?: string; serviceDesc?: string; serviceHref?: string }>
+    serviceItems?: Array<{ serviceIcon?: MediaRef | null; serviceTitle?: string; serviceDesc?: string; serviceFeatures?: string; serviceHref?: string }>
     customSolutionHeading?: string
     customSolutionBody?: string
     customSolutionCtaLabel?: string
     customSolutionCtaUrl?: string
 
     // ── Home Testimonials ────────────────────────────────────────────────
+    testimonialsContentSource?: 'collection' | 'manual'
+    testimonialsLimit?: number
+    enableCarousel?: boolean
     testimonialItems?: Array<{ clientName?: string; clientRole?: string; clientCompany?: string; quote?: string; rating?: number; avatar?: MediaRef | null }>
 
     // ── Service Cards ────────────────────────────────────────────────────
@@ -154,23 +179,32 @@ export interface BlockOverrides {
     contactEmail?: string
     contactPhone?: string
     contactLocation?: string
+    contactEmailIcon?: MediaRef | null
+    contactPhoneIcon?: MediaRef | null
+    contactLocationIcon?: MediaRef | null
 
     // ── Button icons ──────────────────────────────────────────────────────
     ctaPrimaryIcon?: MediaRef | null
     ctaPrimaryIconPos?: 'left' | 'right'
+    ctaPrimaryIconFill?: boolean
     ctaSecondaryIcon?: MediaRef | null
     ctaSecondaryIconPos?: 'left' | 'right'
+    ctaSecondaryIconFill?: boolean
     buttonIcon?: MediaRef | null
     buttonIconPos?: 'left' | 'right'
+    buttonIconFill?: boolean
     customSolutionCtaIcon?: MediaRef | null
     customSolutionCtaIconPos?: 'left' | 'right'
+    customSolutionCtaIconFill?: boolean
     ambassadorCtaIcon?: MediaRef | null
     ambassadorCtaIconPos?: 'left' | 'right'
+    ambassadorCtaIconFill?: boolean
 
     // ── Service Hero (generic service page hero with breadcrumb) ─────────
     badgeIconSrc?: string
     breadcrumbs?: Array<{ bcLabel?: string; bcHref?: string | null }>
     heroImagePosition?: 'left' | 'right'
+    heroImagePadding?: boolean
     heroStatValue?: string
     heroStatLabel?: string
 
@@ -187,11 +221,69 @@ export interface BlockOverrides {
     // ── Expertise Tiles ───────────────────────────────────────────────────
     expertiseTiles?: Array<{ tileIconSrc?: string; tileLabel?: string; tileImage?: MediaRef | null }>
 
+    // ── Insights Advantages ───────────────────────────────────────────────────
+    advSectionBg?: 'yellow' | 'white' | 'dark'
+    advantageItems?: Array<{ advIcon?: MediaRef | null; advTitle?: string; advDesc?: string }>
+
+    // ── Insights Tech Guide ───────────────────────────────────────────────────
+    guideItems?: Array<{ guideIcon?: MediaRef | null; guideTitle?: string; guideDesc?: string; guideTags?: string; guideCtaLabel?: string; guideCtaUrl?: string }>
+
+    // ── Article Hero ──────────────────────────────────────────────────────────
+    heroBg?: 'white' | 'dark'
+
+    // ── Subscribe ─────────────────────────────────────────────────────────────
+    subBadgeLabel?:       string
+    subBadgeIcon?:        MediaRef | null
+    subHeading?:          string
+    subSubheading?:       string
+    subInputPlaceholder?: string
+    subButtonLabel?:      string
+    subNote?:             string
+    subSuccessMessage?:   string
+    subApiEndpoint?:      string
+
+    // ── Article Main Grid ─────────────────────────────────────────────────────
+    mainGridSectionLabel?:  string
+    mainGridContentSource?: 'collection' | 'manual'
+    mainGridLimit?:         number
+    mainGridPageSize?:      number
+    mainGridCategory?:      string
+    mainGridOrderBy?:       'publishedAt_desc' | 'publishedAt_asc'
+    mainGridItems?:         Array<{ mgImage?: MediaRef | null; mgCategory?: string; mgDate?: string; mgTitle?: string; mgExcerpt?: string; mgCtaLabel?: string; mgCtaUrl?: string }>
+    mainGridLoadMoreType?:  'pagination' | 'load-more' | 'link'
+    mainGridLoadMoreLabel?: string
+    mainGridLoadMoreUrl?:   string
+
+    // ── Community Hero ────────────────────────────────────────────────────────
+    communityHeroTitle?:     string
+    communityHeroDesc?:      string
+    communityHeroBackLabel?: string
+    communityHeroBackUrl?:   string
+
+    // ── Article Filter ────────────────────────────────────────────────────────
+    artFilterAllLabel?: string
+
+    // ── Article Feature ───────────────────────────────────────────────────────
+    artFeatSectionLabel?:  string
+    artFeatContentSource?: 'collection' | 'manual'
+    artFeatImage?:         MediaRef | null
+    artFeatCategory?:      string
+    artFeatDate?:          string
+    artFeatTitle?:         string
+    artFeatDesc?:          string
+    artFeatReadTime?:      string
+    artFeatViews?:         string
+    artFeatCtaLabel?:      string
+    artFeatCtaUrl?:        string
+
     // ── About Hero ────────────────────────────────────────────────────────
     aboutHeroHeading?: string
     aboutHeroSubheading?: string
     badgeIcon?: MediaRef | null
+    badgeIconUrl?: string
     aboutHeroVideoUrl?: string
+    aboutHeroMediaType?: 'video' | 'image'
+    aboutHeroImage?: MediaRef | null
 
     // ── About Company ─────────────────────────────────────────────────────
     aboutCompanyHeading?: string
@@ -213,23 +305,50 @@ export interface BlockOverrides {
     // ── About Leadership ──────────────────────────────────────────────────
     leadershipHeading?: string
     leadershipSubheading?: string
+    teamColumns?: 2 | 3
     teamMembers?: Array<{ memberAvatar?: MediaRef | null; memberName?: string; memberRole?: string; memberBio?: string }>
+
+    // ── FAQ Section / FAQ Main ────────────────────────────────────────────
+    faqContentSource?: 'collection' | 'manual'
+    faqCategorySlug?: string
+    faqLimit?: number
+    faqBackLabel?: string
 
     // ── About FAQ ─────────────────────────────────────────────────────────
     faqHeading?: string
     faqSubheading?: string
     faqItems?: Array<{ faqQuestion?: string; faqAnswer?: string }>
+    faqSeeMoreLabel?: string
+    faqSeeMoreUrl?: string
+
+    // ── Article Submit ────────────────────────────────────────────────────
+    articleSubmitHeading?: string
+    articleSubmitSubheading?: string
+    articleSubmitCtaLabel?: string
+    articleSubmitSuccessMessage?: string
 
     // ── Page Hero (portfolio, insight, article, faq, community) ───────────
-    pageHeroAlign?: 'left' | 'center'
-    pageHeroDark?:  boolean
+    pageHeroAlign?:    'left' | 'center'
+    pageHeroDark?:     boolean
+    pageHeroCtaStyle?: 'rounded' | 'square'
 
     // ── Project Grid ──────────────────────────────────────────────────────
-    projectItems?: Array<{ projectTag?: string; projectType?: string; projectTitle?: string; projectDesc?: string; projectCta?: string; projectUrl?: string }>
+    projectHeading?: string
+    projectSubheading?: string
+    showCategoryFilter?: 'yes' | 'no'
+    projectContentSource?: 'collection' | 'manual'
+    projectLimit?: number
+    projectCategory?: string
+    projectOrderBy?: 'publishedAt_desc' | 'publishedAt_asc'
+    projectItems?: Array<{ projectTag?: string; projectType?: string; projectTitle?: string; projectDesc?: string; projectCta?: string; projectUrl?: string; projectImage?: MediaRef | null }>
 
     // ── Article Grid ──────────────────────────────────────────────────────
-    sectionLabel?:  string
-    articleItems?:  Array<{ articleCategory?: string; articleDate?: string; articleTitle?: string; articleDesc?: string; articleCta?: string; articleUrl?: string }>
+    sectionLabel?:          string
+    articleContentSource?:  'collection' | 'manual'
+    articlePostsLimit?:     number
+    articlePostsCategory?:  string
+    articlePostsOrderBy?:   'publishedAt_desc' | 'publishedAt_asc'
+    articleItems?:          Array<{ articleCategory?: string; articleDate?: string; articleTitle?: string; articleDesc?: string; articleCta?: string; articleUrl?: string; articleImage?: MediaRef | null }>
 
     // ── Article Featured ──────────────────────────────────────────────────
     featCategory?: string
@@ -245,16 +364,19 @@ export interface BlockOverrides {
     jobItems?: Array<{ jobTitle?: string; jobType?: string; jobDesc?: string; jobCta?: string; jobUrl?: string }>
 
     // ── Involved Hero ─────────────────────────────────────────────────────
-    ctaArrowSrc?: string
+    ctaArrowSrc?:       string
+    involvedHeroImage?: MediaRef | null
 
     // ── Culture Values ────────────────────────────────────────────────────
     cultureValues?: Array<{ valueTitle?: string; valueDesc?: string; valueIcon?: string }>
+    cultureImage?:  MediaRef | null
 
     // ── Community Channels ────────────────────────────────────────────────
     channelItems?: Array<{ channelIcon?: string; channelTitle?: string; channelDesc?: string; channelStats?: Array<{ statIcon?: string; statLabel?: string }>; channelCta?: string; channelUrl?: string }>
 
     // ── Community Ambassador ──────────────────────────────────────────────
     ambassadorBenefits?: Array<{ benefitIcon?: string; benefitTitle?: string; benefitDesc?: string }>
+    ambassadorImage?:    MediaRef | null
     ambassadorCta?: string
     ambassadorUrl?: string
 
@@ -264,12 +386,57 @@ export interface BlockOverrides {
     // ── Contact Hero ──────────────────────────────────────────────────────
     contactCards?: Array<{ cardIconSrc?: string; cardTitle?: string; cardDesc?: string; cardValue?: string }>
 
+    // ── Jobs List ─────────────────────────────────────────────────────────
+    jobSource?:   'manual' | 'collection'
+    jobCategory?: string
+    jobLimit?:    number
+
     // ── Contact Stats ─────────────────────────────────────────────────────
-    contactStatCtas?:  Array<{ contactCtaLabel?: string; contactCtaUrl?: string; contactCtaPrimary?: boolean; contactCtaIcon?: MediaRef | null; contactCtaIconPos?: 'left' | 'right' }>
+    contactStatsStyle?: 'light' | 'dark'
+    contactStatCtas?:  Array<{ contactCtaLabel?: string; contactCtaUrl?: string; contactCtaPrimary?: boolean; contactCtaIcon?: MediaRef | null; contactCtaIconPos?: 'left' | 'right'; contactCtaIconFill?: boolean }>
     contactStatItems?: Array<{ contactStatValue?: string; contactStatLabel?: string }>
 
     // ── Locations ─────────────────────────────────────────────────────────
     officeItems?: Array<{ officeName?: string; officeAddress?: string }>
+    locationCards?: Array<{ cardOffices?: Array<{ officeName?: string; officeAddress?: string }> }>
+
+    // ── Featured Case Study ───────────────────────────────────────────────
+    caseTitle?:              string
+    caseDesc?:               string
+    caseFeatures?:           string
+    clientLogo?:             MediaRef | null
+    clientLogos?:            MediaRef[]
+    caseImage?:              MediaRef | null
+    floatingPlatform?:       string
+    floatingPlatformType?:   string
+    floatingIconSrc?:        string
+    imagePosition?:          'left' | 'right'
+    sectionBg?:              string
+
+    // ── Partnership ───────────────────────────────────────────────────────────
+    partnershipNote?: string
+
+    // ── Serve Hero ────────────────────────────────────────────────────────────
+    serveHeroStatIconSrc?: string
+    serveHeroStatIconBg?:  string
+    serveHeroStatValue?:   string
+    serveHeroStatLabel?:   string
+
+    // ── Serve Value ───────────────────────────────────────────────────────────
+    serveValueItems?: Array<{ valueIconSrc?: string; valueTitle?: string; valueDesc?: string }>
+
+    // ── Serve Model ───────────────────────────────────────────────────────────
+    serveModelItems?: Array<{
+      modelTitle?:      string
+      modelIconSrc?:    string
+      modelDesc?:       string
+      modelFeatures?:   string
+      modelFeatured?:   boolean
+      modelBadgeLabel?: string
+    }>
+
+    // ── Form block ────────────────────────────────────────────────────────────
+    formRef?: string | null
   }
   style?: Partial<Pick<BlockTemplate,
     'textAlign' | 'fontFamily' | 'fontSize' | 'fontWeight' | 'lineHeight' |

@@ -1,18 +1,20 @@
+import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { getNavigation } from '@/lib/payload'
 import MegaMenuNav, { type NavItem } from './MegaMenuNav'
 
 interface HeaderProps {
   theme?: any
+  languageSwitcher?: React.ReactNode
 }
 
-export default async function Header({ theme }: HeaderProps = {}) {
+export default async function Header({ theme, languageSwitcher }: HeaderProps = {}) {
   const nav = await getNavigation().catch(() => ({
     siteTitle: 'ATech',
     menuItems: [],
     logo: null,
     ctaLabel: 'Get a Quote',
-    ctaUrl: '/contact',
+    ctaUrl: '/static/contact',
   }))
 
   const defaultNav: NavItem[] = [
@@ -26,7 +28,7 @@ export default async function Header({ theme }: HeaderProps = {}) {
     (nav.menuItems as any[])?.length ? (nav.menuItems as NavItem[]) : defaultNav
 
   const ctaLabel = (theme as any)?.navCtaLabel ?? (nav as any).ctaLabel ?? 'Get a Quote'
-  const ctaUrl   = (theme as any)?.navCtaUrl   ?? (nav as any).ctaUrl   ?? '/contact'
+  const ctaUrl   = (theme as any)?.navCtaUrl   ?? (nav as any).ctaUrl   ?? '/static/contact'
   const siteName = (theme as any)?.siteName ?? ''
   const logo     = (theme as any)?.logo ?? ''
 
@@ -39,8 +41,7 @@ export default async function Header({ theme }: HeaderProps = {}) {
       }}
     >
       <div
-        className="flex items-center justify-between px-6 md:px-[80px] mx-auto"
-        style={{ maxWidth: '1280px', height: 80 }}
+        className="flex items-center justify-between px-6 md:px-[80px] mx-auto h-[80px] md:max-w-[1440px]"
       >
         {/* Logo */}
         <Link href="/" className="flex items-center flex-shrink-0" style={{ textDecoration: 'none' }}>
@@ -59,8 +60,14 @@ export default async function Header({ theme }: HeaderProps = {}) {
           </div>
         </Link>
 
-        {/* Nav + CTA — light theme */}
-        <MegaMenuNav items={items} ctaLabel={ctaLabel} ctaUrl={ctaUrl} navTheme="light" />
+        {/* Nav + Language Switcher + CTA */}
+        <MegaMenuNav
+          items={items}
+          ctaLabel={ctaLabel}
+          ctaUrl={ctaUrl}
+          navTheme="light"
+          languageSwitcher={languageSwitcher}
+        />
       </div>
     </header>
   )

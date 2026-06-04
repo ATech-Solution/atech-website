@@ -37,3 +37,17 @@
 .template-minimal__wrap {
   border-top: 3px solid #034F98;
 }
+
+
+// custom
+.template-minimal__wrap {
+    border-top: none;
+}
+.login__brand {
+    filter: invert(100%);
+}
+.step-nav__home {
+    width: 100px;
+    height: auto;
+    filter: invert(100%);
+}

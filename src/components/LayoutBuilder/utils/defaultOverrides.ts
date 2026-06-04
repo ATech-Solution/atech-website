@@ -32,6 +32,7 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
         content: {
           badge:              h.hero.badge,
           heading:            h.hero.heading,
+          headingSub:         h.hero.headingSub,
           body:               h.hero.body,
           ctaPrimaryLabel:    h.hero.cta.primary.label,
           ctaPrimaryUrl:      h.hero.cta.primary.url,
@@ -77,8 +78,11 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
     case 'testimonials':
       return {
         content: {
-          heading:          h.testimonials.heading,
-          subheading:       h.testimonials.subheading,
+          heading:                    h.testimonials.heading,
+          subheading:                 h.testimonials.subheading,
+          testimonialsContentSource:  'manual',
+          testimonialsLimit:          9,
+          enableCarousel:             false,
           testimonialItems: h.testimonials.items.map((t) => ({
             clientName:    t.name,
             clientRole:    t.role,
@@ -297,6 +301,7 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
     case 'jobs-list':
       return {
         content: {
+          jobSource:  'manual' as const,
           heading:   inv.jobs.heading,
           subheading: inv.jobs.subheading,
           jobItems:  inv.jobs.openings.map((j) => ({
@@ -406,6 +411,7 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
     case 'contact-stats':
       return {
         content: {
+          contactStatsStyle: 'light' as const,
           heading:          cnt.stats.heading,
           subheading:       cnt.stats.subheading,
           contactStatCtas:  cnt.stats.cta.map((c) => ({
@@ -423,11 +429,153 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
     case 'locations':
       return {
         content: {
-          heading:     cnt.locations.heading,
-          officeItems: cnt.locations.offices.map((o) => ({
-            officeName:    o.name,
-            officeAddress: o.address,
-          })),
+          heading: cnt.locations.heading ?? 'Our Locations',
+          locationCards: [
+            {
+              cardOffices: [
+                { officeName: 'Hong Kong Head Office',            officeAddress: 'Room C, 22/F, King Palace Plaza, No.55 King Yip Street, Kwun Tong, KLN' },
+                { officeName: 'Hong Kong Science Park (HKSTP)',   officeAddress: 'Unit 962, 9/F, Building 19W, No. 19 Science Park West Avenue, Hong Kong Science Park, Pak Shek Kok, N.T.' },
+              ],
+            },
+            {
+              cardOffices: [
+                { officeName: 'China Branch Office',     officeAddress: '广州市南沙区黄阁镇市南公路黄阁段230号(自编三栋)105-13' },
+                { officeName: 'Indonesia Branch Office', officeAddress: 'Jl. Pluit Timur Raya No.17, RT.5/RW.6, Pluit, Kec. Penjaringan, Jkt Utara, Daerah Khusus Ibukota Jakarta 14450' },
+              ],
+            },
+            {
+              cardOffices: [
+                { officeName: 'Malaysia Branch Office', officeAddress: 'A-1-12 Vertical Business Suite No. 8, Jalan Kerinchi, Bangsar South, 59200, Kuala Lumpur' },
+              ],
+            },
+          ],
+        },
+      }
+
+    case 'featured-case-study':
+      return {
+        content: {
+          sectionLabel:        'Featured Case Study',
+          sectionBg:           '#ffffff',
+          caseTitle:           'HomAge: Revolutionizing Elderly Care Management',
+          caseDesc:            'HomAge is a project funded by the City University of Hong Kong that provides frail elders home-visiting healthcare services. ATech worked with HomAge\'s team of nurses and social workers shoulder-to-shoulder to design and develop an end-to-end system.',
+          caseFeatures:        'Real-time coordination of caregiver tasks and schedules.\nSecure portal for families to track health metrics and reports.\nCentralized record-keeping ensuring care continuity across shifts.',
+          floatingPlatform:    '40%',
+          floatingPlatformType: 'Efficiency Increase',
+          ctaPrimaryLabel:     'View Case Study',
+          ctaPrimaryUrl:       '#',
+          imagePosition:       'right',
+        },
+      }
+
+    case 'faq-main':
+      return {
+        content: {
+          faqContentSource: 'collection' as const,
+          faqLimit: 100,
+          faqBackLabel: 'Back',
+        },
+      }
+
+    case 'breadcrumb':
+      return {
+        content: {
+          breadcrumbs: [
+            { bcLabel: 'Home', bcHref: '/' },
+            { bcLabel: 'Page', bcHref: null },
+          ],
+        },
+      }
+
+    case 'faq-about':
+      return {
+        content: {
+          badge:             'FAQ',
+          faqContentSource:  'manual' as const,
+          faqCategorySlug:   '',
+          faqLimit:          20,
+          faqHeading:        au.faq.heading,
+          faqSubheading:     au.faq.subheading,
+          faqItems:          au.faq.items.map((f) => ({ faqQuestion: f.question, faqAnswer: f.answer })),
+          faqSeeMoreLabel:   'See more',
+          faqSeeMoreUrl:     undefined,
+        },
+      }
+
+    case 'article-submit':
+      return {
+        content: {
+          articleSubmitHeading:        'Submit an Article',
+          articleSubmitSubheading:     'Share your knowledge with our community.',
+          articleSubmitCtaLabel:       'Submit Article',
+          articleSubmitSuccessMessage: 'Thank you! Your article has been submitted for review.',
+        },
+      }
+
+    case 'serve-model':
+      return {
+        content: {
+          heading:    'Flexible Engagement Models',
+          subheading: "Choose the partnership model that best fits your startup's stage and needs.",
+          serveModelItems: [
+            {
+              modelTitle:    'Project-Based',
+              modelDesc:     'Fixed scope and timeline for MVP development and specific features.',
+              modelFeatures: 'Clear deliverables and milestones\nFixed budget and timeline\nIdeal for MVPs and prototypes',
+              modelFeatured: false,
+            },
+            {
+              modelTitle:      'Dedicated Team',
+              modelDesc:       'Your own dedicated development team working exclusively on your product.',
+              modelFeatures:   'Full-time dedicated developers\nFlexible team scaling\nLong-term partnership',
+              modelFeatured:   true,
+              modelBadgeLabel: 'Most Popular',
+            },
+            {
+              modelTitle:    'Staff Augmentation',
+              modelDesc:     'Extend your in-house team with skilled engineers on demand.',
+              modelFeatures: 'Seamless team integration\nOn-demand scaling\nRetain full control',
+              modelFeatured: false,
+            },
+          ],
+        },
+      }
+
+    case 'serve-value':
+      return {
+        content: {
+          heading:    'Why Startups Choose ATech',
+          subheading: 'We understand the unique challenges startups face and provide solutions designed for rapid growth and scalability.',
+          serveValueItems: [
+            { valueTitle: 'Fast MVP Development',   valueDesc: 'Launch your product in weeks, not months, with our agile development approach.' },
+            { valueTitle: 'Cost-Effective Solutions', valueDesc: 'Flexible pricing models and efficient development to maximize your runway.' },
+            { valueTitle: 'Scalable Architecture',   valueDesc: 'Build on solid foundations that grow seamlessly with your user base.' },
+            { valueTitle: 'Strategic Guidance',      valueDesc: 'Tech consultancy and strategic advice from experienced startup advisors.' },
+          ],
+        },
+      }
+
+    case 'serve-hero':
+      return {
+        content: {
+          heading:           'Technology Partner for Ambitious Startups',
+          body:              'From MVP to scale, we empower startups with agile development, strategic tech guidance, and flexible solutions that grow with your vision. Build faster, smarter, and more cost-effectively with ATech.',
+          ctaPrimaryLabel:   'Get Started',
+          ctaPrimaryUrl:     '/static/contact',
+          ctaSecondaryLabel: 'View Success Stories',
+          ctaSecondaryUrl:   '/portfolio',
+          serveHeroStatValue: '50+ Startups Launched',
+          serveHeroStatLabel: 'From Seed to Series B',
+        },
+      }
+
+    case 'partnership':
+      return {
+        content: {
+          heading:         'Get Partnership Opportunities',
+          description:     'Have ideas, questions, or want to collaborate?\nLeave your details and we\'ll get in touch with you soon.',
+          partnershipNote: 'Join 15,000+ developers and tech leaders. Unsubscribe anytime.',
+          submitLabel:     'Send Message',
         },
       }
 

@@ -1,32 +1,41 @@
 // Hero Section — Layout Builder variant (Advance)
 // Used by: hero block type
 
-import type React from 'react'
 import Link from 'next/link'
+import type { CSSProperties, ReactNode } from 'react'
+
+function CtaWrap({ href, className, style, children }: { href?: string; className?: string; style?: CSSProperties; children: ReactNode }) {
+  if (href) return <Link href={href} className={className} style={style}>{children}</Link>
+  return <span className={className} style={style}>{children}</span>
+}
 
 interface HeroStat         { statValue: string; statLabel: string }
 interface FloatingCard     { cardText: string; cardPosition: string; cardIcon?: { url: string } }
 interface HeroSectionData {
-  badge?:              string
-  badgeIcon?:          { url: string } | null
-  heading?:            string
-  body?:               string
-  ctaPrimaryLabel?:    string
-  ctaPrimaryUrl?:      string
-  ctaPrimaryIcon?:     { url: string } | null
-  ctaPrimaryIconPos?:  'left' | 'right'
-  ctaSecondaryLabel?:  string
-  ctaSecondaryUrl?:    string
-  ctaSecondaryIcon?:   { url: string } | null
-  ctaSecondaryIconPos?: 'left' | 'right'
-  heroImage?:          { url: string; alt?: string }
-  heroStats?:          HeroStat[]
-  floatingCards?:      FloatingCard[]
+  badge?:                 string
+  badgeIcon?:             { url: string } | null
+  heading?:               string
+  headingSub?:            string
+  body?:                  string
+  ctaPrimaryLabel?:       string
+  ctaPrimaryUrl?:         string
+  ctaPrimaryIcon?:        { url: string } | null
+  ctaPrimaryIconPos?:     'left' | 'right'
+  ctaPrimaryIconFill?:    boolean
+  ctaSecondaryLabel?:     string
+  ctaSecondaryUrl?:       string
+  ctaSecondaryIcon?:      { url: string } | null
+  ctaSecondaryIconPos?:   'left' | 'right'
+  ctaSecondaryIconFill?:  boolean
+  heroImage?:             { url: string; alt?: string }
+  heroImagePadding?:      boolean
+  heroStats?:             HeroStat[]
+  floatingCards?:         FloatingCard[]
 }
 
-function BtnIcon({ src, size = 14 }: { src: string; size?: number }) {
+function BtnIcon({ src, size = 14, fill }: { src: string; size?: number; fill?: boolean }) {
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt="" width={size} height={size} style={{ objectFit: 'contain', display: 'inline-block', verticalAlign: 'middle' }} />
+  return <img src={src} alt="" width={size} height={size} style={{ objectFit: fill ? 'fill' : 'contain', display: 'inline-block', verticalAlign: 'middle' }} />
 }
 
 function ArrowDefault() {
@@ -37,21 +46,18 @@ function ArrowDefault() {
   )
 }
 
-function StatItem({ statValue, statLabel, hasBorder }: HeroStat & { hasBorder: boolean }) {
+function StatItem({ statValue, statLabel }: HeroStat) {
   return (
-    <div
-      className="flex-1"
-      style={hasBorder ? { paddingLeft: '1.5rem', borderLeft: '1px solid rgba(255,255,255,0.15)' } : {}}
-    >
+    <div className="flex-1">
       <p
-        className="leading-none mb-1"
-        style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.875rem', fontWeight: 700, color: 'var(--stat-value-color, #ffd369)' }}
+        className="mb-1"
+        style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '1.875rem', fontWeight: 400, color: '#ffd369', lineHeight: '36px' }}
       >
         {statValue}
       </p>
       <p
         className="text-xs tracking-wider uppercase"
-        style={{ color: 'var(--stat-label-color, #ffd369)', fontFamily: 'var(--font-work-sans, sans-serif)', opacity: 0.85 }}
+        style={{ color: '#ffd369', fontFamily: 'var(--font-work-sans, sans-serif)', letterSpacing: '0.6px' }}
       >
         {statLabel}
       </p>
@@ -66,8 +72,7 @@ function FloatingBadgeCard({ cardText, cardIcon, className }: { cardText: string
       style={{
         background: 'var(--badge-bg, #ffffff)',
         border: '1px solid #e5e5e5',
-        boxShadow: '0px 10px 15px -3px rgba(0,0,0,0.1), 0px 4px 6px -4px rgba(0,0,0,0.1)',
-        minWidth: '180px',
+        boxShadow: '0px 10px 15px -3px rgba(0,0,0,0.1), 0px 4px 6px -4px rgba(0,0,0,0.1)',        
       }}
     >
       <div
@@ -107,20 +112,24 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
       className="relative overflow-hidden"
       style={{
         background: 'var(--color-bg, #292929)',
-        minHeight: 'var(--section-min-height, auto)',
+        minHeight: '90.1vh',
       }}
     >
+      {/* minHeight: 'var(--section-min-height, auto)', */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{ backgroundImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0) 100%)' }}
       />
 
       <div
-        className="relative mx-auto px-6 md:px-10 py-20 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
-        style={{ maxWidth: 'var(--content-max-width, 1280px)' }}
+        className="relative mx-auto flex flex-col lg:flex-row items-stretch"
+        style={{ maxWidth: '1470px' }}
       >
+        {/* maxWidth: 'var(--content-max-width, 1280px)' */}
         {/* ── Left ── */}
-        <div className="flex flex-col">
+        {/* flex-1 */}
+        <div className="w-full lg:flex-1 flex flex-col
+          ">
           {data.badge && (
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 self-start"
@@ -144,21 +153,26 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
               </span>
             </div>
           )}
-
-          {data.heading && (
+          <span className='px-6 md:px-10 py-20 lg:py-24 lg:pl-24 lg:pr-16 lg:mt-5'>
+          {(data.heading || data.headingSub) && (
             <h1
-              className="leading-tight mb-6"
+              className="mb-6"
               style={{
                 fontFamily: 'var(--font-work-sans, sans-serif)',
-                fontSize: 'var(--heading-font-size, clamp(2rem, 4.5vw, 3.5rem))',
-                fontWeight: 'var(--heading-font-weight, 700)' as React.CSSProperties['fontWeight'],
-                color: 'var(--color-text, #fafafa)',
-                letterSpacing: '-0.02em',
-                lineHeight: 'var(--heading-line-height, 1.1)',
-                textShadow: 'var(--heading-text-shadow, none)',
+                color: '#ffffff',
+                paddingRight: '30px'
               }}
             >
-              {data.heading}
+              {data.heading && (
+                <span className="text-4xl sm:text-6xl md:text-[64px]" style={{fontWeight: 700, lineHeight: '1.1', display: 'block' }}>
+                  {data.heading}{data.headingSub ? ' ' : ''}
+                </span>
+              )}
+              {data.headingSub && (
+                <span className="text-2xl sm:text-4xl md:text-[48px]" style={{fontWeight: 400, lineHeight: '1.2' }}>
+                  {data.headingSub}
+                </span>
+              )}
             </h1>
           )}
 
@@ -168,7 +182,7 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
               style={{
                 fontFamily: 'var(--font-work-sans, sans-serif)',
                 fontSize: 'var(--body-font-size, 1.125rem)',
-                color: 'var(--color-muted, #a3a3a3)',
+                color: '#ffffff',
                 lineHeight: '1.625',
               }}
             >
@@ -178,78 +192,98 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
 
           {(data.ctaPrimaryLabel || data.ctaSecondaryLabel) && (
             <div className="flex flex-wrap gap-4 mb-14">
-              {data.ctaPrimaryLabel && data.ctaPrimaryUrl && (
-                <Link
+              {data.ctaPrimaryLabel && (
+                <CtaWrap
                   href={data.ctaPrimaryUrl}
-                  className="inline-flex items-center gap-2.5 px-8 py-4 rounded-md text-base font-normal transition-opacity duration-200 hover:opacity-90"
+                  className="w-full sm:w-[350px] md:w-auto inline-flex items-center gap-2 transition-opacity duration-200 hover:opacity-90"
                   style={{
-                    background: 'var(--cta-primary-bg, #ffd369)',
-                    color: 'var(--cta-primary-text, #171717)',
+                    background: '#ffffff',
+                    color: '#000000',
                     fontFamily: 'var(--font-work-sans, sans-serif)',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    padding: '16px 32px',
+                    borderRadius: '6px',
                   }}
                 >
                   {data.ctaPrimaryIcon?.url && primaryIconPos === 'left' && (
-                    <BtnIcon src={data.ctaPrimaryIcon.url} />
+                    <BtnIcon src={data.ctaPrimaryIcon.url} fill={data.ctaPrimaryIconFill} />
                   )}
                   {data.ctaPrimaryLabel}
                   {data.ctaPrimaryIcon?.url && primaryIconPos === 'right' ? (
-                    <BtnIcon src={data.ctaPrimaryIcon.url} />
-                  ) : !data.ctaPrimaryIcon?.url ? (
+                    <BtnIcon src={data.ctaPrimaryIcon.url} fill={data.ctaPrimaryIconFill} />
+                  ) : data.ctaPrimaryIcon === undefined ? (
                     <ArrowDefault />
                   ) : null}
-                </Link>
+                </CtaWrap>
               )}
-              {data.ctaSecondaryLabel && data.ctaSecondaryUrl && (
-                <Link
+              {data.ctaSecondaryLabel && (
+                <CtaWrap
                   href={data.ctaSecondaryUrl}
-                  className="inline-flex items-center gap-2.5 px-8 py-4 rounded-md text-base font-normal transition-opacity duration-200 hover:opacity-80"
+                  className="w-full sm:w-[350px] md:w-auto inline-flex items-center gap-2.5 transition-opacity duration-200 hover:opacity-80"
                   style={{
-                    background: 'var(--cta-secondary-bg, transparent)',
-                    color: 'var(--cta-secondary-text, #fafafa)',
-                    border: 'var(--cta-secondary-border, 1px solid rgba(250,250,250,0.25))',
+                    background: '#41403f',
+                    color: '#ffffff',
+                    border: '1px solid #e5e5e5',
                     fontFamily: 'var(--font-work-sans, sans-serif)',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    padding: '16px 33px',
+                    borderRadius: '6px',
                   }}
                 >
                   {data.ctaSecondaryIcon?.url && secondaryIconPos === 'left' && (
-                    <BtnIcon src={data.ctaSecondaryIcon.url} />
+                    <BtnIcon src={data.ctaSecondaryIcon.url} fill={data.ctaSecondaryIconFill} />
                   )}
                   {data.ctaSecondaryLabel}
                   {data.ctaSecondaryIcon?.url && secondaryIconPos === 'right' && (
-                    <BtnIcon src={data.ctaSecondaryIcon.url} />
+                    <BtnIcon src={data.ctaSecondaryIcon.url} fill={data.ctaSecondaryIconFill} />
                   )}
-                </Link>
+                </CtaWrap>
               )}
             </div>
           )}
 
           {stats.length > 0 && (
             <div
-              className="flex items-start pt-8 gap-0"
-              style={{
-                borderTop: 'var(--stats-border, 1px solid rgba(255,255,255,0.12))',
-                background: 'var(--stats-bg, transparent)',
-              }}
+              className="flex items-start gap-6"
+              style={{ borderTop: '1px solid #FFCD37', paddingTop: '33px' }}
             >
               {stats.map((stat, i) => (
-                <StatItem key={i} {...stat} hasBorder={i > 0} />
+                <StatItem key={i} {...stat} />
               ))}
             </div>
           )}
+          </span>
         </div>
+        {/* px-6 md:px-10 py-20 lg:py-24 lg:pl-24 lg:pr-16 lg:mt-5 */}
 
         {/* ── Right — image + floating cards ── */}
         {data.heroImage?.url && (
-          <div className="relative w-full hidden lg:block" style={{ height: '580px' }}>
+          <div
+            className="w-full lg:flex-1 hiddens lg:blocks relative 2xl:mt-8"
+            style={{ flex: 1, minHeight: '100%' }}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={data.heroImage.url}
               alt={data.heroImage.alt ?? ''}
-              className="absolute inset-0 w-full h-full object-cover"
+              style={{
+                position: 'relative',
+                top:    data.heroImagePadding ? '80px' : '0',
+                right:  data.heroImagePadding ? '40px' : '0',
+                bottom: data.heroImagePadding ? '40px' : '0',
+                left:   data.heroImagePadding ? '40px' : 'unset',
+                objectFit: 'cover',
+                maxHeight: data.heroImagePadding ? '600px' : 'none',
+                width: '100%',
+                margin: data.heroImagePadding ? '0 auto' : 'auto',
+              }}
             />
-            {topCard    && <FloatingBadgeCard {...topCard}    className="top-[174px] -right-3" />}
-            {bottomCard && <FloatingBadgeCard {...bottomCard} className="bottom-[144px] left-[-24px]" />}
-            {topLeftCard  && <FloatingBadgeCard {...topLeftCard}  className="top-[174px] -left-3" />}
-            {botRightCard && <FloatingBadgeCard {...botRightCard} className="bottom-[144px] -right-3" />}
+            {topCard    && <FloatingBadgeCard {...topCard}    className="w-[200px] top-[90px] md:top-[250px] right-[15px] md:right-20" />}
+            {bottomCard && <FloatingBadgeCard {...bottomCard} className="min-w-[200px] bottom-[100px] left-[15px] md:left-[-24px]" />}
+            {topLeftCard  && <FloatingBadgeCard {...topLeftCard}  className="min-w-[250px] top-[174px] md:-left-3" />}
+            {botRightCard && <FloatingBadgeCard {...botRightCard} className="min-w-[250px] bottom-[144px] md:-right-3" />}
           </div>
         )}
       </div>

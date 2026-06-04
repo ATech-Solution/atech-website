@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { Syne, DM_Sans, Work_Sans } from 'next/font/google'
 import React from 'react'
-import '../../../public/assets/css/globals.css'
+import '../globals.css'
+import { getFaviconUrl } from '@/lib/payload'
 
 const syne = Syne({
   subsets: ['latin'],
@@ -24,7 +25,10 @@ const workSans = Work_Sans({
   display: 'swap',
 })
 
-export const metadata: Metadata = { title: 'Layout Preview' }
+export async function generateMetadata(): Promise<Metadata> {
+  const icon = await getFaviconUrl()
+  return { title: 'Layout Preview', icons: [{ rel: 'icon', url: icon }] }
+}
 
 export default function LBPreviewLayout({ children }: { children: React.ReactNode }) {
   return (

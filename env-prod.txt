@@ -10,7 +10,7 @@ MAINTENANCE_MODE=true
 # ============================================================
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_SITE_URL_DEV=http://localhost:3000
-NEXT_PUBLIC_SITE_URL_PROD=https://uat.atach.software
+NEXT_PUBLIC_SITE_URL_PROD=https://uat.atech.software
 NODE_ENV=production
 #production or development (default: development)
 # ============================================================
@@ -19,14 +19,14 @@ NODE_ENV=production
 # ============================================================
 PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3000
 PAYLOAD_PUBLIC_SERVER_URL_DEV=http://localhost:3000
-PAYLOAD_PUBLIC_SERVER_URL_PROD=https://uat.atach.software
+PAYLOAD_PUBLIC_SERVER_URL_PROD=https://uat.atech.software
 PAYLOAD_SECRET=9a53f76e1108f288f6717bea779733dff1ab967b7fe298d9ba1f6cb438387fce
 # ============================================================
 # SITE DOMAIN (used for SEO canonical URLs)
 # ============================================================
 NEXT_PUBLIC_DOMAIN=http://localhost:3000
 NEXT_PUBLIC_DOMAIN_DEV=http://localhost:3000
-NEXT_PUBLIC_DOMAIN_PROD=https://uat.atach.software
+NEXT_PUBLIC_DOMAIN_PROD=https://uat.atech.software
 
 # ============================================================
 # DATABASE (SQLite)
@@ -74,4 +74,4 @@ EMAIL_FROM_NAME=ATech Software
 # ============================================================
 # SITE DOMAIN (used for SEO canonical URLs)
 # ============================================================
-NEXT_PUBLIC_DOMAIN=https://uat.atach.software
+NEXT_PUBLIC_DOMAIN=https://uat.atech.software

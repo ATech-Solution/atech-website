@@ -11,8 +11,8 @@
       "heading": "Custom Mobile \nApp Development\nSolutions",
       "body": "Transform your ideas into powerful, scalable, and user-centric applications. We build high-performance native and cross-platform apps tailored to your business goals.",
       "cta": {
-        "primary":   { "label": "Start Your Project",  "url": "/contact"   },
-        "secondary": { "label": "View Case Studies",    "url": "/portfolio" }
+        "primary":   { "label": "Start Your Project",  "url": "/static/contact"   },
+        "secondary": { "label": "View Case Studies",    "url": "/static/portfolio" }
       },
       "image": {
         "src": "https://www.figma.com/api/mcp/asset/57337a01-d858-4816-ba7f-97332e6d73c0",
@@ -46,7 +46,7 @@
     "cta": {
       "heading":    "Ready to Build Your Next Great App?",
       "subheading": "Let our development experts help you create a powerful, scalable application tailored to your business needs.",
-      "button":     { "label": "Start Your App Project", "url": "/contact" },
+      "button":     { "label": "Start Your App Project", "url": "/static/contact" },
       "stats": [
         { "value": "500+", "label": "Apps Delivered"  },
         { "value": "50M+", "label": "Active Users"    },

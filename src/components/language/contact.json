@@ -30,7 +30,7 @@
       "subheading": "Let's discuss how we can help transform your business with innovative technology solutions. Our team is ready to bring your vision to life.",
       "cta": [
         { "label": "Message us on WhatsApp", "url": "#", "primary": true },
-        { "label": "View Portfolio",         "url": "/portfolio",  "primary": false }
+        { "label": "View Portfolio",         "url": "/static/portfolio",  "primary": false }
       ],
       "items": [
         { "value": "500+", "label": "Projects Completed" },

@@ -4,7 +4,9 @@
  */
 import { getPayload } from 'payload'
 import { unstable_cache } from 'next/cache'
+import { cookies } from 'next/headers'
 import config from '@payload-config'
+import { withPerfCache } from '@/plugins/performance/createCachedFetch'
 
 // Singleton so the connection is reused across requests during dev
 let payloadInstance: Awaited<ReturnType<typeof getPayload>> | null = null
@@ -16,53 +18,273 @@ export async function getPayloadClient() {
   return payloadInstance
 }
 
-/** Fetch a single page by its slug */
-export async function getPage(slug: string) {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'pages',
-    where: { slug: { equals: slug } },
-    limit: 1,
-  })
-  return result.docs[0] ?? null
-}
+/** Fetch the page marked as the site frontpage (cached; bust with revalidateTag('perf:frontpage')) */
+export const getFrontpage = withPerfCache(
+  async (locale: string = 'en') => {
+    try {
+      const payload = await getPayloadClient()
+      const result = await payload.find({
+        collection: 'pages',
+        where: { isFrontpage: { equals: true }, status: { equals: 'published' } },
+        locale: locale as any,
+        limit: 1,
+      })
+      return result.docs[0] ?? null
+    } catch {
+      return null
+    }
+  },
+  ['perf:frontpage'],
+  { revalidate: 60, tags: ['perf:frontpage', 'perf:pages'] },
+)
 
-/** Fetch the global navigation config */
-export async function getNavigation() {
-  const payload = await getPayloadClient()
-  return payload.findGlobal({ slug: 'navigation' })
-}
+/** Fetch a single page by its slug (cached; bust with revalidateTag('perf:pages')) */
+export const getPage = withPerfCache(
+  async (slug: string, locale: string = 'en') => {
+    try {
+      const payload = await getPayloadClient()
+      const result = await payload.find({
+        collection: 'pages',
+        where: { slug: { equals: slug } },
+        locale: locale as any,
+        limit: 1,
+      })
+      return result.docs[0] ?? null
+    } catch {
+      return null
+    }
+  },
+  ['perf:page'],
+  { revalidate: 60, tags: ['perf:page', 'perf:pages'] },
+)
+
+/** Fetch the global navigation config (cached; bust with revalidateTag('perf:navigation')) */
+export const getNavigation = withPerfCache(
+  async (locale: string = 'en') => {
+    try {
+      const payload = await getPayloadClient()
+      return payload.findGlobal({ slug: 'navigation', locale: locale as any })
+    } catch {
+      return null
+    }
+  },
+  ['perf:navigation'],
+  { revalidate: 60, tags: ['perf:navigation'] },
+)
 
 /** Fetch the site theme global (cached; busted by revalidateTag('theme') in Theme afterChange hook) */
 export const getTheme = unstable_cache(
-  async () => {
+  async (locale: string = 'en') => {
     const payload = await getPayloadClient()
-    return payload.findGlobal({ slug: 'theme' }).catch(() => null)
+    return payload.findGlobal({ slug: 'theme', locale: locale as any }).catch(() => null)
   },
   ['theme'],
   { tags: ['theme'] },
 )
 
 export const getSettings = unstable_cache(
-  async () => {
+  async (locale: string = 'en') => {
     const payload = await getPayloadClient()
-    return payload.findGlobal({ slug: 'settings' }).catch(() => null)
+    return payload.findGlobal({ slug: 'settings', locale: locale as any }).catch(() => null)
   },
   ['settings'],
   { tags: ['settings'] },
 )
 
+/** Fetch language settings for the multilanguage plugin */
+export const getLanguageSettings = unstable_cache(
+  async () => {
+    try {
+      const payload = await getPayloadClient()
+      return payload.findGlobal({ slug: 'language-settings' as any }).catch(() => null)
+    } catch {
+      return null
+    }
+  },
+  ['language-settings'],
+  { tags: ['multilang-settings'], revalidate: 60 },
+)
+
+/** Fetch performance plugin settings (cached; bust with revalidateTag('perf-settings')) */
+export const getPerformanceSettings = withPerfCache(
+  async () => {
+    try {
+      const payload = await getPayloadClient()
+      return payload.findGlobal({ slug: 'performance-settings' }).catch(() => null)
+    } catch {
+      return null
+    }
+  },
+  ['perf-settings'],
+  { revalidate: 60, tags: ['perf-settings'] },
+)
+
+/** Fetch a single portfolio item by slug, with categories and featuredImage populated */
+export async function getPortfolioItem(slug: string, locale: string = 'en') {
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'portfolio',
+      where: { slug: { equals: slug }, status: { equals: 'published' } },
+      locale: locale as any,
+      depth: 2,
+      limit: 1,
+    })
+    return result.docs[0] ?? null
+  } catch {
+    return null
+  }
+}
+
+/** Fetch the Page marked as the portfolio detail template */
+export async function getPortfolioTemplatePage(locale: string = 'en') {
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'pages',
+      where: { portfolioDetailTemplate: { equals: true } },
+      locale: locale as any,
+      limit: 1,
+    })
+    return result.docs[0] ?? null
+  } catch {
+    return null
+  }
+}
+
+/** Fetch a single post (article) by slug, with categories and featuredImage populated */
+export async function getPostItem(slug: string, locale: string = 'en') {
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'posts',
+      where: { slug: { equals: slug }, status: { equals: 'published' } },
+      locale: locale as any,
+      depth: 2,
+      limit: 1,
+    })
+    return result.docs[0] ?? null
+  } catch {
+    return null
+  }
+}
+
+/** Fetch the Page marked as the article detail template */
+export async function getArticleTemplatePage(locale: string = 'en') {
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'pages',
+      where: { articleDetailTemplate: { equals: true } },
+      locale: locale as any,
+      limit: 1,
+    })
+    return result.docs[0] ?? null
+  } catch {
+    return null
+  }
+}
+
+/** Fetch all active plugins (cached; bust with revalidateTag('plugins')) */
+export const getActivePlugins = unstable_cache(
+  async () => {
+    try {
+      const payload = await getPayloadClient()
+      const result = await payload.find({
+        collection: 'plugins',
+        where: { status: { equals: 'active' } },
+        limit: 100,
+      })
+      return result.docs
+    } catch {
+      return []
+    }
+  },
+  ['active-plugins'],
+  { tags: ['plugins'] },
+)
+
+export interface LoggedInUser {
+  id: string
+  email: string
+  firstName?: string
+  lastName?: string
+  role?: string
+  showAdminMenu?: boolean
+}
+
+/**
+ * Return the currently logged-in Payload user, or null if no valid session.
+ * Decodes the payload-token JWT to get the user ID, then fetches fresh data
+ * from the DB so field values (like showAdminMenu) are always current.
+ */
+export async function getLoggedInUser(): Promise<LoggedInUser | null> {
+  try {
+    const cookieStore = await cookies()
+    const token = cookieStore.get('payload-token')?.value
+    if (!token) return null
+
+    // Decode without verifying — we only need the user ID and expiry
+    const { decodeJwt } = await import('jose')
+    const decoded = decodeJwt(token) as { id?: string; exp?: number }
+
+    if (!decoded.id || !decoded.exp || decoded.exp * 1000 < Date.now()) return null
+
+    const payload = await getPayloadClient()
+    const user = await payload.findByID({
+      collection: 'users',
+      id: decoded.id,
+      depth: 0,
+    })
+    if (!user) return null
+
+    return {
+      id:            String(user.id),
+      email:         user.email,
+      firstName:     (user as any).firstName ?? undefined,
+      lastName:      (user as any).lastName  ?? undefined,
+      role:          (user as any).role      ?? undefined,
+      showAdminMenu: (user as any).showAdminMenu ?? false,
+    }
+  } catch {
+    return null
+  }
+}
+
+/** Return the favicon URL from the theme global, with a static fallback */
+export async function getFaviconUrl(): Promise<string> {
+  try {
+    const theme = await getTheme()
+    const url = (theme as any)?.favicon?.url
+    if (url) return url
+  } catch {
+    // non-fatal
+  }
+  return '/images/favicon-.png'
+}
+
 /**
  * Batch-fetch block templates by ID.
  * Returns a map of { [id]: blockDoc } for merging with layoutBuilder overrides.
  */
-export async function getBlockTemplates(ids: string[]): Promise<Record<string, any>> {
-  if (!ids.length) return {}
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'blocks',
-    where: { id: { in: ids } },
-    limit: ids.length,
-  })
-  return Object.fromEntries(result.docs.map((doc) => [String(doc.id), doc]))
-}
+/** Fetch block templates by IDs (cached; bust with revalidateTag('perf:block-templates')) */
+export const getBlockTemplates = withPerfCache(
+  async (ids: string[], locale: string = 'en'): Promise<Record<string, any>> => {
+    const sortedIds = [...ids].sort()
+    if (!sortedIds.length) return {}
+    try {
+      const payload = await getPayloadClient()
+      const result = await payload.find({
+        collection: 'blocks',
+        where: { id: { in: sortedIds } },
+        locale: locale as any,
+        limit: sortedIds.length,
+      })
+      return Object.fromEntries(result.docs.map((doc) => [String(doc.id), doc]))
+    } catch {
+      return {}
+    }
+  },
+  ['perf:block-templates'],
+  { revalidate: 60, tags: ['perf:block-templates', 'perf:pages'] },
+)

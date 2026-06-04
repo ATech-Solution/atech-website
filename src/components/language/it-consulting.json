@@ -11,8 +11,8 @@
       "heading": "Strategic IT Consulting &\nTechnology Advisory",
       "body": "Navigate complex technology decisions with confidence. Our expert consultants provide strategic guidance to optimize your IT infrastructure, accelerate digital transformation, and drive business growth.",
       "cta": {
-        "primary":   { "label": "Schedule Consultation", "url": "/contact"   },
-        "secondary": { "label": "View Our Expertise",    "url": "/portfolio" }
+        "primary":   { "label": "Schedule Consultation", "url": "/static/contact"   },
+        "secondary": { "label": "View Our Expertise",    "url": "/static/portfolio" }
       },
       "image": {
         "src": "https://www.figma.com/api/mcp/asset/fc0db955-1489-4404-b5f0-15f661e46f2c",
@@ -90,7 +90,7 @@
     "cta": {
       "heading":    "Ready to Transform Your IT Strategy?",
       "subheading": "Let our expert consultants help you navigate complex technology decisions and accelerate your digital transformation journey.",
-      "button":     { "label": "Schedule Free Consultation", "url": "/contact" },
+      "button":     { "label": "Schedule Free Consultation", "url": "/static/contact" },
       "stats": [
         { "value": "200+", "label": "Projects Completed"  },
         { "value": "15+",  "label": "Years Experience"    },

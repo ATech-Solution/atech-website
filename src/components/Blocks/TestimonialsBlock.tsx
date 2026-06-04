@@ -23,7 +23,7 @@ export default function TestimonialsBlock({ data }: { data: TestimonialsData }) 
 
   return (
     <section
-      className="py-24"
+      className="py-20"
       style={{ background: '#ffd369' }}
     >
       <div className="mx-auto px-6 md:px-10" style={{ maxWidth: '1280px' }}>
@@ -35,6 +35,7 @@ export default function TestimonialsBlock({ data }: { data: TestimonialsData }) 
             align="center"
             headingColor="#171717"
             subheadingColor="#525252"
+            headingFontWeight={400}
           />
         </div>
 

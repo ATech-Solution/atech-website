@@ -7,6 +7,7 @@ interface SectionHeaderProps {
   align?: 'center' | 'left'
   headingColor?: string
   subheadingColor?: string
+  headingFontWeight?: number
 }
 
 export default function SectionHeader({
@@ -15,6 +16,7 @@ export default function SectionHeader({
   align = 'center',
   headingColor = 'var(--color-text, #fafafa)',
   subheadingColor = 'var(--color-muted, #525252)',
+  headingFontWeight = 400,
 }: SectionHeaderProps) {
   const textAlign = align === 'center' ? 'text-center' : 'text-left'
   const itemsAlign = align === 'center' ? 'items-center' : 'items-start'
@@ -22,13 +24,12 @@ export default function SectionHeader({
   return (
     <div className={`flex flex-col gap-6 ${itemsAlign} w-full`}>
       <h2
-        className={`${textAlign} w-full leading-tight tracking-tight`}
+        className={`${textAlign} w-full leading-tight`}
         style={{
           fontFamily: 'var(--font-work-sans, sans-serif)',
           fontSize: 'clamp(1.75rem, 3vw, 2.25rem)',
-          fontWeight: 700,
+          fontWeight: headingFontWeight,
           color: headingColor,
-          letterSpacing: '-0.01em',
         }}
       >
         {heading}

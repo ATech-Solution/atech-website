@@ -1,6 +1,6 @@
-import type { CollectionConfig } from 'payload'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import type { CollectionConfig, PayloadRequest } from 'payload'
 import { settingsAccess } from '@/lib/access'
+import { buildSeoFields } from '@/plugins/seo/fields'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -9,7 +9,7 @@ export const Posts: CollectionConfig = {
     defaultColumns: ['title', 'status', 'publishedAt', 'updatedAt'],
     livePreview: {
       url: ({ data }) =>
-        `${process.env.PAYLOAD_PUBLIC_SERVER_URL ?? process.env.NEXT_PUBLIC_DOMAIN ?? 'http://localhost:3000'}/posts/${data?.slug ?? ''}`,
+        `${process.env.PAYLOAD_PUBLIC_SERVER_URL ?? process.env.NEXT_PUBLIC_DOMAIN ?? 'http://localhost:3000'}/article/${data?.slug ?? ''}`,
     },
   },
   access: {
@@ -26,6 +26,27 @@ export const Posts: CollectionConfig = {
   versions: {
     maxPerDoc: 20,
   },
+  // ── Custom endpoints ───────────────────────────────────────────────────────
+  endpoints: [
+    // Payload v3 dropped /:id/versions — admin UI still calls it in some builds.
+    // Proxy to /versions?where[parent][equals]=:id so it returns the correct data.
+    {
+      method: 'get',
+      path: '/:id/versions',
+      handler: async (req: PayloadRequest) => {
+        const id = req.routeParams?.id as string
+        const searchParams = new URL(req.url).searchParams
+        searchParams.set('where[parent][equals]', id)
+        const versionsUrl = new URL(
+          `/api/posts/versions?${searchParams.toString()}`,
+          req.payload.config.serverURL || 'http://localhost:3000',
+        )
+        return fetch(versionsUrl.toString(), {
+          headers: { Authorization: req.headers.get('Authorization') ?? '' },
+        })
+      },
+    },
+  ],
   fields: [
     {
       name: 'title',
@@ -47,7 +68,7 @@ export const Posts: CollectionConfig = {
         },
         custom: {
           watchField: 'title',
-          urlPrefix: '/posts/',
+          urlPrefix: '/article/',
         },
       },
     },
@@ -74,12 +95,14 @@ export const Posts: CollectionConfig = {
       name: 'excerpt',
       type: 'textarea',
       localized: true,
-      label: 'Excerpt',
+      label: 'Short Description',
+      admin: {
+        description: 'A brief summary shown on article cards and grid listings (2–3 sentences).',
+      },
     },
     {
       name: 'content',
       type: 'richText',
-      editor: lexicalEditor({}),
       localized: true,
       label: 'Content',
     },
@@ -109,21 +132,30 @@ export const Posts: CollectionConfig = {
               required: true,
               label: 'Status',
             },
-          ],
-        },
-        {
-          label: 'Relations',
-          fields: [
             {
-              name: 'relatedPosts',
-              type: 'relationship',
-              relationTo: 'posts',
-              hasMany: true,
-              label: 'Related Posts',
+              name: 'featured',
+              type: 'checkbox',
+              label: 'Featured Article',
+              defaultValue: false,
+              admin: {
+                description:
+                  'Mark this post as featured. The Article Feature block (in Collection mode) shows the featured post for the active category filter.',
+              },
             },
           ],
         },
       ],
+    },
+    buildSeoFields('posts'),
+    {
+      name: 'translatePanel',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/TranslateDocButton#TranslateDocButton',
+        },
+      },
     },
   ],
   // ── Hooks ─────────────────────────────────────────────────────────────

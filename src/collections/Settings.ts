@@ -72,11 +72,13 @@ export const Settings: GlobalConfig = {
               type: 'text',
               defaultValue: 'ATech',
               label: 'Site Name',
+              localized: true,
             },
             {
               name: 'siteDescription',
               type: 'textarea',
               label: 'Site Description (default SEO)',
+              localized: true,
             },
             {
               name: 'ogImage',
@@ -105,6 +107,7 @@ export const Settings: GlobalConfig = {
                   type: 'text',
                   label: 'Maintenance Page Title',
                   defaultValue: 'Under Construction.',
+                  localized: true,
                   admin: {
                     condition: (_, siblingData) => Boolean(siblingData?.maintenanceMode),
                   },
@@ -115,6 +118,7 @@ export const Settings: GlobalConfig = {
                   label: 'Maintenance Message',
                   defaultValue:
                     "We're rebuilding something great. Our systems are temporarily offline while we upgrade — we'll be back shortly.",
+                  localized: true,
                   admin: {
                     condition: (_, siblingData) => Boolean(siblingData?.maintenanceMode),
                   },
@@ -124,6 +128,7 @@ export const Settings: GlobalConfig = {
                   type: 'text',
                   label: 'Status Badge Text',
                   defaultValue: 'System upgrade in progress',
+                  localized: true,
                   admin: {
                     condition: (_, siblingData) => Boolean(siblingData?.maintenanceMode),
                   },
@@ -133,24 +138,13 @@ export const Settings: GlobalConfig = {
                   type: 'text',
                   label: 'Estimated Completion (shown in stats)',
                   defaultValue: 'Soon',
+                  localized: true,
                   admin: {
                     condition: (_, siblingData) => Boolean(siblingData?.maintenanceMode),
                   },
                 },
               ],
             },
-          ],
-        },
-
-        // ── Social ────────────────────────────────────────────────────────────
-        {
-          label: 'Social',
-          fields: [
-            { name: 'twitter',   type: 'text', label: 'Twitter/X URL' },
-            { name: 'facebook',  type: 'text', label: 'Facebook URL' },
-            { name: 'instagram', type: 'text', label: 'Instagram URL' },
-            { name: 'linkedin',  type: 'text', label: 'LinkedIn URL' },
-            { name: 'github',    type: 'text', label: 'GitHub URL' },
           ],
         },
 
@@ -325,7 +319,206 @@ export const Settings: GlobalConfig = {
             },
           ],
         },
+
+        // ── Security ─────────────────────────────────────────────────────────
+        {
+          label: 'Security',
+          fields: [
+            // ── Admin Login Protection ──────────────────────────────────────
+            {
+              type: 'collapsible',
+              label: 'Login Protection',
+              admin: { initCollapsed: false },
+              fields: [
+                {
+                  name: 'loginMaxAttempts',
+                  type: 'number',
+                  label: 'Max Failed Login Attempts',
+                  defaultValue: 5,
+                  admin: {
+                    description: 'Number of failed attempts before lockout.',
+                  },
+                },
+                {
+                  name: 'loginLockoutMinutes',
+                  type: 'number',
+                  label: 'Lockout Duration (minutes)',
+                  defaultValue: 15,
+                  admin: {
+                    description: 'How long the lockout lasts. 0 = permanent until manually unlocked.',
+                  },
+                },
+                {
+                  name: 'requireTwoFactor',
+                  type: 'select',
+                  label: 'Require Two-Factor Authentication',
+                  defaultValue: 'disabled',
+                  options: [
+                    { label: 'Disabled (optional per user)', value: 'disabled' },
+                    { label: 'Required for Admins',          value: 'admins-only' },
+                    { label: 'Required for All Users',       value: 'all-users' },
+                  ],
+                  admin: {
+                    description: 'When enforced, users must enroll 2FA on next login.',
+                  },
+                },
+              ],
+            },
+            // ── IP Filtering ───────────────────────────────────────────────
+            {
+              type: 'collapsible',
+              label: 'IP Filtering',
+              admin: { initCollapsed: true },
+              fields: [
+                {
+                  name: 'ipFilterEnabled',
+                  type: 'checkbox',
+                  label: 'Enable IP Filtering',
+                  defaultValue: false,
+                  admin: {
+                    description: 'When enabled, blocklist and allowlist rules are enforced on /admin.',
+                  },
+                },
+                {
+                  name: 'ipBlocklist',
+                  type: 'array',
+                  label: 'IP Blocklist',
+                  admin: {
+                    description: 'IPs that are always denied access to /admin.',
+                    condition: (_, siblingData) => Boolean(siblingData?.ipFilterEnabled),
+                  },
+                  fields: [
+                    { name: 'ip',     type: 'text', required: true, label: 'IP Address' },
+                    { name: 'reason', type: 'text', label: 'Reason (optional)' },
+                  ],
+                },
+                {
+                  name: 'ipAllowlist',
+                  type: 'array',
+                  label: 'IP Allowlist',
+                  admin: {
+                    description: 'If non-empty, only these IPs can access /admin. Leave empty to allow all non-blocked IPs.',
+                    condition: (_, siblingData) => Boolean(siblingData?.ipFilterEnabled),
+                  },
+                  fields: [
+                    { name: 'ip', type: 'text', required: true, label: 'IP Address' },
+                  ],
+                },
+              ],
+            },
+            // ── API Rate Limiting ──────────────────────────────────────────
+            {
+              type: 'collapsible',
+              label: 'API Rate Limiting',
+              admin: { initCollapsed: true },
+              fields: [
+                {
+                  name: 'apiRateLimitEnabled',
+                  type: 'checkbox',
+                  label: 'Enable API Rate Limiting',
+                  defaultValue: true,
+                },
+                {
+                  name: 'apiRateLimitMax',
+                  type: 'number',
+                  label: 'Max Requests per Minute (per IP)',
+                  defaultValue: 60,
+                  admin: {
+                    condition: (_, siblingData) => Boolean(siblingData?.apiRateLimitEnabled),
+                  },
+                },
+              ],
+            },
+            // ── Security Headers ───────────────────────────────────────────
+            {
+              type: 'collapsible',
+              label: 'Security Headers',
+              admin: { initCollapsed: true },
+              fields: [
+                {
+                  name: 'cspEnabled',
+                  type: 'checkbox',
+                  label: 'Enable Content Security Policy (CSP)',
+                  defaultValue: true,
+                },
+                {
+                  name: 'cspReportOnly',
+                  type: 'checkbox',
+                  label: 'CSP Report-Only Mode',
+                  defaultValue: false,
+                  admin: {
+                    description: 'Log violations instead of blocking — useful when first rolling out CSP.',
+                    condition: (_, siblingData) => Boolean(siblingData?.cspEnabled),
+                  },
+                },
+                {
+                  name: 'hstsEnabled',
+                  type: 'checkbox',
+                  label: 'Enable HSTS (Strict-Transport-Security)',
+                  defaultValue: true,
+                  admin: {
+                    description: 'Only enable on HTTPS deployments.',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+
+        // ── SEO Settings ─────────────────────────────────────────────────────
+        {
+          label: 'SEO',
+          fields: [
+            {
+              name: 'canonicalDomain',
+              type: 'text',
+              label: 'Canonical Domain',
+              defaultValue: 'https://atech.software',
+              admin: {
+                description: 'Base URL used for canonical tags and sitemap. No trailing slash.',
+              },
+            },
+            {
+              name: 'robotsDisallow',
+              type: 'array',
+              label: 'robots.txt Disallow Paths',
+              admin: {
+                description: 'Paths crawlers should not index, e.g. /admin, /api',
+              },
+              fields: [
+                { name: 'path', type: 'text', required: true },
+              ],
+            },
+            {
+              name: 'crawlDelay',
+              type: 'number',
+              label: 'Crawl Delay (seconds)',
+              admin: {
+                description: 'Optional crawl delay directive for robots.txt',
+              },
+            },
+            {
+              name: 'llmsTxtEnabled',
+              type: 'checkbox',
+              label: 'Enable /llms.txt',
+              defaultValue: true,
+              admin: {
+                description: 'Serve a machine-readable /llms.txt for AI assistants',
+              },
+            },
+          ],
+        },
       ],
+    },
+    {
+      name: 'translatePanel',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/TranslateDocButton#TranslateDocButton',
+        },
+      },
     },
   ],
 }

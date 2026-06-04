@@ -1,0 +1,129 @@
+{
+  "qa-testing": {
+    "hero": {
+      "badge": "Layanan QA Testing",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/f1348945-7fb6-469d-bd3c-b68ca629b407",
+      "breadcrumb": [
+        { "label": "Beranda",         "href": "/"           },
+        { "label": "Yang Kami Lakukan", "href": "/what-we-do" },
+        { "label": "Layanan QA Testing", "href": null        }
+      ],
+      "heading": "Solusi Quality\nAssurance & Pengujian\nyang Menyeluruh",
+      "body": "Pastikan performa perangkat lunak yang sempurna dengan protokol pengujian otomatis dan manual kami yang ketat. Mulai dari pengujian fungsional hingga audit keamanan, kami menghadirkan solusi QA menyeluruh yang menjamin aplikasi Anda memenuhi standar kualitas tertinggi.",
+      "cta": {
+        "primary":   { "label": "Jadwalkan Konsultasi", "url": "/static/contact" },
+        "secondary": { "label": "Lihat Studi Kasus",    "url": "/case-studies"   }
+      },
+      "image": {
+        "src": "https://www.figma.com/api/mcp/asset/67d281f2-0486-43fa-b02b-93e5bdfae7c4",
+        "alt": "Dasbor QA Testing di laptop"
+      }
+    },
+    "services": {
+      "heading":    "Layanan QA Testing Kami",
+      "subheading": "Metodologi pengujian menyeluruh untuk memastikan perangkat lunak Anda bekerja dengan sempurna di seluruh lingkungan dan kasus penggunaan.",
+      "items": [
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/54e7e051-7265-40d1-8c42-689c1ac8bd99",
+          "title":       "Pengujian Otomatis",
+          "description": "Pengujian integrasi berkelanjutan dengan rangkaian uji otomatis untuk pengujian regresi, unit, dan integrasi.",
+          "features":    ["Framework Selenium & Cypress", "Pengujian otomatisasi API", "Integrasi pipeline CI/CD"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/e7177bde-8ca1-4058-a281-d5097aab6a7d",
+          "title":       "Pengujian Manual",
+          "description": "Pengujian manual oleh para ahli untuk pengalaman pengguna, kegunaan, dan skenario kasus tepi yang mungkin terlewat oleh pengujian otomatis.",
+          "features":    ["Pengujian eksploratif", "Pengujian penerimaan pengguna", "Kompatibilitas lintas browser"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/9f5edfab-6095-44ad-89f4-a8cbc3170eb3",
+          "title":       "Pengujian Performa",
+          "description": "Pengujian beban, tekanan, dan volume untuk memastikan performa optimal dalam berbagai kondisi lalu lintas.",
+          "features":    ["JMeter & LoadRunner", "Analisis skalabilitas", "Identifikasi bottleneck"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/6c4785f4-d91a-4293-81b7-13db42c968d5",
+          "title":       "Pengujian Keamanan",
+          "description": "Audit keamanan menyeluruh dan pengujian penetrasi untuk mengidentifikasi kerentanan dan memastikan perlindungan data.",
+          "features":    ["Pengujian kepatuhan OWASP", "Penilaian kerentanan", "Validasi enkripsi data"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/8e3cadd8-7e10-4738-8b06-dcd54ec7b46b",
+          "title":       "Pengujian Aplikasi Seluler",
+          "description": "Pengujian khusus untuk aplikasi iOS dan Android di berbagai perangkat dan sistem operasi.",
+          "features":    ["Pengujian kompatibilitas perangkat", "Pedoman app store", "Optimisasi performa"]
+        },
+        {
+          "iconSrc":     "https://www.figma.com/api/mcp/asset/33b560d1-a26a-4655-8047-167fd578b63d",
+          "title":       "Pengujian API",
+          "description": "Pengujian API yang menyeluruh untuk memastikan integritas data, performa, dan integrasi yang tepat antar sistem.",
+          "features":    ["Pengujian REST & GraphQL", "Validasi data", "Analisis waktu respons"]
+        }
+      ]
+    },
+    "process": {
+      "heading":    "Proses Pengujian Kami",
+      "subheading": "Pendekatan sistematis terhadap quality assurance yang memastikan cakupan menyeluruh dan hasil yang andal.",
+      "steps": [
+        {
+          "number":      "1",
+          "title":       "Analisis Kebutuhan",
+          "description": "Analisis menyeluruh terhadap kebutuhan proyek dan perencanaan pengujian."
+        },
+        {
+          "number":      "2",
+          "title":       "Desain Strategi Pengujian",
+          "description": "Menyusun kasus uji yang menyeluruh dan framework otomatisasi."
+        },
+        {
+          "number":      "3",
+          "title":       "Eksekusi Pengujian",
+          "description": "Menjalankan pengujian otomatis dan manual di seluruh lingkungan."
+        },
+        {
+          "number":      "4",
+          "title":       "Pelaporan & Analisis",
+          "description": "Pelaporan terperinci dengan wawasan dan rekomendasi yang dapat ditindaklanjuti."
+        }
+      ]
+    },
+    "caseStudy": {
+      "label":       "Studi Kasus Unggulan",
+      "company":     "Emperor Financial Services Group (EFSG)",
+      "description": "EFSG membutuhkan sistem perdagangan yang lebih andal dan stabil seiring ekspansi ekosistem digitalnya, di mana kualitas dan performa yang konsisten sangat penting. ATech menyusun tim Scrum lengkap dari Hong Kong dan Indonesia untuk menghadirkan layanan quality assurance dan pengujian yang menyeluruh di seluruh platform mereka, memastikan fungsionalitas, stabilitas, dan performa sistem tervalidasi secara menyeluruh sepanjang pengembangan. Hasilnya, EFSG memperoleh lingkungan perdagangan yang lebih kokoh dan andal dengan kualitas perangkat lunak yang meningkat signifikan serta berkurangnya masalah pada produksi.",
+      "logoSrc":      "https://www.figma.com/api/mcp/asset/63d9e461-a2c1-45e5-9d97-61c4bf6bd29a",
+      "logoAlt":      "Logo Emperor Financial Services Group",
+      "imageSrc":     "https://www.figma.com/api/mcp/asset/51f9f69c-6792-4b96-ab65-b7e51568c9be",
+      "imageAlt":     "Dasbor platform perdagangan EFSG",
+      "badgeIconSrc": "https://www.figma.com/api/mcp/asset/f6db6159-c967-4ea0-8057-122a94d2100d",
+      "badge": {
+        "title":    "QA Testing Mendalam",
+        "subtitle": "Pastikan perangkat lunak yang andal"
+      }
+    },
+    "cta": {
+      "heading":    "Siap Memastikan Kualitas Perangkat Lunak Anda?",
+      "subheading": "Biarkan para ahli QA kami membantu Anda menghadirkan perangkat lunak yang sempurna dengan solusi pengujian menyeluruh yang disesuaikan dengan kebutuhan Anda.",
+      "button":     { "label": "Mulai Proyek QA Anda", "url": "/static/contact" },
+      "stats": [
+        { "value": "90%",  "label": "Tingkat Deteksi Bug" },
+        { "value": "50+",  "label": "Proyek Terselesaikan" },
+        { "value": "24/7", "label": "Dukungan Pengujian"   }
+      ]
+    },
+    "contact": {
+      "heading":    "Hubungi Kami",
+      "subheading": "Siap memulai proyek Anda berikutnya? Mari diskusikan bagaimana kami dapat membantu.",
+      "form": {
+        "heading":     "Kirim Pesan kepada Kami",
+        "submitLabel": "Kirim Pesan"
+      },
+      "info": {
+        "heading":  "Informasi Kontak",
+        "email":    "hello@atech.software",
+        "phone":    "+852 1234 5678",
+        "location": "Hong Kong"
+      }
+    }
+  }
+}

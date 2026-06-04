@@ -6,9 +6,9 @@ const filename = fileURLToPath(import.meta.url)
 const dirname  = path.dirname(filename)
 
 // Resolve absolute media directory: prefer PAYLOAD_MEDIA_DIR env var,
-// otherwise use {project_root}/public/media (2 levels up from src/collections/)
+// otherwise use {project_root}/media (2 levels up from src/collections/)
 const mediaDir = process.env.PAYLOAD_MEDIA_DIR
-  ?? path.resolve(dirname, '../../public/media')
+  || path.resolve(dirname, '../../media')
 
 export const Media: CollectionConfig = {
   slug: 'media',

@@ -1,17 +1,18 @@
 {
   "home": {
     "hero": {
-      "badge": "Welcome to ATech Solutions",
-      "heading": "Build Software That Scales Your Business Forward",
+      "badge": "",
+      "heading": "ATech Solution",
+      "headingSub": "Your Technology Partner",
       "body": "We build robust, scalable, and intelligent software solutions for startups and enterprises. Elevate your technological capabilities with our expert engineering teams.",
       "cta": {
         "primary": { "label": "Explore Services", "url": "/services" },
         "secondary": { "label": "Client Testimonials", "url": "/testimonials" }
       },
       "stats": [
-        { "value": "250+", "label": "Projects Delivered" },
-        { "value": "98%",  "label": "Client Retention"   },
-        { "value": "10+",  "label": "Years Experience"   }
+        { "value": "90%",  "label": "Bug detection Rate"   },
+        { "value": "50+",  "label": "Projects Delivered"   },
+        { "value": "24/7", "label": "Testing support"      }
       ],
       "image": {
         "src": "https://www.figma.com/api/mcp/asset/dee3b6fb-bb91-4e01-81ca-c6495cbe5bae",
@@ -51,43 +52,43 @@
           "icon": "check-badge",
           "title": "QA Testing Services",
           "description": "Comprehensive testing solutions to ensure software quality and reliability.",
-          "href": "/services/qa-testing"
+          "href": "/static/qa-testing"
         },
         {
           "icon": "globe",
           "title": "Web Development",
           "description": "Custom web applications built with modern frameworks and technologies.",
-          "href": "/services/web-development"
+          "href": "/static/web-dev-service"
         },
         {
           "icon": "device",
           "title": "App Development",
           "description": "Native and cross-platform mobile applications for iOS and Android.",
-          "href": "/services/app-development"
+          "href": "/static/app-dev-service"
         },
         {
           "icon": "users",
           "title": "HR Recruitment",
           "description": "Staff augmentation and dedicated development teams for your projects.",
-          "href": "/services/hr-recruitment"
+          "href": "/static/hr-recruitment"
         },
         {
           "icon": "consult",
           "title": "IT Consultancy",
           "description": "Strategic technology guidance and digital transformation consulting.",
-          "href": "/services/it-consultancy"
+          "href": "/static/it-consulting"
         },
         {
           "icon": "code",
           "title": "Product Development",
           "description": "Design and develop scalable digital products from idea to launch.",
-          "href": "/contact"
+          "href": "/static/contact"
         }
       ],
       "customSolution": {
         "heading": "Need Custom Solution?",
         "body": "Let's discuss your specific requirements and create a tailored solution.",
-        "cta": { "label": "Chat with us", "url": "/contact" }
+        "cta": { "label": "Send us a Message", "url": "/static/contact" }
       }
     },
     "testimonials": {
@@ -95,24 +96,24 @@
       "subheading": "What our clients say about working with us.",
       "items": [
         {
-          "name": "John Smith",
-          "role": "CEO",
-          "company": "TechCorp",
-          "quote": "ATech Solutions delivered exceptional results on our web platform. Their team is professional and highly skilled.",
+          "name": "Name",
+          "role": "Job Title",
+          "company": "Emperor Financial Group",
+          "quote": "ATech helped us build a more stable trading platform through thorough QA and testing, improving software quality and reducing production issues.",
           "rating": 5
         },
         {
-          "name": "Sarah Johnson",
-          "role": "CTO",
-          "company": "StartupX",
-          "quote": "The mobile app they developed exceeded our expectations. Great communication and timely delivery.",
+          "name": "Serena Wong",
+          "role": "Founder",
+          "company": "Heart In Motion",
+          "quote": "Awesome results on our custom web platform and branding design. ATech team is professional and skilled.",
           "rating": 5
         },
         {
-          "name": "Mike Chen",
-          "role": "Director",
-          "company": "Enterprise Inc",
-          "quote": "Outstanding IT consulting services. They helped us modernize our entire technology infrastructure.",
+          "name": "Name",
+          "role": "Founder",
+          "company": "Ejus Racing",
+          "quote": "ATech streamlined our fulfillment process by automating order routing and shipping coordination, reducing errors, and improving delivery speed.",
           "rating": 5
         }
       ]

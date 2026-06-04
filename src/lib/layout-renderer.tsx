@@ -8,6 +8,7 @@ import {
   FeaturesSection,
   ServicesSection,
   TestimonialsSection,
+  TestimonialsSectionServerSection,
   ContactSection,
   CTABannerSection,
   ProcessStepsSection,
@@ -19,10 +20,16 @@ import {
   MissionVisionSection,
   TeamSection,
   FAQSection,
+  FAQSectionServerSection,
+  FAQMainSection,
+  FAQMainServerSection,
   PageHeroSection,
   ProjectGridSection,
+  ProjectGridServerSection,
   ArticleGridSection,
+  ArticleGridServerSection,
   ArticleFeaturedSection,
+  ArticleFeaturedServerSection,
   JobsListSection,
   InvolvedHeroSection,
   QuoteFormSection,
@@ -33,8 +40,41 @@ import {
   ContactHeroSection,
   ContactStatsSection,
   LocationsSection,
+  FeaturedCaseStudySection,
+  PartnershipSection,
   WebDevHeroSection,
+  PortfolioDetailTopSection,
+  PortfolioFeaturedImageSection,
+  PortfolioDetailOverviewSection,
+  ArticleDetailHeroSection,
+  ArticleDetailContentSection,
+  ArticleRelatedSection,
+  PortfolioHeroSection,
+  PortfolioStatisticsSection,
+  PortfolioMainSection,
+  PortfolioMainServerSection,
+  BreadcrumbSection,
+  FAQAboutSection,
+  FAQAboutServerSection,
+  ArticleSubmitSection,
+  ServeHeroSection,
+  ServeValueSection,
+  ServeModelSection,
+  InsightsAdvantagesSection,
+  InsightsTechGuideSection,
+  CommunityHeroSection,
+  ArticleFilterSection,
+  ArticleHeroSection,
+  ArticleFeatureSection,
+  ArticleFeatureClientSection,
+  ArticleMainGridSection,
+  ArticleMainGridServerSection,
+  SubscribeSection,
+  DynamicFormSection,
+  SurveySection,
 } from '@/components/block'
+import { JobsListServerSection } from '@/components/block/Advance/JobsListServerSection'
+import { SuspenseSection } from '@/plugins/performance/components'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -79,8 +119,8 @@ export function buildCSSVarsFromBlockStyle(style: Record<string, unknown>): Reac
   const vars: Record<string, string> = {}
   const str = (v: unknown) => String(v)
 
-  if (style.heroBgColor)   vars['--color-bg']       = str(style.heroBgColor)
-  if (style.sectionBg)     vars['--color-bg']       = str(style.sectionBg)
+  if (style.heroBgColor)   { vars['--color-bg'] = str(style.heroBgColor); vars['--section-bg'] = str(style.heroBgColor) }
+  if (style.sectionBg)     { vars['--color-bg'] = str(style.sectionBg);   vars['--section-bg'] = str(style.sectionBg) }
   if (style.gradientFrom)  vars['--gradient-from']  = str(style.gradientFrom)
   if (style.gradientTo)    vars['--gradient-to']    = str(style.gradientTo)
   if (style.heroBgImage || style.sectionBgImage)
@@ -178,9 +218,13 @@ export function buildInlineStyle(data: any): React.CSSProperties {
 export function LayoutBlockRenderer({
   node,
   templates,
+  portfolioItem,
+  articleItem,
 }: {
   node: any
   templates: Record<string, any>
+  portfolioItem?: any
+  articleItem?: any
 }): React.ReactNode {
   const data        = mergeLayoutBlock(node, templates)
   const inlineStyle = buildInlineStyle(data)
@@ -196,8 +240,13 @@ export function LayoutBlockRenderer({
   const wrapStyle = { ...inlineStyle }
 
   // blockStyle → CSS custom properties (section-level theming vars)
-  const blockStyle   = (node.overrides?.blockStyle ?? {}) as Record<string, unknown>
-  const cssVars      = buildCSSVarsFromBlockStyle(blockStyle)
+  const blockStyle = (node.overrides?.blockStyle ?? {}) as Record<string, unknown>
+  const cssVars    = {
+    ...buildCSSVarsFromBlockStyle(blockStyle),
+    // Expose Style-tab backgroundColor as --section-bg so Advance block <section>s
+    // that use background: var(--section-bg, <default>) pick it up via CSS cascade.
+    ...(data.backgroundColor ? { '--section-bg': data.backgroundColor as string } : {}),
+  }
   const sectionStyle = { ...cssVars, ...inlineStyle } as React.CSSProperties
 
   const wrapAdvanced = (content: React.ReactNode): React.ReactNode => {
@@ -212,7 +261,7 @@ export function LayoutBlockRenderer({
       return (
         <div id={id} className={`lb-container ${className ?? ''} ${hideClasses}`} style={wrapStyle}>
           {node.children?.map((child: any) => (
-            <LayoutBlockRenderer key={child.id} node={child} templates={templates} />
+            <LayoutBlockRenderer key={child.id} node={child} templates={templates} portfolioItem={portfolioItem} articleItem={articleItem} />
           ))}
         </div>
       )
@@ -226,7 +275,7 @@ export function LayoutBlockRenderer({
           style={{ ...wrapStyle, display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 24 }}
         >
           {node.children?.map((child: any) => (
-            <LayoutBlockRenderer key={child.id} node={child} templates={templates} />
+            <LayoutBlockRenderer key={child.id} node={child} templates={templates} portfolioItem={portfolioItem} articleItem={articleItem} />
           ))}
         </div>
       )
@@ -809,7 +858,11 @@ export function LayoutBlockRenderer({
     case 'services':
       return wrapAdvanced(<ServicesSection data={data} />)
     case 'testimonials':
-      return wrapAdvanced(<TestimonialsSection data={data} />)
+      return wrapAdvanced(
+        (data as any).testimonialsContentSource === 'collection'
+          ? <SuspenseSection><TestimonialsSectionServerSection data={data} /></SuspenseSection>
+          : <TestimonialsSection data={data} />
+      )
     case 'contact':
       return wrapAdvanced(<ContactSection data={data} />)
     case 'card-grid':
@@ -831,24 +884,49 @@ export function LayoutBlockRenderer({
     case 'team-section':
       return wrapAdvanced(<TeamSection data={data} />)
     case 'faq-section':
-      return wrapAdvanced(<FAQSection data={data} />)
+      return wrapAdvanced(
+        (data as any).faqContentSource === 'collection'
+          ? <SuspenseSection><FAQSectionServerSection data={data} /></SuspenseSection>
+          : <FAQSection data={data} />
+      )
+    case 'faq-main':
+      return wrapAdvanced(<SuspenseSection><FAQMainServerSection data={data} /></SuspenseSection>)
+    case 'faq-about':
+      return wrapAdvanced(
+        (data as any).faqContentSource === 'collection'
+          ? <SuspenseSection><FAQAboutServerSection data={data as any} /></SuspenseSection>
+          : <FAQAboutSection data={data as any} />
+      )
+
+    case 'home-testimonials':
+      return wrapAdvanced(
+        (data as any).testimonialsContentSource === 'collection'
+          ? <SuspenseSection><TestimonialsSectionServerSection data={data} /></SuspenseSection>
+          : <TestimonialsSection data={data} />
+      )
 
     case 'page-hero':
       return wrapAdvanced(<PageHeroSection data={data} />)
     case 'project-grid':
-      return wrapAdvanced(<ProjectGridSection data={data} />)
+      return wrapAdvanced(<SuspenseSection><ProjectGridServerSection data={data} /></SuspenseSection>)
     case 'article-grid':
-      return wrapAdvanced(<ArticleGridSection data={data} />)
+      return wrapAdvanced(<SuspenseSection><ArticleGridServerSection data={data} /></SuspenseSection>)
     case 'article-featured':
-      return wrapAdvanced(<ArticleFeaturedSection data={data} />)
+      return wrapAdvanced(<SuspenseSection><ArticleFeaturedServerSection data={data} /></SuspenseSection>)
     case 'jobs-list':
-      return wrapAdvanced(<JobsListSection data={data} />)
+      return wrapAdvanced(
+        (data as any).jobSource === 'collection'
+          ? <SuspenseSection><JobsListServerSection data={data} /></SuspenseSection>
+          : <JobsListSection data={data} />
+      )
     case 'involved-hero':
       return wrapAdvanced(<InvolvedHeroSection data={data} />)
     case 'quote-form':
       return wrapAdvanced(<QuoteFormSection data={data} />)
     case 'culture-values':
       return wrapAdvanced(<CultureValuesSection data={data} />)
+    case 'community-hero':
+      return wrapAdvanced(<CommunityHeroSection data={data as any} />)
     case 'community-channels':
       return wrapAdvanced(<CommunityChannelsSection data={data} />)
     case 'community-ambassador':
@@ -861,10 +939,78 @@ export function LayoutBlockRenderer({
       return wrapAdvanced(<ContactStatsSection data={data} />)
     case 'locations':
       return wrapAdvanced(<LocationsSection data={data} />)
+    case 'featured-case-study':
+      return wrapAdvanced(<FeaturedCaseStudySection data={data} />)
+    case 'partnership':
+      return wrapAdvanced(<PartnershipSection data={data} />)
+
+    // ── Portfolio Sections ───────────────────────────────────────────────────
+    case 'portfolio-hero':
+      return wrapAdvanced(<PortfolioHeroSection data={data} />)
+    case 'portfolio-statistics':
+      return wrapAdvanced(<PortfolioStatisticsSection data={data} />)
+    case 'portfolio-main':
+      return wrapAdvanced(<SuspenseSection><PortfolioMainServerSection data={data} /></SuspenseSection>)
+
+    // ── Portfolio Detail Sections ────────────────────────────────────────────
+    case 'portfolio-detail-top':
+      return wrapAdvanced(<PortfolioDetailTopSection data={data} portfolioItem={portfolioItem} />)
+    case 'portfolio-featured-image':
+      return wrapAdvanced(<PortfolioFeaturedImageSection data={data} portfolioItem={portfolioItem} />)
+    case 'portfolio-detail-overview':
+      return wrapAdvanced(<PortfolioDetailOverviewSection data={data} portfolioItem={portfolioItem} />)
+
+    // ── Article Detail Sections ──────────────────────────────────────────────
+    case 'article-detail-hero':
+      return wrapAdvanced(<ArticleDetailHeroSection data={data} articleItem={articleItem} />)
+    case 'article-detail-content':
+      return wrapAdvanced(<ArticleDetailContentSection data={data} articleItem={articleItem} />)
+    case 'article-related':
+      return wrapAdvanced(<ArticleRelatedSection data={data} articleItem={articleItem} />)
 
     // ── Service Page Sections ────────────────────────────────────────────────
     case 'web-dev-hero':
       return wrapAdvanced(<WebDevHeroSection data={data} />)
+
+    case 'breadcrumb':
+      return wrapAdvanced(<BreadcrumbSection data={data} />)
+
+    case 'article-submit':
+      return wrapAdvanced(<ArticleSubmitSection data={data} />)
+    case 'serve-hero':
+      return wrapAdvanced(<ServeHeroSection data={data} />)
+    case 'serve-value':
+      return wrapAdvanced(<ServeValueSection data={data} />)
+    case 'serve-model':
+      return wrapAdvanced(<ServeModelSection data={data} />)
+    case 'insights-advantages':
+      return wrapAdvanced(<InsightsAdvantagesSection data={data} />)
+    case 'insights-tech-guide':
+      return wrapAdvanced(<InsightsTechGuideSection data={data} />)
+    case 'article-filter':
+      return wrapAdvanced(<ArticleFilterSection data={data} />)
+    case 'article-hero':
+      return wrapAdvanced(<ArticleHeroSection data={data} />)
+    case 'article-feature':
+      return wrapAdvanced(
+        (data as any).artFeatContentSource === 'collection'
+          ? <ArticleFeatureClientSection data={data as any} />
+          : <ArticleFeatureSection data={data} />
+      )
+    case 'subscribe':
+      return wrapAdvanced(<SubscribeSection data={data} />)
+    case 'article-main-grid':
+      return wrapAdvanced(
+        (data as any).mainGridContentSource === 'collection'
+          ? <SuspenseSection><ArticleMainGridServerSection data={data as any} /></SuspenseSection>
+          : <ArticleMainGridSection data={data as any} />
+      )
+
+    case 'dynamic-form':
+      return wrapAdvanced(<DynamicFormSection data={data} />)
+
+    case 'form':
+      return wrapAdvanced(<SurveySection data={data} />)
 
     default:
       return (
@@ -876,7 +1022,7 @@ export function LayoutBlockRenderer({
           {data.title    && <h3>{data.title}</h3>}
           {data.subtitle && <p>{data.subtitle}</p>}
           {node.children?.map((child: any) => (
-            <LayoutBlockRenderer key={child.id} node={child} templates={templates} />
+            <LayoutBlockRenderer key={child.id} node={child} templates={templates} portfolioItem={portfolioItem} articleItem={articleItem} />
           ))}
         </div>
       )

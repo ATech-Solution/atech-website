@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -41,6 +41,7 @@ interface MegaMenuNavProps {
   ctaUrl?: string
   /** 'light' = white header (dark text), 'dark' = dark header (light text) */
   navTheme?: 'light' | 'dark'
+  languageSwitcher?: React.ReactNode
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -100,7 +101,7 @@ function ArrowRight() {
 
 function GridMegaPanel({ item }: { item: NavItem }) {
   const links    = (item.columns ?? []).flatMap((col) => col.links ?? [])
-  const ctaUrl   = item.featured?.url ?? '/contact'
+  const ctaUrl   = item.featured?.url ?? '/static/contact'
   const ctaLabel = item.featured?.cta ?? 'Get in touch'
 
   return (
@@ -138,7 +139,7 @@ function GridMegaPanel({ item }: { item: NavItem }) {
 
       <div
         style={{
-          background: '#f0f0f0',
+          background: '#FFCD37',
           borderRadius: 14,
           height: 72,
           display: 'flex',
@@ -250,7 +251,7 @@ function GridLinkItem({ link }: { link: MegaMenuLink }) {
 
 function CategoryGridMegaPanel({ item }: { item: NavItem }) {
   const columns  = item.columns ?? []
-  const ctaUrl   = item.featured?.url ?? '/contact'
+  const ctaUrl   = item.featured?.url ?? '/static/contact'
   const ctaLabel = item.featured?.cta ?? 'Get in touch'
 
   return (
@@ -307,7 +308,7 @@ function CategoryGridMegaPanel({ item }: { item: NavItem }) {
 
       <div
         style={{
-          background: '#f0f0f0',
+          background: '#FFCD37',
           borderRadius: 14,
           height: 72,
           display: 'flex',
@@ -467,6 +468,7 @@ function MobileDrawer({
   items,
   ctaLabel,
   ctaUrl,
+  languageSwitcher,
   open,
   onClose,
 }: MegaMenuNavProps & { open: boolean; onClose: () => void }) {
@@ -517,17 +519,40 @@ function MobileDrawer({
             <div key={item.label} style={{ borderBottom: '1px solid #f0f0f0' }}>
               {item.megaMenu ? (
                 <>
-                  <button
-                    onClick={() => setExpanded(expanded === item.label ? null : item.label)}
-                    style={{
-                      width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      padding: '14px 0', fontFamily: fontWorkSans, fontSize: 14, fontWeight: 500,
-                      color: '#171717', background: 'none', border: 'none', cursor: 'pointer',
-                    }}
-                  >
-                    {item.label}
-                    <ChevronDown rotated={expanded === item.label} color="#6b7280" />
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    {item.url ? (
+                      <Link
+                        href={item.url}
+                        onClick={onClose}
+                        style={{
+                          flex: 1, padding: '14px 0', fontFamily: fontWorkSans, fontSize: 14, fontWeight: 500,
+                          color: '#171717', textDecoration: 'none',
+                        }}
+                      >
+                        {item.label}
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() => setExpanded(expanded === item.label ? null : item.label)}
+                        style={{
+                          flex: 1, padding: '14px 0', fontFamily: fontWorkSans, fontSize: 14, fontWeight: 500,
+                          color: '#171717', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+                        }}
+                      >
+                        {item.label}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => setExpanded(expanded === item.label ? null : item.label)}
+                      aria-label={`${expanded === item.label ? 'Collapse' : 'Expand'} ${item.label}`}
+                      style={{
+                        padding: '14px 0 14px 16px', background: 'none', border: 'none',
+                        cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0,
+                      }}
+                    >
+                      <ChevronDown rotated={expanded === item.label} color="#6b7280" />
+                    </button>
+                  </div>
                   {expanded === item.label && (
                     <div style={{ paddingBottom: 12, paddingLeft: 16, display: 'flex', flexDirection: 'column', gap: 4 }}>
                       {(item.columns ?? []).flatMap((col) => col.links ?? []).map((link) => (
@@ -565,8 +590,20 @@ function MobileDrawer({
             </div>
           ))}
 
+          {languageSwitcher && (
+            <div
+              style={{
+                marginTop: 20,
+                paddingTop: 16,
+                borderTop: '1px solid #f0f0f0',
+              }}
+            >
+              {languageSwitcher}
+            </div>
+          )}
+
           <Link
-            href={ctaUrl ?? '/contact'}
+            href={ctaUrl ?? '/static/contact'}
             onClick={onClose}
             style={{
               marginTop: 20,
@@ -587,7 +624,7 @@ function MobileDrawer({
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark' }: MegaMenuNavProps) {
+export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark', languageSwitcher }: MegaMenuNavProps) {
   const [activeMenu, setActiveMenu]   = useState<string | null>(null)
   const [mobileOpen, setMobileOpen]   = useState(false)
   const closeTimer                    = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -623,31 +660,59 @@ export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark'
             onMouseLeave={() => item.megaMenu && closeMenu()}
           >
             {item.megaMenu ? (
-              <button
-                onClick={() => {
-                  if (!item.url) return
-                  if (item.openInNewTab) {
-                    window.open(item.url, '_blank', 'noopener,noreferrer')
-                  } else {
-                    window.location.href = item.url
-                  }
-                }}
-                onFocus={() => openMenu(item.label)}
-                aria-expanded={activeMenu === item.label}
-                aria-haspopup="true"
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '8px 12px', borderRadius: 8,
-                  fontSize: 14, fontWeight: 400,
-                  fontFamily: fontWorkSans,
-                  color: activeMenu === item.label ? navHoverColor : navTextColor,
-                  background: 'transparent', border: 'none', cursor: 'pointer',
-                  transition: 'color 0.15s',
-                }}
-              >
-                {item.label}
-                <ChevronDown rotated={activeMenu === item.label} color={chevronColor} />
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                {/* Label — navigates to URL on click/Enter */}
+                {item.url ? (
+                  <Link
+                    href={item.url}
+                    target={item.openInNewTab ? '_blank' : undefined}
+                    rel={item.openInNewTab ? 'noopener noreferrer' : undefined}
+                    onFocus={() => openMenu(item.label)}
+                    style={{
+                      display: 'flex', alignItems: 'center',
+                      padding: '8px 4px 8px 12px', borderRadius: '8px 0 0 8px',
+                      fontSize: 14, fontWeight: 400,
+                      fontFamily: fontWorkSans,
+                      color: activeMenu === item.label ? navHoverColor : navTextColor,
+                      textDecoration: 'none',
+                      transition: 'color 0.15s',
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = navHoverColor }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = activeMenu === item.label ? navHoverColor : navTextColor }}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <span
+                    style={{
+                      display: 'flex', alignItems: 'center',
+                      padding: '8px 4px 8px 12px',
+                      fontSize: 14, fontWeight: 400,
+                      fontFamily: fontWorkSans,
+                      color: activeMenu === item.label ? navHoverColor : navTextColor,
+                    }}
+                  >
+                    {item.label}
+                  </span>
+                )}
+                {/* Chevron — toggles submenu only, no navigation */}
+                <button
+                  onClick={() => setActiveMenu(activeMenu === item.label ? null : item.label)}
+                  onFocus={() => openMenu(item.label)}
+                  aria-expanded={activeMenu === item.label}
+                  aria-haspopup="true"
+                  aria-label={`${activeMenu === item.label ? 'Close' : 'Open'} ${item.label} submenu`}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    padding: '8px 10px 8px 2px', borderRadius: '0 8px 8px 0',
+                    background: 'transparent', border: 'none', cursor: 'pointer',
+                    color: activeMenu === item.label ? navHoverColor : navTextColor,
+                    transition: 'color 0.15s',
+                  }}
+                >
+                  <ChevronDown rotated={activeMenu === item.label} color={chevronColor} />
+                </button>
+              </div>
             ) : (
               <Link
                 href={item.url ?? '#'}
@@ -681,11 +746,18 @@ export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark'
             )}
           </div>
         ))}
+        
+        {/* Language Switcher — between nav and CTA */}
+        {languageSwitcher && (
+          <div className="hidden md:block ml-12">{languageSwitcher}</div>
+        )}
       </nav>
+
+      
 
       {/* Desktop CTA — black button matching Figma */}
       <Link
-        href={ctaUrl ?? '/contact'}
+        href={ctaUrl ?? '/static/contact'}
         className="hidden md:inline-flex items-center"
         style={{
           padding: '8px 20px',
@@ -716,13 +788,13 @@ export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark'
         onClick={() => setMobileOpen(true)}
         aria-label="Open menu"
       >
-        {[18, 18, 12].map((w, i) => (
+        {[18, 18, 18].map((w, i) => (
           <span
             key={i}
             style={{
               display: 'block', width: w, height: 1.5, borderRadius: 2,
               background: isLight ? '#171717' : 'var(--color-text, #fafafa)',
-              ...(i === 2 ? { alignSelf: 'flex-start', marginLeft: 3 } : {}),
+              // ...(i === 2 ? { alignSelf: 'flex-start', marginLeft: 3 } : {}),
             }}
           />
         ))}
@@ -733,6 +805,7 @@ export default function MegaMenuNav({ items, ctaLabel, ctaUrl, navTheme = 'dark'
         items={items}
         ctaLabel={ctaLabel}
         ctaUrl={ctaUrl}
+        languageSwitcher={languageSwitcher}
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
       />

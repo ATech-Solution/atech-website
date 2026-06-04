@@ -9,7 +9,7 @@ export function cloneBlockWithNewIds(block: LayoutBlock): LayoutBlock {
     blockId: undefined,
     detached: true,
     overrides: JSON.parse(JSON.stringify(block.overrides ?? {})),
-    children: block.children.map(cloneBlockWithNewIds),
+    children: (block.children ?? []).map(cloneBlockWithNewIds),
   }
 }
 
@@ -46,8 +46,8 @@ export function findNode(
   for (let i = 0; i < tree.length; i++) {
     const node = tree[i]
     if (node.id === id) return [node, parents, i]
-    if (node.children.length > 0) {
-      const found = findNode(node.children, id, [...parents, node])
+    if ((node.children?.length ?? 0) > 0) {
+      const found = findNode(node.children!, id, [...parents, node])
       if (found) return found
     }
   }
@@ -60,7 +60,7 @@ export function flattenIds(tree: LayoutTree): string[] {
   const walk = (nodes: LayoutBlock[]) => {
     for (const node of nodes) {
       ids.push(node.id)
-      walk(node.children)
+      walk(node.children ?? [])
     }
   }
   walk(tree)
@@ -92,7 +92,7 @@ function setChildrenAt(
         node.children = children
         return
       }
-      walk(node.children)
+      walk(node.children ?? [])
     }
   }
   walk(clone)
@@ -225,7 +225,8 @@ export function nestNode(
   const containerResult = findNode(tree, containerId)
   if (!containerResult) return tree
   const [container] = containerResult
-  const lastChild = container.children[container.children.length - 1]
+  const _cc = container.children ?? []
+  const lastChild = _cc[_cc.length - 1]
   return moveNode(tree, id, containerId, lastChild?.id ?? null)
 }
 

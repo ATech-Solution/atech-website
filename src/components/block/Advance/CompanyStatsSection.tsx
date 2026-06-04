@@ -17,7 +17,7 @@ export default function CompanyStatsSection({ data }: CompanyStatsSectionProps) 
   const { aboutCompanyHeading, body1, body2, companyStats = [], companyImage } = data
 
   return (
-    <section className="py-24 px-6 md:px-10" style={{ background: '#292929' }}>
+    <section className="py-24 px-6 md:px-10" style={{ background: 'var(--section-bg, #292929)' }}>
       <div className="mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center" style={{ maxWidth: '1280px' }}>
         <div className="flex flex-col gap-6">
           {aboutCompanyHeading && (

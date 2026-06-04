@@ -12,27 +12,26 @@ export const Navigation: GlobalConfig = {
     drafts: true,
     max: 3,
   },
+  hooks: {
+    afterChange: [
+      async () => {
+        try {
+          const { revalidateTag } = await import('next/cache')
+          revalidateTag('perf:navigation')
+        } catch {
+          // Ignore in non-Next.js contexts
+        }
+      },
+    ],
+  },
   fields: [
-    {
-      name: 'siteTitle',
-      type: 'text',
-      required: true,
-      label: 'Site Title',
-      defaultValue: 'ATech',
-    },
-    {
-      name: 'logo',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Logo',
-    },
     // ── Main Menu Items ──────────────────────────────────────────────────────
     {
       name: 'menuItems',
       type: 'array',
       label: 'Menu Items',
       fields: [
-        { name: 'label', type: 'text', required: true },
+        { name: 'label', type: 'text', required: true, localized: true },
         {
           name: 'url',
           type: 'text',
@@ -81,18 +80,20 @@ export const Navigation: GlobalConfig = {
               name: 'columnTitle',
               type: 'text',
               label: 'Column Heading',
+              localized: true,
             },
             {
               name: 'links',
               type: 'array',
               label: 'Links',
               fields: [
-                { name: 'label',       type: 'text', required: true },
+                { name: 'label',       type: 'text', required: true, localized: true },
                 { name: 'url',         type: 'text', required: true },
                 {
                   name: 'description',
                   type: 'text',
                   label: 'Short description (optional)',
+                  localized: true,
                 },
                 {
                   name: 'icon',
@@ -114,10 +115,10 @@ export const Navigation: GlobalConfig = {
             description: 'Optional promotional card shown on the right side of the mega menu.',
           },
           fields: [
-            { name: 'title',       type: 'text',   label: 'Card Title' },
-            { name: 'description', type: 'text',   label: 'Card Description' },
+            { name: 'title',       type: 'text',   label: 'Card Title',        localized: true },
+            { name: 'description', type: 'text',   label: 'Card Description',  localized: true },
             { name: 'url',         type: 'text',   label: 'Card Link URL' },
-            { name: 'cta',         type: 'text',   label: 'CTA Button Label', defaultValue: 'Learn More' },
+            { name: 'cta',         type: 'text',   label: 'CTA Button Label',  defaultValue: 'Learn More', localized: true },
             {
               name: 'image',
               type: 'upload',
@@ -134,19 +135,13 @@ export const Navigation: GlobalConfig = {
       type: 'text',
       label: 'Header CTA Button Label',
       defaultValue: 'Get a Quote',
+      localized: true,
     },
     {
       name: 'ctaUrl',
       type: 'text',
       label: 'Header CTA Button URL',
-      defaultValue: '/contact',
-    },
-    // ── Footer ───────────────────────────────────────────────────────────────
-    {
-      name: 'footerText',
-      type: 'text',
-      label: 'Footer Copyright Text',
-      defaultValue: '© 2026 ATech. All rights reserved.',
+      defaultValue: '/static/contact',
     },
     // ── Footer Columns ────────────────────────────────────────────────────────
     {
@@ -154,17 +149,40 @@ export const Navigation: GlobalConfig = {
       type: 'array',
       label: 'Footer Link Columns',
       fields: [
-        { name: 'heading', type: 'text', required: true, label: 'Column Heading' },
+        { name: 'heading', type: 'text', required: true, label: 'Column Heading', localized: true },
         {
           name: 'links',
           type: 'array',
           label: 'Links',
           fields: [
-            { name: 'label', type: 'text', required: true },
+            { name: 'label', type: 'text', required: true, localized: true },
             { name: 'url',   type: 'text', required: true },
           ],
         },
       ],
+    },
+    // ── Footer Copyright Menu ─────────────────────────────────────────────────
+    {
+      name: 'footerCopyrightMenu',
+      type: 'array',
+      label: 'Footer Copyright Menu',
+      admin: {
+        description: 'Links shown in the footer bottom bar (e.g. Privacy Policy, Terms of Service).',
+      },
+      fields: [
+        { name: 'label', type: 'text', required: true, label: 'Label', localized: true },
+        { name: 'url',   type: 'text', required: true, label: 'URL'   },
+      ],
+    },
+    {
+      name: 'translatePanel',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/TranslateDocButton#TranslateDocButton',
+        },
+      },
     },
   ],
 }

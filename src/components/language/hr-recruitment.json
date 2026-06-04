@@ -10,7 +10,7 @@
       ],
       "heading": "HR Recruitment\n& Staff Augmentation",
       "body": "Connect with top-tier talent and scale your team with precision. Our HR recruitment and staff augmentation services deliver the right professionals exactly when you need them.",
-      "cta": { "label": "Schedule Consultation", "url": "/contact" },
+      "cta": { "label": "Schedule Consultation", "url": "/static/contact" },
       "image": {
         "src": "https://www.figma.com/api/mcp/asset/4145cc24-03ef-419c-80c3-7248d497e811",
         "alt": "HR Recruitment Services"
@@ -95,7 +95,7 @@
     "cta": {
       "heading": "Ready to Build Your Dream Team?",
       "subheading": "Let us connect you with the talent that will drive your business forward. Our recruitment experts are ready to start today.",
-      "button": { "label": "Schedule Consultation", "url": "/contact" },
+      "button": { "label": "Schedule Consultation", "url": "/static/contact" },
       "stats": [
         { "value": "200+", "label": "Placements Made" },
         { "value": "15+", "label": "Industry Sectors" },

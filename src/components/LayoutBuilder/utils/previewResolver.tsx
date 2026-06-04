@@ -34,6 +34,23 @@ import {
   ContactHeroSection,
   ContactStatsSection,
   LocationsSection,
+  FeaturedCaseStudySection,
+  PartnershipSection,
+  FAQMainSection,
+  BreadcrumbSection,
+  FAQAboutSection,
+  ArticleSubmitSection,
+  ServeHeroSection,
+  ServeValueSection,
+  ServeModelSection,
+  InsightsAdvantagesSection,
+  InsightsTechGuideSection,
+  CommunityHeroSection,
+  ArticleFilterSection,
+  ArticleHeroSection,
+  ArticleFeatureSection,
+  ArticleMainGridSection,
+  SubscribeSection,
 } from '@/components/block'
 
 // ── CSS custom property injection ─────────────────────────────────────────────
@@ -174,6 +191,14 @@ export function resolvePreviewComponent(
     case 'article-featured':
       return withStyle(<ArticleFeaturedSection data={data as any} />, blockStyle)
     case 'jobs-list':
+      if ((data as any).jobSource === 'collection') {
+        return withStyle(
+          <div style={{ background: '#171717', padding: '96px 40px', textAlign: 'center', color: '#737373', fontFamily: 'var(--font-work-sans,"Work Sans",sans-serif)', fontSize: '0.875rem' }}>
+            Collection mode — live jobs load on the published page
+          </div>,
+          blockStyle
+        )
+      }
       return withStyle(<JobsListSection data={data as any} />, blockStyle)
     case 'involved-hero':
       return withStyle(<InvolvedHeroSection data={data as any} />, blockStyle)
@@ -181,6 +206,8 @@ export function resolvePreviewComponent(
       return withStyle(<QuoteFormSection data={data as any} />, blockStyle)
     case 'culture-values':
       return withStyle(<CultureValuesSection data={data as any} />, blockStyle)
+    case 'community-hero':
+      return withStyle(<CommunityHeroSection data={data as any} />, blockStyle)
     case 'community-channels':
       return withStyle(<CommunityChannelsSection data={data as any} />, blockStyle)
     case 'community-ambassador':
@@ -193,6 +220,38 @@ export function resolvePreviewComponent(
       return withStyle(<ContactStatsSection data={data as any} />, blockStyle)
     case 'locations':
       return withStyle(<LocationsSection data={data as any} />, blockStyle)
+    case 'featured-case-study':
+      return withStyle(<FeaturedCaseStudySection data={data as any} />, blockStyle)
+    case 'partnership':
+      return withStyle(<PartnershipSection data={data as any} />, blockStyle)
+    case 'faq-main':
+      return withStyle(<FAQMainSection data={data as any} />, blockStyle)
+    case 'breadcrumb':
+      return withStyle(<BreadcrumbSection data={data as any} />, blockStyle)
+    case 'faq-about':
+      return withStyle(<FAQAboutSection data={data as any} />, blockStyle)
+    case 'article-submit':
+      return withStyle(<ArticleSubmitSection data={data as any} />, blockStyle)
+    case 'serve-hero':
+      return withStyle(<ServeHeroSection data={data as any} />, blockStyle)
+    case 'serve-value':
+      return withStyle(<ServeValueSection data={data as any} />, blockStyle)
+    case 'serve-model':
+      return withStyle(<ServeModelSection data={data as any} />, blockStyle)
+    case 'insights-advantages':
+      return withStyle(<InsightsAdvantagesSection data={data as any} />, blockStyle)
+    case 'insights-tech-guide':
+      return withStyle(<InsightsTechGuideSection data={data as any} />, blockStyle)
+    case 'article-filter':
+      return withStyle(<ArticleFilterSection data={data as any} />, blockStyle)
+    case 'article-hero':
+      return withStyle(<ArticleHeroSection data={data as any} />, blockStyle)
+    case 'article-feature':
+      return withStyle(<ArticleFeatureSection data={data as any} />, blockStyle)
+    case 'article-main-grid':
+      return withStyle(<ArticleMainGridSection data={data as any} />, blockStyle)
+    case 'subscribe':
+      return withStyle(<SubscribeSection data={data as any} />, blockStyle)
 
     // ── Basic blocks — inline previews ────────────────────────────────────────
     case 'heading':

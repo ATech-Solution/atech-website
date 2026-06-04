@@ -276,343 +276,6 @@ export const Theme: GlobalConfig = {
           ],
         },
 
-        // ── HOMEPAGE ─────────────────────────────────────────────────────────
-        {
-          label: 'Homepage',
-          fields: [
-            // Hero
-            {
-              type: 'collapsible',
-              label: 'Hero Section',
-              fields: [
-                {
-                  name: 'heroBadge',
-                  type: 'text',
-                  label: 'Hero Badge Text',
-                  localized: true,
-                  defaultValue: 'Welcome to ATech Solutions',
-                },
-                {
-                  name: 'heroHeading',
-                  type: 'text',
-                  label: 'Hero Heading',
-                  localized: true,
-                  defaultValue: 'Build Software That Scales Your Business Forward',
-                },
-                {
-                  name: 'heroBody',
-                  type: 'textarea',
-                  label: 'Hero Body Text',
-                  localized: true,
-                  defaultValue: 'We build robust, scalable, and intelligent software solutions for startups and enterprises.',
-                },
-                {
-                  type: 'row',
-                  fields: [
-                    {
-                      name: 'heroCtaPrimaryLabel',
-                      type: 'text',
-                      label: 'Primary CTA Label',
-                      defaultValue: 'Explore Services',
-                    },
-                    {
-                      name: 'heroCtaPrimaryUrl',
-                      type: 'text',
-                      label: 'Primary CTA URL',
-                      defaultValue: '/services',
-                    },
-                  ],
-                },
-                {
-                  type: 'row',
-                  fields: [
-                    {
-                      name: 'heroCtaSecondaryLabel',
-                      type: 'text',
-                      label: 'Secondary CTA Label',
-                      defaultValue: 'Client Testimonials',
-                    },
-                    {
-                      name: 'heroCtaSecondaryUrl',
-                      type: 'text',
-                      label: 'Secondary CTA URL',
-                      defaultValue: '/testimonials',
-                    },
-                  ],
-                },
-                {
-                  name: 'heroImage',
-                  type: 'upload',
-                  relationTo: 'media',
-                  label: 'Hero Image (right column)',
-                  admin: { description: 'Used when heroLayout is set to "Image"' },
-                },
-                {
-                  name: 'heroLayout',
-                  type: 'select',
-                  label: 'Right Column Layout',
-                  defaultValue: 'services-grid',
-                  options: [
-                    { label: 'Services Grid', value: 'services-grid' },
-                    { label: 'Code Editor',   value: 'code-editor' },
-                    { label: 'Image',         value: 'image' },
-                  ],
-                },
-              ],
-            },
-
-            // Stats
-            {
-              type: 'collapsible',
-              label: 'Stats Bar',
-              fields: [
-                {
-                  name: 'stats',
-                  type: 'array',
-                  label: 'Stats',
-                  fields: [
-                    { name: 'value', type: 'text', required: true, label: 'Value (e.g. "250+")' },
-                    { name: 'label', type: 'text', required: true, label: 'Label', localized: true },
-                  ],
-                },
-              ],
-            },
-
-            // About
-            {
-              type: 'collapsible',
-              label: 'About Section',
-              fields: [
-                {
-                  name: 'aboutHeading',
-                  type: 'text',
-                  label: 'Heading',
-                  localized: true,
-                  defaultValue: 'About ATech Solutions',
-                },
-                {
-                  name: 'aboutDescription',
-                  type: 'textarea',
-                  label: 'Description',
-                  localized: true,
-                },
-                {
-                  name: 'aboutPillars',
-                  type: 'array',
-                  label: 'Pillars',
-                  fields: [
-                    {
-                      name: 'icon',
-                      type: 'select',
-                      label: 'Icon',
-                      options: [
-                        { label: 'Lightbulb (Innovation)', value: 'lightbulb' },
-                        { label: 'Star (Expertise)',       value: 'star' },
-                        { label: 'Handshake (Partnership)', value: 'handshake' },
-                        { label: 'Globe',                  value: 'globe' },
-                        { label: 'Code',                   value: 'code' },
-                        { label: 'Shield',                 value: 'shield' },
-                      ],
-                    },
-                    { name: 'title',       type: 'text',     required: true, localized: true },
-                    { name: 'description', type: 'textarea', localized: true },
-                  ],
-                },
-              ],
-            },
-
-            // Services
-            {
-              type: 'collapsible',
-              label: 'Services Section',
-              fields: [
-                {
-                  name: 'servicesHeading',
-                  type: 'text',
-                  label: 'Heading',
-                  localized: true,
-                  defaultValue: 'Our Services',
-                },
-                {
-                  name: 'servicesSubheading',
-                  type: 'text',
-                  label: 'Subheading',
-                  localized: true,
-                },
-                {
-                  name: 'servicesBgStyle',
-                  type: 'select',
-                  label: 'Section Background',
-                  defaultValue: 'light',
-                  options: [
-                    { label: 'Light / White', value: 'light' },
-                    { label: 'Dark',          value: 'dark' },
-                    { label: 'Subtle',        value: 'subtle' },
-                  ],
-                },
-                {
-                  name: 'services',
-                  type: 'array',
-                  label: 'Service Cards',
-                  fields: [
-                    {
-                      name: 'icon',
-                      type: 'select',
-                      label: 'Icon',
-                      options: [
-                        { label: 'QA / Check Badge', value: 'check-badge' },
-                        { label: 'Globe / Web',      value: 'globe' },
-                        { label: 'Mobile / Device',  value: 'device' },
-                        { label: 'Users / HR',       value: 'users' },
-                        { label: 'Consultancy Box',  value: 'consult' },
-                        { label: 'Code',             value: 'code' },
-                        { label: 'Lightbulb',        value: 'lightbulb' },
-                        { label: 'Shield',           value: 'shield' },
-                      ],
-                    },
-                    { name: 'title',       type: 'text',     required: true, localized: true },
-                    { name: 'description', type: 'textarea', localized: true },
-                    { name: 'href',        type: 'text',     defaultValue: '#' },
-                  ],
-                },
-                // Custom Solution CTA
-                {
-                  name: 'customSolutionHeading',
-                  type: 'text',
-                  label: 'Custom Solution Banner — Heading',
-                  localized: true,
-                  defaultValue: 'Need Custom Solution?',
-                },
-                {
-                  name: 'customSolutionBody',
-                  type: 'text',
-                  label: 'Custom Solution Banner — Body',
-                  localized: true,
-                },
-                {
-                  type: 'row',
-                  fields: [
-                    {
-                      name: 'customSolutionCtaLabel',
-                      type: 'text',
-                      label: 'CTA Label',
-                      defaultValue: 'Chat with us',
-                    },
-                    {
-                      name: 'customSolutionCtaUrl',
-                      type: 'text',
-                      label: 'CTA URL',
-                      defaultValue: '/contact',
-                    },
-                  ],
-                },
-              ],
-            },
-
-            // Testimonials
-            {
-              type: 'collapsible',
-              label: 'Testimonials Section',
-              fields: [
-                {
-                  name: 'testimonialsHeading',
-                  type: 'text',
-                  label: 'Heading',
-                  localized: true,
-                  defaultValue: 'Client Testimonials',
-                },
-                {
-                  name: 'testimonialsSubheading',
-                  type: 'text',
-                  label: 'Subheading',
-                  localized: true,
-                  defaultValue: 'What our clients say about working with us.',
-                },
-                {
-                  name: 'testimonialsBgStyle',
-                  type: 'select',
-                  label: 'Section Background Style',
-                  defaultValue: 'yellow',
-                  options: [
-                    { label: 'Yellow / Gold', value: 'yellow' },
-                    { label: 'Dark',          value: 'dark' },
-                    { label: 'Light',         value: 'light' },
-                    { label: 'Custom Color',  value: 'custom' },
-                  ],
-                },
-                {
-                  name: 'testimonialsBgColor',
-                  type: 'text',
-                  label: 'Custom Background Color',
-                  admin: {
-                    placeholder: '#f5c500',
-                    condition: (data) => data.testimonialsBgStyle === 'custom',
-                  },
-                },
-                {
-                  name: 'testimonials',
-                  type: 'array',
-                  label: 'Testimonials',
-                  fields: [
-                    { name: 'name',    type: 'text',     required: true },
-                    { name: 'role',    type: 'text' },
-                    { name: 'company', type: 'text' },
-                    { name: 'quote',   type: 'textarea', required: true, localized: true },
-                    { name: 'avatar',  type: 'upload',   relationTo: 'media' },
-                    {
-                      name: 'rating',
-                      type: 'number',
-                      label: 'Rating (1–5)',
-                      defaultValue: 5,
-                      admin: { step: 1 },
-                    },
-                  ],
-                },
-              ],
-            },
-
-            // Contact
-            {
-              type: 'collapsible',
-              label: 'Contact Section',
-              fields: [
-                {
-                  name: 'contactHeading',
-                  type: 'text',
-                  label: 'Heading',
-                  localized: true,
-                  defaultValue: 'Get in Touch',
-                },
-                {
-                  name: 'contactSubheading',
-                  type: 'text',
-                  label: 'Subheading',
-                  localized: true,
-                  defaultValue: 'Ready to start your next project? Let\'s discuss how we can help.',
-                },
-                {
-                  name: 'contactEmail',
-                  type: 'text',
-                  label: 'Contact Email',
-                  defaultValue: 'hello@atech.software',
-                },
-                {
-                  name: 'contactPhone',
-                  type: 'text',
-                  label: 'Contact Phone',
-                  defaultValue: '+852 1234 5678',
-                },
-                {
-                  name: 'contactLocation',
-                  type: 'text',
-                  label: 'Location',
-                  defaultValue: 'Central, Hong Kong',
-                },
-              ],
-            },
-          ],
-        },
-
         // ── FOOTER ───────────────────────────────────────────────────────────
         {
           label: 'Footer',
@@ -630,25 +293,56 @@ export const Theme: GlobalConfig = {
               label: 'Copyright Text',
               defaultValue: 'ATech Solutions Limited. All rights reserved.',
             },
+            // ── Get Started column ────────────────────────────────────────────
             {
-              name: 'footerColumns',
-              type: 'array',
-              label: 'Footer Link Columns',
-              admin: {
-                description: 'Each column appears in the footer grid. Max 3 columns recommended.',
-              },
-              fields: [
-                { name: 'heading', type: 'text', required: true, localized: true },
-                {
-                  name: 'links',
-                  type: 'array',
-                  label: 'Links',
-                  fields: [
-                    { name: 'label', type: 'text', required: true, localized: true },
-                    { name: 'href',  type: 'text', required: true },
-                  ],
-                },
-              ],
+              name: 'getStartedTitle',
+              type: 'text',
+              label: 'Get Started — Title',
+              defaultValue: 'Get Started',
+            },
+            {
+              name: 'getStartedDesc',
+              type: 'textarea',
+              label: 'Get Started — Description',
+              defaultValue: 'Ready to transform your business with technology?',
+            },
+            {
+              name: 'getStartedButtonLabel',
+              type: 'text',
+              label: 'Get Started — Button Label',
+              defaultValue: 'Send us a Message',
+            },
+            {
+              name: 'getStartedButtonUrl',
+              type: 'text',
+              label: 'Get Started — Button URL',
+              defaultValue: '/static/contact',
+            },
+            // ── Social Links ──────────────────────────────────────────────────
+            {
+              name: 'twitter',
+              type: 'text',
+              label: 'Twitter / X URL',
+            },
+            {
+              name: 'facebook',
+              type: 'text',
+              label: 'Facebook URL',
+            },
+            {
+              name: 'instagram',
+              type: 'text',
+              label: 'Instagram URL',
+            },
+            {
+              name: 'linkedin',
+              type: 'text',
+              label: 'LinkedIn URL',
+            },
+            {
+              name: 'github',
+              type: 'text',
+              label: 'GitHub URL',
             },
           ],
         },

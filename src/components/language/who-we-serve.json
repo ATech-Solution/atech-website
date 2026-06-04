@@ -10,8 +10,8 @@
       "heading": "Technology Solutions\nTailored to Every\nIndustry",
       "body": "We partner with organisations across diverse sectors — from fast-growing startups to established enterprises — delivering bespoke software, IT consulting, and quality engineering that fits your world.",
       "cta": {
-        "primary":   { "label": "Talk to Us",         "url": "/contact"   },
-        "secondary": { "label": "Explore Our Work",   "url": "/portfolio" }
+        "primary":   { "label": "Talk to Us",         "url": "/static/contact"   },
+        "secondary": { "label": "Explore Our Work",   "url": "/static/portfolio" }
       },
       "image": {
         "src": "https://www.figma.com/api/mcp/asset/41747a28-5202-4d51-a1f4-98501dfd6c9f",
@@ -89,7 +89,7 @@
     "cta": {
       "heading":    "Ready to Work Together?",
       "subheading": "Tell us about your industry and challenges. Our team will put together a tailored approach that delivers real results.",
-      "button":     { "label": "Start a Conversation", "url": "/contact" },
+      "button":     { "label": "Start a Conversation", "url": "/static/contact" },
       "stats": [
         { "value": "12+",  "label": "Industries Served"   },
         { "value": "200+", "label": "Projects Delivered"  },

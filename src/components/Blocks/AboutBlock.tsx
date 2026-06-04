@@ -22,28 +22,36 @@ export default function AboutBlock({ data }: { data: AboutData }) {
 
   return (
     <section
-      className="py-24"
+      className="py-20"
       style={{
-        background: 'var(--color-bg, #292929)',
-        borderTop: '1px solid var(--color-border, #383838)',
+        background: '#292929',
+        borderTop: '1px solid #383838',
       }}
     >
-      <div className="mx-auto px-6 md:px-10" style={{ maxWidth: '1280px' }}>
+      <div className="mx-auto px-6 md:px-10 lg:px-20" style={{ maxWidth: '1280px' }}>
         {/* Section heading */}
         <div className="mb-16">
-          <SectionHeader heading={heading} subheading={description} align="center" />
+          <SectionHeader
+            heading={heading}
+            subheading={description}
+            align="center"
+            headingColor="#fafafa"
+            subheadingColor="#fafafa"
+            headingFontWeight={400}
+          />
         </div>
 
-        {/* Pillars grid — centered icon, centered text */}
+        {/* Pillars grid — Figma: transparent bg, 64px icon box, gold title */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {pillars.map((pillar) => (
             <IconCard
               key={pillar.title}
-              icon={<ServiceIcon name={pillar.icon} size={24} />}
+              icon={<ServiceIcon name={pillar.icon} size={20} />}
               title={pillar.title}
               description={pillar.description}
               align="center"
               size="md"
+              theme="transparent"
             />
           ))}
         </div>

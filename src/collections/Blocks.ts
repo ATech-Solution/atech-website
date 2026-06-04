@@ -55,8 +55,11 @@ const CONTENT_SECTION_TYPES = [
   { label: 'Article — Hero',     value: 'article-hero' },
   { label: 'Article — Featured', value: 'article-featured' },
   { label: 'Article — Grid',     value: 'article-grid' },
-  { label: 'Portfolio — Hero',   value: 'portfolio-hero' },
-  { label: 'Portfolio — Grid',   value: 'portfolio-grid' },
+  { label: 'Portfolio — Hero',       value: 'portfolio-hero'       },
+  { label: 'Portfolio — Statistics', value: 'portfolio-statistics' },
+  { label: 'Portfolio — Main Grid',  value: 'portfolio-main'       },
+  { label: 'Portfolio — Grid',       value: 'project-grid'         },
+  { label: 'FAQ — Main',             value: 'faq-main'             },
 ]
 
 const GET_INVOLVED_SECTION_TYPES = [
@@ -75,6 +78,23 @@ const WHO_WE_SERVE_SECTION_TYPES = [
   { label: 'Who We Serve — Hero',       value: 'who-we-serve-hero' },
   { label: 'Who We Serve — Industries', value: 'who-we-serve-industries' },
   { label: 'Who We Serve — Why Us',     value: 'who-we-serve-why' },
+]
+
+const PORTFOLIO_SECTION_TYPES = [
+  { label: 'Portfolio — Detail Top',      value: 'portfolio-detail-top'      },
+  { label: 'Portfolio — Featured Image',  value: 'portfolio-featured-image'  },
+  { label: 'Portfolio — Detail Overview', value: 'portfolio-detail-overview' },
+]
+
+const ARTICLE_SECTION_TYPES = [
+  { label: 'Article — Detail Hero',    value: 'article-detail-hero'    },
+  { label: 'Article — Detail Content', value: 'article-detail-content' },
+  { label: 'Article — Related',        value: 'article-related'        },
+]
+
+const FORM_BLOCK_TYPES = [
+  { label: 'Dynamic Form', value: 'dynamic-form' },
+  { label: 'Form',         value: 'form'         },
 ]
 
 const GENERAL_BLOCK_TYPES = [
@@ -112,14 +132,26 @@ export const Blocks: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'blockType', 'category', 'updatedAt'],
-    group: 'Layout Builder',
-    hidden: false,
+    hidden: () => true,
   },
   access: {
     read: ({ req }) => Boolean(req.user),
     create: ({ req }) => req.user?.role === 'admin' || req.user?.role === 'editor',
     update: ({ req }) => req.user?.role === 'admin' || req.user?.role === 'editor',
     delete: ({ req }) => req.user?.role === 'admin',
+  },
+  hooks: {
+    afterChange: [
+      async () => {
+        try {
+          const { revalidateTag } = await import('next/cache')
+          revalidateTag('perf:block-templates')
+          revalidateTag('perf:pages')
+        } catch {
+          // Ignore in non-Next.js contexts
+        }
+      },
+    ],
   },
   fields: [
     // ── Identity ───────────────────────────────────────────────────────────
@@ -183,6 +215,21 @@ export const Blocks: CollectionConfig = {
               value: '__who_we_serve_header__',
             },
             ...WHO_WE_SERVE_SECTION_TYPES,
+            {
+              label: '── Portfolio Detail ──',
+              value: '__portfolio_detail_header__',
+            },
+            ...PORTFOLIO_SECTION_TYPES,
+            {
+              label: '── Article Detail ──',
+              value: '__article_detail_header__',
+            },
+            ...ARTICLE_SECTION_TYPES,
+            {
+              label: '── Forms ──',
+              value: '__forms_header__',
+            },
+            ...FORM_BLOCK_TYPES,
           ],
         },
         {
@@ -201,6 +248,9 @@ export const Blocks: CollectionConfig = {
             { label: 'Content Sections',   value: 'content-sections' },
             { label: 'Get Involved',       value: 'get-involved-sections' },
             { label: 'Who We Serve',       value: 'who-we-serve-sections' },
+            { label: 'Portfolio Sections', value: 'portfolio-sections' },
+            { label: 'Article Sections',   value: 'article-sections'   },
+            { label: 'Forms',              value: 'form-sections'       },
           ],
         },
       ],
@@ -241,7 +291,7 @@ export const Blocks: CollectionConfig = {
               label: 'Image',
               admin: {
                 condition: (data) =>
-                  ['image', 'image-box', 'icon-box', 'hero'].includes(data.blockType),
+                  ['image', 'image-box', 'icon-box', 'hero', 'portfolio-featured-image'].includes(data.blockType),
               },
             },
             {
@@ -389,7 +439,7 @@ export const Blocks: CollectionConfig = {
             type: 'text',
             label: 'Badge Text',
             defaultValue: h.hero.badge,
-            admin: { condition: (data) => ['home-hero', 'about-hero', 'web-dev-hero'].includes(data.blockType) },
+            admin: { condition: (data) => ['home-hero', 'about-hero', 'web-dev-hero', 'article-detail-hero'].includes(data.blockType) },
           },
           {
             name: 'heading',
@@ -397,7 +447,7 @@ export const Blocks: CollectionConfig = {
             label: 'Heading',
             localized: true,
             defaultValue: h.hero.heading,
-            admin: { condition: (data) => [...HOME_SECTION_TYPES.map(t => t.value), 'web-dev-hero', 'service-cards', 'cta-banner'].includes(data.blockType) },
+            admin: { condition: (data) => [...HOME_SECTION_TYPES.map(t => t.value), 'web-dev-hero', 'service-cards', 'cta-banner', 'article-related'].includes(data.blockType) },
           },
           {
             name: 'body',
@@ -558,6 +608,36 @@ export const Blocks: CollectionConfig = {
 
           // ── HOME TESTIMONIALS fields ─────────────────────────────────────
           {
+            name: 'testimonialsContentSource',
+            type: 'select',
+            label: 'Content Source',
+            defaultValue: 'manual',
+            options: [
+              { label: 'Testimonials Collection (CMS)', value: 'collection' },
+              { label: 'Manual Items',                  value: 'manual'     },
+            ],
+            admin: { condition: (data) => data.blockType === 'home-testimonials' },
+          },
+          {
+            name: 'testimonialsLimit',
+            type: 'number',
+            label: 'Items Limit',
+            defaultValue: 9,
+            admin: {
+              description: 'Max testimonials to load from the collection.',
+              condition: (data) =>
+                data.blockType === 'home-testimonials' &&
+                data.testimonialsContentSource === 'collection',
+            },
+          },
+          {
+            name: 'enableCarousel',
+            type: 'checkbox',
+            label: 'Enable Slide Carousel',
+            defaultValue: false,
+            admin: { condition: (data) => data.blockType === 'home-testimonials' },
+          },
+          {
             name: 'testimonialItems',
             type: 'array',
             label: 'Testimonials',
@@ -568,7 +648,11 @@ export const Blocks: CollectionConfig = {
               quote:         t.quote,
               rating:        t.rating,
             })),
-            admin: { condition: (data) => data.blockType === 'home-testimonials' },
+            admin: {
+              condition: (data) =>
+                data.blockType === 'home-testimonials' &&
+                (data.testimonialsContentSource ?? 'manual') !== 'collection',
+            },
             fields: [
               { name: 'clientName',    type: 'text',     label: 'Name' },
               { name: 'clientRole',    type: 'text',     label: 'Role' },
@@ -802,26 +886,87 @@ export const Blocks: CollectionConfig = {
             ],
           },
 
-          // ── ABOUT FAQ fields ─────────────────────────────────────────────
+          // ── FAQ fields (about-faq, faq-section, faq-main) ─────────────────
+          {
+            name: 'faqContentSource',
+            type: 'select',
+            label: 'Content Source',
+            defaultValue: 'manual',
+            options: [
+              { label: 'FAQ Collection (CMS)', value: 'collection' },
+              { label: 'Manual Items',         value: 'manual'     },
+            ],
+            admin: {
+              condition: (data) => ['faq-section', 'faq-main'].includes(data.blockType),
+            },
+          },
+          {
+            name: 'faqCategorySlug',
+            type: 'text',
+            label: 'Filter by Category Slug',
+            admin: {
+              description: 'Optional: load only FAQs from this category slug (faq-section only).',
+              condition: (data) =>
+                data.blockType === 'faq-section' && data.faqContentSource === 'collection',
+            },
+          },
+          {
+            name: 'faqLimit',
+            type: 'number',
+            label: 'Items Limit',
+            defaultValue: 20,
+            admin: {
+              description: 'Max FAQ items to load from the collection.',
+              condition: (data) =>
+                ['faq-section', 'faq-main'].includes(data.blockType) &&
+                data.faqContentSource === 'collection',
+            },
+          },
+          {
+            name: 'faqBackLabel',
+            type: 'text',
+            label: 'Back Link Label',
+            admin: {
+              placeholder: 'Back to about us',
+              condition: (data) => data.blockType === 'faq-main',
+            },
+          },
+          {
+            name: 'faqBackUrl',
+            type: 'text',
+            label: 'Back Link URL',
+            admin: {
+              placeholder: '/about',
+              condition: (data) => data.blockType === 'faq-main',
+            },
+          },
           {
             name: 'faqHeading',
             type: 'text',
             label: 'Heading',
             localized: true,
-            admin: { condition: (data) => data.blockType === 'about-faq' },
+            admin: {
+              condition: (data) => ['about-faq', 'faq-section'].includes(data.blockType),
+            },
           },
           {
             name: 'faqSubheading',
             type: 'textarea',
             label: 'Subheading',
             localized: true,
-            admin: { condition: (data) => data.blockType === 'about-faq' },
+            admin: {
+              condition: (data) => ['about-faq', 'faq-section'].includes(data.blockType),
+            },
           },
           {
             name: 'faqItems',
             type: 'array',
-            label: 'FAQ Items',
-            admin: { condition: (data) => data.blockType === 'about-faq' },
+            label: 'FAQ Items (Manual Mode)',
+            admin: {
+              condition: (data) =>
+                ['about-faq', 'faq-section', 'faq-main'].includes(data.blockType) &&
+                (data.blockType === 'about-faq' || data.faqContentSource !== 'collection'),
+            },
             fields: [
               { name: 'question', type: 'text',     label: 'Question', localized: true },
               { name: 'answer',   type: 'textarea', label: 'Answer',   localized: true },
@@ -839,7 +984,7 @@ export const Blocks: CollectionConfig = {
             name: 'breadcrumbItems',
             type: 'array',
             label: 'Breadcrumb',
-            admin: { condition: (data) => data.blockType === 'web-dev-hero' },
+            admin: { condition: (data) => ['web-dev-hero', 'article-detail-hero'].includes(data.blockType) },
             fields: [
               { name: 'breadcrumbLabel', type: 'text', label: 'Label', required: true },
               { name: 'breadcrumbUrl',   type: 'text', label: 'URL (leave empty for current page)' },
@@ -863,6 +1008,339 @@ export const Blocks: CollectionConfig = {
                 admin: { description: 'Enter each feature on a new line' },
               },
             ],
+          },
+
+          // ── PROJECT GRID (project-grid) fields ───────────────────────────
+          // Non-localized fields FIRST (must precede localized fields to render)
+          {
+            name: 'showCategoryFilter',
+            type: 'select',
+            label: 'Show Category Filter Tabs',
+            defaultValue: 'yes',
+            options: [
+              { label: 'Yes', value: 'yes' },
+              { label: 'No',  value: 'no'  },
+            ],
+            admin: { condition: (data) => data.blockType === 'project-grid' || data.blockType === 'portfolio-main' },
+          },
+          {
+            name: 'projectContentSource',
+            type: 'select',
+            label: 'Content Source',
+            defaultValue: 'manual',
+            options: [
+              { label: 'Portfolio Collection (CMS)', value: 'collection' },
+              { label: 'Manual Items',               value: 'manual'     },
+            ],
+            admin: { condition: (data) => data.blockType === 'project-grid' || data.blockType === 'portfolio-main' },
+          },
+          {
+            name: 'projectLimit',
+            type: 'number',
+            label: 'Items Limit',
+            defaultValue: 9,
+            admin: {
+              description: 'Max portfolio items to load from the collection.',
+              condition: (data) => (data.blockType === 'project-grid' || data.blockType === 'portfolio-main') && data.projectContentSource === 'collection',
+            },
+          },
+          {
+            name: 'projectCategory',
+            type: 'text',
+            label: 'Filter by Category Slug',
+            admin: {
+              description: 'Optional: show only items from this portfolio-category slug.',
+              condition: (data) => (data.blockType === 'project-grid' || data.blockType === 'portfolio-main') && data.projectContentSource === 'collection',
+            },
+          },
+          {
+            name: 'projectOrderBy',
+            type: 'select',
+            label: 'Sort Order',
+            defaultValue: 'publishedAt_desc',
+            options: [
+              { label: 'Newest First', value: 'publishedAt_desc' },
+              { label: 'Oldest First', value: 'publishedAt_asc'  },
+            ],
+            admin: {
+              condition: (data) => (data.blockType === 'project-grid' || data.blockType === 'portfolio-main') && data.projectContentSource === 'collection',
+            },
+          },
+          // Localized fields AFTER non-localized
+          {
+            name: 'projectHeading',
+            type: 'text',
+            label: 'Heading',
+            localized: true,
+            admin: { condition: (data) => data.blockType === 'project-grid' || data.blockType === 'portfolio-main' },
+          },
+          {
+            name: 'projectSubheading',
+            type: 'textarea',
+            label: 'Subheading',
+            localized: true,
+            admin: { condition: (data) => data.blockType === 'project-grid' || data.blockType === 'portfolio-main' },
+          },
+          {
+            name: 'projectItems',
+            type: 'array',
+            label: 'Project Items (Manual Mode)',
+            admin: {
+              condition: (data) => data.blockType === 'project-grid' && data.projectContentSource !== 'collection',
+            },
+            fields: [
+              {
+                name: 'projectImage',
+                type: 'upload',
+                relationTo: 'media',
+                label: 'Project Image',
+              },
+              { name: 'projectTag',   type: 'text',     label: 'Primary Category / Tag' },
+              { name: 'projectType',  type: 'text',     label: 'Project Type (second badge)' },
+              { name: 'projectTitle', type: 'text',     label: 'Project Title', required: true },
+              { name: 'projectDesc',  type: 'textarea', label: 'Short Description' },
+              {
+                name: 'projectCta',
+                type: 'text',
+                label: 'CTA Label',
+                admin: { placeholder: 'View Case Study' },
+              },
+              { name: 'projectUrl', type: 'text', label: 'Project URL' },
+            ],
+          },
+
+          // ── PORTFOLIO DETAIL TOP (portfolio-detail-top) fields ───────────
+          {
+            name: 'backLabel',
+            type: 'text',
+            label: 'Back Link Label',
+            admin: {
+              placeholder: 'Back to Portfolio',
+              condition: (data) => data.blockType === 'portfolio-detail-top',
+            },
+          },
+          {
+            name: 'backUrl',
+            type: 'text',
+            label: 'Back Link URL',
+            admin: {
+              placeholder: '/static/portfolio',
+              condition: (data) => data.blockType === 'portfolio-detail-top',
+            },
+          },
+          {
+            name: 'tags',
+            type: 'array',
+            label: 'Category Tags',
+            admin: { condition: (data) => data.blockType === 'portfolio-detail-top' },
+            fields: [
+              { name: 'tagLabel', type: 'text', label: 'Tag Label', required: true },
+            ],
+          },
+          {
+            name: 'pdTitle',
+            type: 'text',
+            label: 'Project Title',
+            localized: true,
+            admin: { condition: (data) => data.blockType === 'portfolio-detail-top' },
+          },
+          {
+            name: 'pdDescription',
+            type: 'textarea',
+            label: 'Project Description',
+            localized: true,
+            admin: { condition: (data) => data.blockType === 'portfolio-detail-top' },
+          },
+          {
+            name: 'pdClient',
+            type: 'text',
+            label: 'Client',
+            admin: { condition: (data) => data.blockType === 'portfolio-detail-top' },
+          },
+          {
+            name: 'pdDuration',
+            type: 'text',
+            label: 'Duration',
+            admin: {
+              placeholder: 'e.g. 6 Months',
+              condition: (data) => data.blockType === 'portfolio-detail-top',
+            },
+          },
+          {
+            name: 'pdYear',
+            type: 'text',
+            label: 'Year',
+            admin: {
+              placeholder: 'e.g. 2025',
+              condition: (data) => data.blockType === 'portfolio-detail-top',
+            },
+          },
+          {
+            name: 'pdTeamSize',
+            type: 'text',
+            label: 'Team Size',
+            admin: {
+              placeholder: 'e.g. 12 Members',
+              condition: (data) => data.blockType === 'portfolio-detail-top',
+            },
+          },
+
+          // ── PORTFOLIO FEATURED IMAGE (portfolio-featured-image) fields ───
+          {
+            name: 'pdCaption',
+            type: 'text',
+            label: 'Image Caption / Alt Text',
+            admin: { condition: (data) => data.blockType === 'portfolio-featured-image' },
+          },
+
+          // ── PORTFOLIO DETAIL OVERVIEW (portfolio-detail-overview) fields ─
+          {
+            name: 'pdSectionTitle',
+            type: 'text',
+            label: 'Section Title',
+            localized: true,
+            admin: {
+              placeholder: 'Project Overview',
+              condition: (data) => data.blockType === 'portfolio-detail-overview',
+            },
+          },
+          {
+            name: 'pdContent',
+            type: 'textarea',
+            label: 'Overview Content',
+            localized: true,
+            admin: {
+              description: 'Separate paragraphs with a blank line.',
+              condition: (data) => data.blockType === 'portfolio-detail-overview',
+            },
+          },
+          {
+            name: 'pdMetricsTitle',
+            type: 'text',
+            label: 'Metrics Sidebar Title',
+            admin: {
+              placeholder: 'Key Metrics',
+              condition: (data) => data.blockType === 'portfolio-detail-overview',
+            },
+          },
+          {
+            name: 'pdMetrics',
+            type: 'array',
+            label: 'Key Metrics',
+            admin: { condition: (data) => data.blockType === 'portfolio-detail-overview' },
+            fields: [
+              { name: 'pdMetricValue', type: 'text', label: 'Value (e.g. "500K+")' },
+              { name: 'pdMetricLabel', type: 'text', label: 'Label (e.g. "Active Users")' },
+            ],
+          },
+
+          // ── PORTFOLIO HERO (portfolio-hero) fields ───────────────────────
+          {
+            name: 'portfolioHeroBadge',
+            type: 'text',
+            label: 'Badge Text',
+            defaultValue: 'Our Work',
+            admin: { condition: (data) => data.blockType === 'portfolio-hero' },
+          },
+          {
+            name: 'portfolioHeroHeading',
+            type: 'text',
+            label: 'Heading',
+            localized: true,
+            defaultValue: 'Our Portfolio',
+            admin: { condition: (data) => data.blockType === 'portfolio-hero' },
+          },
+          {
+            name: 'portfolioHeroSubheading',
+            type: 'textarea',
+            label: 'Subheading',
+            localized: true,
+            defaultValue: 'Explore our collection of successful projects across industries. From startups to enterprises, we deliver exceptional digital solutions that drive results.',
+            admin: { condition: (data) => data.blockType === 'portfolio-hero' },
+          },
+          {
+            type: 'row',
+            admin: { condition: (data) => data.blockType === 'portfolio-hero' },
+            fields: [
+              { name: 'portfolioHeroCtaPrimaryLabel', type: 'text', label: 'Primary CTA Label', defaultValue: 'View Projects' },
+              { name: 'portfolioHeroCtaPrimaryUrl',   type: 'text', label: 'Primary CTA URL',   defaultValue: '#projects' },
+            ],
+          },
+          {
+            type: 'row',
+            admin: { condition: (data) => data.blockType === 'portfolio-hero' },
+            fields: [
+              { name: 'portfolioHeroCtaSecondaryLabel', type: 'text', label: 'Secondary CTA Label', defaultValue: 'Start Your Project' },
+              { name: 'portfolioHeroCtaSecondaryUrl',   type: 'text', label: 'Secondary CTA URL',   defaultValue: '/static/contact' },
+            ],
+          },
+
+          // ── PORTFOLIO STATISTICS (portfolio-statistics) fields ──────────────
+          {
+            name: 'portfolioStats',
+            type: 'array',
+            label: 'Statistics',
+            admin: { condition: (data) => data.blockType === 'portfolio-statistics' },
+            fields: [
+              { name: 'statValue', type: 'text', label: 'Value (e.g. "150+")' },
+              { name: 'statLabel', type: 'text', label: 'Label',              localized: true },
+            ],
+          },
+
+          // ── ARTICLE FEATURED (article-featured) fields ───────────────────
+          {
+            name: 'featContentSource',
+            type: 'select',
+            label: 'Content Source',
+            defaultValue: 'manual',
+            options: [
+              { label: 'Posts Collection', value: 'collection' },
+              { label: 'Manual',           value: 'manual'     },
+            ],
+            admin: { condition: (data) => data.blockType === 'article-featured' },
+          },
+          {
+            name: 'featPostSlug',
+            type: 'text',
+            label: 'Post Slug',
+            admin: {
+              description: 'Slug of the post to feature (e.g. "my-first-post").',
+              condition: (data) =>
+                data.blockType === 'article-featured' && data.featContentSource === 'collection',
+            },
+          },
+
+          // ── DYNAMIC FORM fields ──────────────────────────────────────────
+          {
+            name: 'formRef',
+            type: 'relationship',
+            relationTo: 'forms',
+            label: 'Form',
+            admin: {
+              description: 'Select the form to render on this page.',
+              condition: (data) => data.blockType === 'dynamic-form',
+            },
+          },
+          {
+            name: 'formSubmitLabel',
+            type: 'text',
+            label: 'Submit Button Label',
+            admin: {
+              placeholder: 'Submit',
+              condition: (data) => data.blockType === 'dynamic-form',
+            },
+          },
+
+          // ── FORM block fields ──────────────────────────────────────────────
+          {
+            name: 'surveyFormRef',
+            type: 'relationship',
+            relationTo: 'forms',
+            label: 'Form',
+            admin: {
+              description: 'Select the form to display inside this styled section.',
+              condition: (data) => data.blockType === 'form',
+            },
           },
           ],
         },
@@ -1051,6 +1529,16 @@ export const Blocks: CollectionConfig = {
           ],
         },
       ],
+    },
+    {
+      name: 'translatePanel',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/TranslateDocButton#TranslateDocButton',
+        },
+      },
     },
   ],
 }

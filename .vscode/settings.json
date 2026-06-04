@@ -1,0 +1,31 @@
+{
+  // ── Tailwind CSS IntelliSense ─────────────────────────────────────────────
+  // Point to the TypeScript tailwind config so IntelliSense resolves custom
+  // colors, font sizes, spacing tokens, etc. from tailwind.config.ts
+  "tailwindCSS.experimental.configFile": "tailwind.config.ts",
+
+  // Activate IntelliSense in all files that use className / class props
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+
+  // Validate Tailwind classes inline (underlines unknown/misspelled classes)
+  "tailwindCSS.validate": true,
+
+  // Show color swatches next to color utility classes
+  "tailwindCSS.colorDecorators": true,
+
+  // Class attributes to activate autocomplete in (covers className + custom props)
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "ngClass"
+  ],
+
+  // ── Editor ────────────────────────────────────────────────────────────────
+  // Keep Tailwind class completions working inside template literals / clsx calls
+  "editor.quickSuggestions": {
+    "strings": true
+  }
+}

@@ -1,14 +1,88 @@
 import type { CollectionConfig } from 'payload'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { getPageTemplateOptions } from '@/lib/page-templates'
 import { settingsAccess } from '@/lib/access'
+import { buildSeoFields } from '@/plugins/seo/fields'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
+    defaultColumns: ['title', 'slug', 'status', 'updatedAt', 'pageActions'],
+    livePreview: {
+      url: ({ data }) => {
+        const isFrontpage = data?.isFrontpage as boolean | undefined
+        const base        = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+        if (isFrontpage) return base
+        // Use full breadcrumb path when a parent is set
+        const breadcrumbs = data?.breadcrumbs as Array<{ url?: string }> | undefined
+        const fullPath    = breadcrumbs?.at(-1)?.url
+        if (fullPath) return `${base}${fullPath}`
+        const slug = data?.slug as string | undefined
+        return slug ? `${base}/${slug}` : base
+      },
+    },
   },
+  endpoints: [
+    {
+      path: '/:id/duplicate',
+      method: 'post',
+      handler: async (req) => {
+        const params = req.routeParams as { id?: string }
+        const id = params?.id
+        if (!id) return Response.json({ error: 'Missing id' }, { status: 400 })
+        if (!req.user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+        const original = await req.payload.findByID({
+          collection: 'pages',
+          id,
+          depth: 0,
+          req,
+        })
+
+        // Strip Payload-managed and hierarchy fields; the rest is safe to copy
+        const {
+          id: _id,
+          createdAt: _c,
+          updatedAt: _u,
+          _status: _s,
+          publishedAt: _pub,
+          parent: _parent,
+          breadcrumbs: _bc,
+          ...docData
+        } = original as any
+
+        // Find a free slug: try "<slug>-copy", then "<slug>-copy-2", "-copy-3", ...
+        const baseSlug = `${docData.slug ?? 'page'}-copy`
+        let freeSlug = baseSlug
+        let attempt = 1
+        while (true) {
+          const existing = await req.payload.find({
+            collection: 'pages',
+            where: { slug: { equals: freeSlug } },
+            limit: 1,
+            depth: 0,
+            req,
+          })
+          if (existing.totalDocs === 0) break
+          attempt += 1
+          freeSlug = `${baseSlug}-${attempt}`
+        }
+
+        const duplicate = await req.payload.create({
+          collection: 'pages',
+          data: {
+            ...docData,
+            title: `${docData.title ?? 'Page'} (Copy)`,
+            slug: freeSlug,
+            status: 'draft',
+          },
+          req,
+        })
+
+        return Response.json(duplicate, { status: 201 })
+      },
+    },
+  ],
   access: {
     // Public visitors can read published pages; authenticated users are controlled by Settings
     read: async ({ req }) => {
@@ -59,11 +133,24 @@ export const Pages: CollectionConfig = {
             },
             {
               name: 'excerpt',
-              type: 'textarea',
+              type: 'richText',
               localized: true,
-              label: 'Excerpt',
+              label: 'Content',
               admin: {
-                description: 'Short description shown in search results and SEO.',
+                description: 'Page content. For metadata shown in search results and SEO, use the SEO Meta Description field.',
+              },
+            },
+            // ── Row actions (list view only — View URL + Duplicate) ────────────
+            {
+              name: 'pageActions',
+              type: 'ui',
+              label: 'Actions',
+              admin: {
+                disableBulkEdit: true,
+                components: {
+                  Cell: '@/components/admin/PageRowActions#PageRowActionsCell',
+                  Field: '@/components/admin/PageRowActions#PageRowActionsField',
+                },
               },
             },
             // Visual Layout Builder (primary, plugin-powered)
@@ -72,6 +159,7 @@ export const Pages: CollectionConfig = {
               type: 'json',
               label: 'Layout Builder',
               defaultValue: [],
+              localized: true,
               admin: {
                 description: 'Visual drag-and-drop page builder. Activate the Layout Builder plugin in Plugins to use.',
                 components: {
@@ -112,7 +200,6 @@ export const Pages: CollectionConfig = {
                     {
                       name: 'content',
                       type: 'richText',
-                      editor: lexicalEditor({}),
                       localized: true,
                     },
                   ],
@@ -320,6 +407,50 @@ export const Pages: CollectionConfig = {
       },
       options: getPageTemplateOptions(),
     },
+    // ── Sidebar: Frontpage ───────────────────────────────────────────────────
+    {
+      name: 'isFrontpage',
+      type: 'checkbox',
+      label: 'Use as Frontpage',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'When checked, this page renders at the root URL (/). Only one page should be marked as Frontpage.',
+      },
+    },
+    // ── Sidebar: Portfolio Detail Template ──────────────────────────────────
+    {
+      name: 'portfolioDetailTemplate',
+      type: 'checkbox',
+      label: 'Use as Portfolio Detail Template',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'When checked, this page\'s Layout Builder becomes the template for all portfolio detail pages (/portfolio/<slug>).',
+      },
+    },
+    // ── Sidebar: Article Detail Template ────────────────────────────────────
+    {
+      name: 'articleDetailTemplate',
+      type: 'checkbox',
+      label: 'Use as Article Detail Template',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'When checked, this page\'s Layout Builder becomes the template for all article detail pages (/article/<slug>).',
+      },
+    },
+    buildSeoFields('pages'),
+    {
+      name: 'translatePanel',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/TranslateDocButton#TranslateDocButton',
+        },
+      },
+    },
   ],
   hooks: {
     beforeChange: [
@@ -328,6 +459,16 @@ export const Pages: CollectionConfig = {
           data.publishedAt = new Date().toISOString()
         }
         return data
+      },
+    ],
+    afterChange: [
+      async () => {
+        try {
+          const { revalidateTag } = await import('next/cache')
+          revalidateTag('perf:pages')
+        } catch {
+          // Ignore in non-Next.js contexts
+        }
       },
     ],
   },

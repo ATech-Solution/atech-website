@@ -1,16 +1,38 @@
-// Contact Section — Layout Builder variant (Advance)
-// Used by: home-contact, about-contact block types
+'use client'
+
+import { useEffect, useId, useRef, useState } from 'react'
+
+declare global {
+  interface Window {
+    grecaptcha?: {
+      render: (container: string | HTMLElement, params: Record<string, string>) => number
+      getResponse: (widgetId?: number) => string
+      reset: (widgetId?: number) => void
+      ready: (cb: () => void) => void
+    }
+  }
+}
+
+// Form ID for the "Contact" form in the forms collection (seeded via seed-contact-form.ts)
+const CONTACT_FORM_ID = 2
+
+interface MediaRef { url: string; alt?: string }
 
 interface ContactSectionData {
-  heading?:           string
-  contactSubheading?: string
-  formHeading?:       string
-  submitLabel?:       string
-  infoHeading?:       string
-  contactEmail?:      string
-  contactPhone?:      string
-  contactLocation?:   string
+  heading?:              string
+  contactSubheading?:    string
+  formHeading?:          string
+  submitLabel?:          string
+  infoHeading?:          string
+  contactEmail?:         string
+  contactPhone?:         string
+  contactLocation?:      string
+  contactEmailIcon?:     MediaRef | null
+  contactPhoneIcon?:     MediaRef | null
+  contactLocationIcon?:  MediaRef | null
 }
+
+type FormStatus = 'idle' | 'loading' | 'success' | 'error'
 
 function EmailIcon() {
   return (
@@ -50,14 +72,17 @@ function LocationIcon() {
   )
 }
 
-function ContactInfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function ContactInfoRow({ icon, iconSrc, label, value }: { icon: React.ReactNode; iconSrc?: string; label: string; value: string }) {
   return (
     <div className="flex items-start gap-4">
       <div
         className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
         style={{ background: '#000000' }}
       >
-        {icon}
+        {iconSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={iconSrc} alt="" style={{ width: 16, height: 16, objectFit: 'contain' }} />
+        ) : icon}
       </div>
       <div className="flex flex-col gap-1">
         <span
@@ -94,6 +119,106 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
   const formHeading = data.formHeading ?? 'Send us a Message'
   const infoHeading = data.infoHeading ?? 'Contact Information'
 
+  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? ''
+  const captchaId = useId().replace(/:/g, '')
+  const captchaRef = useRef<HTMLDivElement>(null)
+  const widgetIdRef = useRef<number | null>(null)
+  const captchaCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const [status,          setStatus]          = useState<FormStatus>('idle')
+  const [errorMsg,        setErrorMsg]        = useState('')
+  // true once widget renders, false while loading, null if it failed to load
+  const [captchaReady,    setCaptchaReady]    = useState<boolean | null>(!siteKey ? true : false)
+  const [fields, setFields] = useState({
+    firstName: '',
+    lastName:  '',
+    email:     '',
+    phone:     '',
+    message:   '',
+  })
+
+  useEffect(() => {
+    if (!siteKey) return
+    if (document.querySelector('script[src*="recaptcha/api.js"]')) {
+      renderCaptcha(); return
+    }
+    const script = document.createElement('script')
+    script.src = 'https://www.google.com/recaptcha/api.js?render=explicit'
+    script.async = true
+    script.defer = true
+    script.onload = renderCaptcha
+    script.onerror = () => setCaptchaReady(null) // script failed to load
+    document.head.appendChild(script)
+    return () => { if (captchaCheckTimer.current) clearTimeout(captchaCheckTimer.current) }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [siteKey])
+
+  function renderCaptcha() {
+    if (!siteKey || !captchaRef.current) return
+    window.grecaptcha?.ready(() => {
+      if (widgetIdRef.current !== null) return
+      try {
+        widgetIdRef.current = window.grecaptcha!.render(captchaRef.current!, { sitekey: siteKey })
+      } catch { /* render failed — widget won't appear */ }
+
+      // After 3s check whether the iframe actually appeared
+      captchaCheckTimer.current = setTimeout(() => {
+        if (captchaRef.current?.querySelector('iframe')) {
+          setCaptchaReady(true)  // widget rendered — user must tick it
+        } else {
+          setCaptchaReady(null)  // widget failed to render (domain not whitelisted, etc.)
+        }
+      }, 3000)
+    })
+  }
+
+  const set = (key: keyof typeof fields) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setFields(prev => ({ ...prev, [key]: e.target.value }))
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!fields.firstName || !fields.email || !fields.message) return
+
+    // captchaReady === true  → widget visible, get token
+    // captchaReady === null  → widget unavailable (localhost / domain mismatch) → send fallback
+    // captchaReady === false → still loading, block
+    const recaptchaToken = captchaReady === true
+      ? (window.grecaptcha?.getResponse(widgetIdRef.current ?? undefined) ?? '')
+      : captchaReady === null ? 'recaptcha-unavailable' : ''
+
+    if (captchaReady === false) {
+      setErrorMsg('Security check is still loading. Please wait a moment.')
+      setStatus('error')
+      return
+    }
+    if (captchaReady === true && !recaptchaToken) {
+      setErrorMsg('Please complete the reCAPTCHA.')
+      setStatus('error')
+      return
+    }
+
+    setStatus('loading')
+    setErrorMsg('')
+    try {
+      const res = await fetch('/api/contact', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ ...fields, recaptchaToken }),
+      })
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        throw new Error(d?.error ?? 'error')
+      }
+      setStatus('success')
+      setFields({ firstName: '', lastName: '', email: '', phone: '', message: '' })
+    } catch (err: any) {
+      setErrorMsg(err?.message ?? 'Something went wrong. Please try again or email us directly.')
+      setStatus('error')
+      if (captchaReady === true) window.grecaptcha?.reset(widgetIdRef.current ?? undefined)
+    }
+  }
+
   return (
     <section
       className="py-24"
@@ -113,8 +238,8 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
                 style={{
                   fontFamily: 'var(--font-work-sans, sans-serif)',
                   fontSize: 'clamp(1.75rem, 3vw, 2.25rem)',
-                  fontWeight: 700,
-                  color: 'var(--color-text, #fafafa)',
+                  fontWeight: 400,
+                  color: 'var(--color-text, #fff)',
                   letterSpacing: '-0.01em',
                 }}
               >
@@ -127,7 +252,7 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
                 style={{
                   fontFamily: 'var(--font-work-sans, sans-serif)',
                   fontSize: '1.125rem',
-                  color: 'var(--color-muted, #525252)',
+                  color: 'var(--color-text, #fff)',
                   maxWidth: '44rem',
                   marginLeft: 'auto',
                   marginRight: 'auto',
@@ -150,13 +275,13 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
             </h3>
             <div className="flex flex-col gap-6">
               {data.contactEmail && (
-                <ContactInfoRow icon={<EmailIcon />} label="Email" value={data.contactEmail} />
+                <ContactInfoRow icon={<EmailIcon />} iconSrc={data.contactEmailIcon?.url} label="Email" value={data.contactEmail} />
               )}
               {data.contactPhone && (
-                <ContactInfoRow icon={<PhoneIcon />} label="Phone" value={data.contactPhone} />
+                <ContactInfoRow icon={<PhoneIcon />} iconSrc={data.contactPhoneIcon?.url} label="Phone" value={data.contactPhone} />
               )}
               {data.contactLocation && (
-                <ContactInfoRow icon={<LocationIcon />} label="Location" value={data.contactLocation} />
+                <ContactInfoRow icon={<LocationIcon />} iconSrc={data.contactLocationIcon?.url} label="Location" value={data.contactLocation} />
               )}
             </div>
           </div>
@@ -170,33 +295,141 @@ export default function ContactSection({ data }: { data: ContactSectionData }) {
               {formHeading}
             </h3>
 
-            <form className="flex flex-col gap-4" action="/contact" method="POST">
-              <div className="grid grid-cols-2 gap-4">
-                <input type="text" placeholder="First Name" className="w-full focus:outline-none" style={inputStyle} />
-                <input type="text" placeholder="Last Name"  className="w-full focus:outline-none" style={inputStyle} />
-              </div>
-              <input type="email" placeholder="Email" className="w-full focus:outline-none" style={inputStyle} />
-              <textarea
-                placeholder="Message"
-                rows={5}
-                className="w-full focus:outline-none"
-                style={{ ...inputStyle, resize: 'none' }}
-              />
-              <div>
-                <button
-                  type="submit"
-                  className="px-8 py-3 rounded-lg text-base font-normal transition-opacity duration-200 hover:opacity-90"
+            {status === 'success' ? (
+              <div className="flex flex-col gap-4 py-8">
+                <div
+                  className="flex items-center justify-center"
                   style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: '50%',
                     background: 'var(--button-bg, #ffffff)',
-                    color: 'var(--button-text, #000000)',
-                    fontFamily: 'var(--font-work-sans, sans-serif)',
-                    borderRadius: 'var(--button-radius, 8px)',
                   }}
                 >
-                  {submitLabel}
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+                    <path d="M5 12l5 5 9-10" stroke="var(--button-text, #000000)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-work-sans, sans-serif)',
+                    fontSize: '1.125rem',
+                    fontWeight: 500,
+                    color: 'var(--color-text, #fafafa)',
+                  }}
+                >
+                  Message Sent
+                </p>
+                <p style={{ fontFamily: 'var(--font-work-sans, sans-serif)', color: 'var(--color-muted, #525252)', lineHeight: 1.6, fontSize: '14px' }}>
+                  Thank you for reaching out. We&apos;ll get back to you within 1–2 business days.
+                </p>
+                <button
+                  onClick={() => setStatus('idle')}
+                  style={{
+                    alignSelf: 'flex-start',
+                    marginTop: 8,
+                    background: 'transparent',
+                    border: '1px solid var(--color-border, #383838)',
+                    borderRadius: 8,
+                    padding: '10px 20px',
+                    fontFamily: 'var(--font-work-sans, sans-serif)',
+                    fontSize: '14px',
+                    color: 'var(--color-muted, #525252)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Send Another Message
                 </button>
               </div>
-            </form>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="First Name *"
+                    required
+                    value={fields.firstName}
+                    onChange={set('firstName')}
+                    className="focus:outline-none"
+                    style={inputStyle}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Last Name"
+                    value={fields.lastName}
+                    onChange={set('lastName')}
+                    className="focus:outline-none"
+                    style={inputStyle}
+                  />
+                </div>
+                <input
+                  type="email"
+                  placeholder="Email *"
+                  required
+                  value={fields.email}
+                  onChange={set('email')}
+                  className="focus:outline-none"
+                  style={inputStyle}
+                />
+                <input
+                  type="tel"
+                  placeholder="Phone (optional)"
+                  value={fields.phone}
+                  onChange={set('phone')}
+                  className="focus:outline-none"
+                  style={inputStyle}
+                />
+                <textarea
+                  placeholder="Message *"
+                  required
+                  rows={5}
+                  value={fields.message}
+                  onChange={set('message')}
+                  className="focus:outline-none"
+                  style={{ ...inputStyle, resize: 'none' }}
+                />
+
+                {siteKey && (
+                  <div ref={captchaRef} id={`recaptcha-${captchaId}`} />
+                )}
+
+                {status === 'error' && errorMsg && (
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-work-sans, sans-serif)',
+                      fontSize: '13px',
+                      color: '#ef4444',
+                      padding: '10px 14px',
+                      background: 'rgba(239,68,68,0.08)',
+                      borderRadius: 6,
+                      border: '1px solid rgba(239,68,68,0.2)',
+                    }}
+                  >
+                    {errorMsg}
+                  </p>
+                )}
+
+                <div>
+                  <button
+                    type="submit"
+                    disabled={status === 'loading'}
+                    className="px-8 py-3 rounded-lg text-base font-normal"
+                    style={{
+                      background: 'var(--button-bg, #ffffff)',
+                      color: 'var(--button-text, #000000)',
+                      fontFamily: 'var(--font-work-sans, sans-serif)',
+                      borderRadius: 'var(--button-radius, 8px)',
+                      border: 'none',
+                      cursor: status === 'loading' ? 'not-allowed' : 'pointer',
+                      opacity: status === 'loading' ? 0.6 : 1,
+                      transition: 'opacity 0.2s',
+                    }}
+                  >
+                    {status === 'loading' ? 'Sending…' : submitLabel}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </div>
