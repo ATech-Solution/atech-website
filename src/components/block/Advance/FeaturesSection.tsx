@@ -13,6 +13,15 @@ interface FeaturesSectionData {
   pillars?:         Pillar[]
   featuresTheme?:   'dark' | 'light'
   featuresColumns?: number
+  backgroundImage?: { url: string; alt?: string } | null
+}
+
+// Style-tab "Background Image" → full-bleed section background with a readability
+// overlay tinted to the section's base colour.
+function bgWithOverlay(url: string | undefined, base: string, overlay: string): string {
+  return url
+    ? `linear-gradient(${overlay}, ${overlay}), url("${url}") center / cover no-repeat`
+    : base
 }
 
 function PillarCard({ pillar }: { pillar: Pillar }) {
@@ -92,11 +101,17 @@ export default function FeaturesSection({ data }: { data: FeaturesSectionData })
   const isLight  = data.featuresTheme === 'light'
   const cols     = data.featuresColumns ?? 3
   const gridCols = `grid-cols-1 ${cols === 2 ? 'md:grid-cols-2' : cols >= 4 ? 'md:grid-cols-4' : 'md:grid-cols-3'}`
+  const bgImage  = data.backgroundImage?.url
 
   // ── Light theme ──────────────────────────────────────────────────────────
   if (isLight) {
     return (
-      <section className="py-24 px-6 md:px-10" style={{ background: '#ffffff' }}>
+      <section className="py-24 px-6 md:px-10" 
+      style={{ 
+        background: bgWithOverlay(bgImage, '#ffffff', 'rgba(255,255,255,0.82)'),
+        backgroundSize: 'contain',
+        backgroundPosition: 'left middle'
+        }}>
         <div className="mx-auto" style={{ maxWidth: '1280px' }}>
           {(data.heading || data.description) && (
             <div className="flex flex-col gap-6 items-center w-full mb-16">
@@ -124,8 +139,14 @@ export default function FeaturesSection({ data }: { data: FeaturesSectionData })
 
   // ── Dark theme — outer #41403f frame + inner #292929 card (Figma 1:26467) ─
   return (
-    <section className="py-24 px-5 md:px-20" style={{ background: '#41403f' }}>
-      <div className="p-10 md:p-20" style={{ background: '#292929' }}>
+    <section className="py-24 px-5 md:px-20" 
+    style={{ 
+      background: bgWithOverlay(bgImage, '#41403f', 'rgba(41,41,41,0.7)'),
+      backgroundSize: 'contain',
+      backgroundPosition: 'left'
+      }}
+    >
+      <div className="p-10 md:p-20" style={{ background: 'transparent' }}>
         <div className="mx-auto flex flex-col gap-16 px-6" style={{ maxWidth: '1280px' }}>
           {(data.heading || data.description) && (
             <div className="flex flex-col gap-6 items-center w-full">

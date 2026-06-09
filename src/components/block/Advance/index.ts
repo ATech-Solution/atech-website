@@ -1,6 +1,7 @@
 export { default as HeroSection                } from './HeroSection'
 export { default as FeaturesSection            } from './FeaturesSection'
 export { default as ServicesSection            } from './ServicesSection'
+export { default as ServicesMascotSection      } from './ServicesMascotSection'
 export { default as TestimonialsSection        } from './TestimonialsSection'
 export { TestimonialsSectionServerSection      } from './TestimonialsServerSection'
 export { default as ContactSection             } from './ContactSection'

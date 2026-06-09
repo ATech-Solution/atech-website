@@ -28,6 +28,7 @@ interface HeroSectionData {
   ctaSecondaryIconPos?:   'left' | 'right'
   ctaSecondaryIconFill?:  boolean
   heroImage?:             { url: string; alt?: string }
+  backgroundImage?:       { url: string; alt?: string } | null
   heroImagePadding?:      boolean
   heroStats?:             HeroStat[]
   floatingCards?:         FloatingCard[]
@@ -57,7 +58,7 @@ function StatItem({ statValue, statLabel }: HeroStat) {
       </p>
       <p
         className="text-xs tracking-wider uppercase"
-        style={{ color: '#ffd369', fontFamily: 'var(--font-work-sans, sans-serif)', letterSpacing: '0.6px' }}
+        style={{ color: '#fff', fontFamily: 'var(--font-work-sans, sans-serif)', letterSpacing: '0.6px' }}
       >
         {statLabel}
       </p>
@@ -107,6 +108,13 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
   const primaryIconPos   = data.ctaPrimaryIconPos   ?? 'right'
   const secondaryIconPos = data.ctaSecondaryIconPos ?? 'right'
 
+  const hasHeroImage = !!data.heroImage?.url
+  const hasBgImage   = !!data.backgroundImage?.url
+  // Full-bleed Figma layout (content on the left half, background showing through on
+  // the right half) whenever there is no right-column hero image. With a hero image,
+  // keep the original split layout.
+  const fullBleed = !hasHeroImage
+
   return (
     <section
       className="relative overflow-hidden"
@@ -116,20 +124,36 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
       }}
     >
       {/* minHeight: 'var(--section-min-height, auto)', */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ backgroundImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0) 100%)' }}
-      />
+
+      {/* Full-bleed background image + left-to-right dark gradient (Figma hero) */}
+      {hasBgImage ? (
+        <div className="absolute inset-0 pointer-events-none">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={data.backgroundImage!.url}
+            alt={data.backgroundImage!.alt ?? ''}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div
+            className="absolute inset-0"
+            style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.2) 100%)' }}
+          />
+        </div>
+      ) : (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0) 100%)' }}
+        />
+      )}
 
       <div
-        className="relative mx-auto flex flex-col lg:flex-row items-stretch"
+        className={`relative mx-auto flex flex-col lg:flex-row ${fullBleed ? 'items-center min-h-[90.1vh]' : 'items-stretch'}`}
         style={{ maxWidth: '1470px' }}
       >
         {/* maxWidth: 'var(--content-max-width, 1280px)' */}
         {/* ── Left ── */}
         {/* flex-1 */}
-        <div className="w-full lg:flex-1 flex flex-col
-          ">
+        <div className={`w-full flex flex-col ${fullBleed ? 'lg:w-1/2 lg:flex-none lg:justify-center' : 'lg:flex-1'}`}>
           {data.badge && (
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 self-start"
@@ -153,7 +177,7 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
               </span>
             </div>
           )}
-          <span className='px-6 md:px-10 py-20 lg:py-24 lg:pl-24 lg:pr-16 lg:mt-5'>
+          <span className={`lg:mt-5 px-6 md:px-10 py-20 lg:py-24 lg:pl-24 ${data.heroImage?.url ? 'lg:pr-16' : 'lg:px-0 lg:pr-0'}`}>
           {(data.heading || data.headingSub) && (
             <h1
               className="mb-6"
@@ -178,11 +202,11 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
 
           {data.body && (
             <p
-              className="leading-relaxed mb-10 max-w-lg"
+              className={`leading-relaxed mb-10 ${data.heroImage?.url ? 'max-w-lg' : 'max-w-xl'}`}
               style={{
                 fontFamily: 'var(--font-work-sans, sans-serif)',
                 fontSize: 'var(--body-font-size, 1.125rem)',
-                color: '#ffffff',
+                color: '#E5E7EB',
                 lineHeight: '1.625',
               }}
             >
@@ -247,7 +271,7 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
           {stats.length > 0 && (
             <div
               className="flex items-start gap-6"
-              style={{ borderTop: '1px solid #FFCD37', paddingTop: '33px' }}
+              // style={{ borderTop: '1px solid #FFCD37', paddingTop: '33px' }}
             >
               {stats.map((stat, i) => (
                 <StatItem key={i} {...stat} />
@@ -287,6 +311,18 @@ export default function HeroSection({ data }: { data: HeroSectionData }) {
           </div>
         )}
       </div>
+
+      {/* Floating cards over the full-bleed background (no right-column image) */}
+      {!hasHeroImage && (topCard || bottomCard || topLeftCard || botRightCard) && (
+        <div className="absolute inset-0 hidden lg:block pointer-events-none">
+          <div className="relative mx-auto h-full" style={{ maxWidth: '1470px' }}>
+            {topCard      && <FloatingBadgeCard {...topCard}      className="min-w-[200px] top-[42%] right-[8%]" />}
+            {topLeftCard  && <FloatingBadgeCard {...topLeftCard}  className="min-w-[200px] top-[28%] left-[52%]" />}
+            {bottomCard   && <FloatingBadgeCard {...bottomCard}   className="min-w-[200px] bottom-[12%] left-[52%]" />}
+            {botRightCard && <FloatingBadgeCard {...botRightCard} className="min-w-[200px] bottom-[22%] right-[14%]" />}
+          </div>
+        </div>
+      )}
     </section>
   )
 }

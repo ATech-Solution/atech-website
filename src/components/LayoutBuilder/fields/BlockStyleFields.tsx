@@ -2,6 +2,7 @@
 
 import React from 'react'
 import type { BlockType, BlockOverrides } from '../types'
+import { MediaField } from './ContentFields'
 
 // ── Shared primitives ─────────────────────────────────────────────────────────
 
@@ -78,9 +79,7 @@ function HeroStyleFields({ style, onChange }: { style: any; onChange: (s: any) =
             <ColorInput value={style.gradientTo ?? '#1a1a1a'} onChange={(v) => set('gradientTo', v)} onReset={() => reset('gradientTo')} />
           </Field>
         </Row>
-        <Field label="Background Image URL">
-          <input className="lb-input" value={style.heroBgImage ?? ''} onChange={(e) => set('heroBgImage', e.target.value)} placeholder="/images/hero-bg.jpg" />
-        </Field>
+        <MediaField label="Background Image" value={style.heroBgImage ?? ''} onChange={(ref) => set('heroBgImage', ref?.url ?? '')} />
         <Field label="Overlay Opacity (0-1)">
           <input type="number" className="lb-input" min="0" max="1" step="0.1" value={style.overlayOpacity ?? 0.6} onChange={(e) => set('overlayOpacity', parseFloat(e.target.value))} />
         </Field>
@@ -203,9 +202,7 @@ function SectionStyleFields({ style, onChange }: { style: any; onChange: (s: any
         <Field label="Background Color">
           <ColorInput value={style.sectionBg ?? '#292929'} onChange={(v) => set('sectionBg', v)} onReset={() => reset('sectionBg')} />
         </Field>
-        <Field label="Background Image URL">
-          <input className="lb-input" value={style.sectionBgImage ?? ''} onChange={(e) => set('sectionBgImage', e.target.value)} placeholder="/images/section-bg.jpg" />
-        </Field>
+        <MediaField label="Background Image" value={style.sectionBgImage ?? ''} onChange={(ref) => set('sectionBgImage', ref?.url ?? '')} />
         <Row>
           <Field label="Gradient From">
             <ColorInput value={style.gradientFrom ?? '#292929'} onChange={(v) => set('gradientFrom', v)} onReset={() => reset('gradientFrom')} />
@@ -496,9 +493,7 @@ function GenericSectionStyleFields({ style, onChange }: { style: any; onChange: 
         <Field label="Background Color">
           <ColorInput value={style.sectionBg ?? '#292929'} onChange={(v) => set('sectionBg', v)} onReset={() => reset('sectionBg')} />
         </Field>
-        <Field label="Background Image URL">
-          <input className="lb-input" value={style.sectionBgImage ?? ''} onChange={(e) => set('sectionBgImage', e.target.value)} placeholder="/images/section-bg.jpg" />
-        </Field>
+        <MediaField label="Background Image" value={style.sectionBgImage ?? ''} onChange={(ref) => set('sectionBgImage', ref?.url ?? '')} />
         <Row>
           <Field label="Gradient From">
             <ColorInput value={style.gradientFrom ?? '#292929'} onChange={(v) => set('gradientFrom', v)} onReset={() => reset('gradientFrom')} />
@@ -607,7 +602,7 @@ export function getBlockStyleFields(
   if (['about', 'features', 'team-section', 'mission-vision'].includes(blockType)) {
     return <SectionStyleFields style={style} onChange={onChange} />
   }
-  if (['services', 'expertise-tiles', 'process-steps', 'card-grid'].includes(blockType)) {
+  if (['services', 'services-mascot', 'expertise-tiles', 'process-steps', 'card-grid'].includes(blockType)) {
     return <SectionStyleFields style={style} onChange={onChange} />
   }
   if (['testimonials', 'testimonial'].includes(blockType)) {

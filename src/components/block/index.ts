@@ -6,6 +6,7 @@ export {
   HeroSection,
   FeaturesSection,
   ServicesSection,
+  ServicesMascotSection,
   TestimonialsSection,
   TestimonialsSectionServerSection,
   ContactSection,

@@ -40,7 +40,7 @@ function Row({ children }: { children: React.ReactNode }) {
 // ── Media picker ──────────────────────────────────────────────────────────────
 type MediaItem = { id: string; url: string; alt?: string; filename?: string }
 
-function MediaField({
+export function MediaField({
   label = 'Image',
   value,
   onChange,
@@ -436,7 +436,11 @@ function HomeHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => 
         onIconFillChange={(v) => set('ctaSecondaryIconFill', v)}
       />
 
+      <MediaField label="Background Image" value={ov.backgroundImage?.url ?? ''} onChange={(ref) => set('backgroundImage', ref)} />
+      <p style={{ fontSize: 12, color: '#9ca3af', margin: '-4px 0 12px' }}>Fills the whole section as a full-bleed background with a dark gradient overlay (Figma hero). Leave empty to use the section background colour.</p>
+
       <MediaField label="Hero Image" value={ov.heroImage?.url ?? ''} onChange={(ref) => set('heroImage', ref)} />
+      <p style={{ fontSize: 12, color: '#9ca3af', margin: '-4px 0 12px' }}>Optional right-column image. When empty, the hero uses the full-bleed background layout.</p>
 
       <Field label="Image Padding">
         <select className="lb-input lb-input--select" value={ov.heroImagePadding ? 'padded' : 'none'} onChange={(e) => set('heroImagePadding', e.target.value === 'padded')}>
@@ -596,6 +600,46 @@ function HomeServicesFields({ ov, set }: { ov: any; set: (k: string, v: unknown)
         onIconPosChange={(v) => set('customSolutionCtaIconPos', v)}
         onIconFillChange={(v) => set('customSolutionCtaIconFill', v)}
       />
+    </>
+  )
+}
+
+// ── Services (Mascot) fields ──────────────────────────────────────────────────
+function ServicesMascotFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const items: any[] = ov.serviceItems ?? []
+  return (
+    <>
+      <Field label="Heading (HTML supported)">
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Our Services" />
+      </Field>
+      <Field label="Subheading">
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.subheading ?? ''} onChange={(e) => set('subheading', e.target.value)} placeholder="Comprehensive technology solutions tailored to your business needs." />
+      </Field>
+
+      <Field label="Service Items">
+        <div className="lb-items">
+          {items.map((s: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Service {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); set('serviceItems', a) }}>✕</button>
+              </div>
+              <MediaField label="Icon" value={s.serviceIcon?.url ?? ''} onChange={(ref) => { const a = [...items]; a[i] = { ...a[i], serviceIcon: ref }; set('serviceItems', a) }} />
+              <input className="lb-input" placeholder="Title" value={s.serviceTitle ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], serviceTitle: e.target.value }; set('serviceItems', a) }} />
+              <Field label="Description (HTML supported)">
+                <textarea className="lb-input lb-input--textarea" rows={3} placeholder="Short description…" value={s.serviceDesc ?? ''} onChange={(e) => { const a = [...items]; a[i] = { ...a[i], serviceDesc: e.target.value }; set('serviceItems', a) }} />
+              </Field>
+              <LinkField label="Link URL" value={s.serviceHref ?? ''} onChange={(v) => { const a = [...items]; a[i] = { ...a[i], serviceHref: v }; set('serviceItems', a) }} placeholder="/services/it-outsourcing" />
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => set('serviceItems', [...items, {}])}>+ Add Service</button>
+        </div>
+      </Field>
+
+      <MediaField label="Mascot Image" value={ov.mascotImage?.url ?? ''} onChange={(ref) => set('mascotImage', ref)} />
+      <Field label="Mascot Speech Bubble Text">
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.mascotBubbleText ?? ''} onChange={(e) => set('mascotBubbleText', e.target.value)} placeholder="Hi I'm TAC, the Ambassador of ATech!" />
+      </Field>
     </>
   )
 }
@@ -2900,6 +2944,7 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'hero'                  && <HomeHeroFields            ov={ov} set={set} />}
         {blockType === 'features'              && <HomeAboutFields           ov={ov} set={set} />}
         {blockType === 'services'              && <HomeServicesFields        ov={ov} set={set} />}
+        {blockType === 'services-mascot'       && <ServicesMascotFields      ov={ov} set={set} />}
         {blockType === 'testimonials'          && <HomeTestimonialsFields    ov={ov} set={set} />}
         {blockType === 'contact'               && <HomeContactFields         ov={ov} set={set} />}
         {blockType === 'card-grid'             && <ServiceCardsFields        ov={ov} set={set} />}

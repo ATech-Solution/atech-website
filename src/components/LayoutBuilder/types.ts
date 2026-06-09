@@ -14,7 +14,7 @@ export const GENERAL_BLOCK_TYPES = [
 // All generic, page-agnostic sections from src/components/block/Advance/
 export const ADVANCE_BLOCK_TYPES = [
   'hero', 'hero-split', 'hero-centered',
-  'features', 'services', 'testimonials', 'contact',
+  'features', 'services', 'services-mascot', 'testimonials', 'contact',
   'card-grid', 'cta-banner', 'process-steps', 'expertise-tiles',
   'company-stats', 'mission-vision', 'team-section', 'faq-section',
   'page-hero', 'project-grid', 'article-grid', 'article-featured',
@@ -147,6 +147,9 @@ export interface BlockOverrides {
     ctaSecondaryLabel?: string
     ctaSecondaryUrl?: string
     heroImage?: MediaRef | null
+    backgroundImage?: MediaRef | null
+    mascotImage?: MediaRef | null
+    mascotBubbleText?: string
     heroStats?: Array<{ statValue: string; statLabel: string }>
     floatingCards?: Array<{ cardText: string; cardPosition: string; cardIcon?: MediaRef | null }>
 

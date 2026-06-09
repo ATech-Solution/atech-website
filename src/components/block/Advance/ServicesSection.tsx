@@ -30,6 +30,7 @@ interface ServicesSectionData {
   customSolutionCtaIcon?:     { url: string } | null
   customSolutionCtaIconPos?:  'left' | 'right'
   customSolutionCtaIconFill?: boolean
+  backgroundImage?:           { url: string; alt?: string } | null
 }
 
 function Arrow() {
@@ -137,12 +138,17 @@ export default function ServicesSection({ data }: { data: ServicesSectionData })
   const ctaIconPos = data.customSolutionCtaIconPos ?? 'right'
   const hasCtaIcon = !!data.customSolutionCtaIcon?.url
   const ctaIconFit = data.customSolutionCtaIconFill ? 'fill' : 'contain'
+  const bgImage    = data.backgroundImage?.url
+  // Style-tab "Background Image" → full-bleed background with a dark readability overlay.
+  const sectionBg  = bgImage
+    ? `linear-gradient(rgba(41,41,41,0.72), rgba(41,41,41,0.72)), url("${bgImage}") center / cover no-repeat`
+    : 'var(--color-bg, #292929)'
 
   return (
     <section
       className="py-24"
       style={{
-        background: 'var(--color-bg, #292929)',
+        background: sectionBg,
         borderTop: '1px solid var(--color-border, #383838)',
         paddingTop: 'var(--section-padding-y, 96px)',
         paddingBottom: 'var(--section-padding-y, 96px)',

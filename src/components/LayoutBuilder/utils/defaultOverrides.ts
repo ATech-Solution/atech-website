@@ -75,6 +75,22 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
         },
       }
 
+    case 'services-mascot':
+      return {
+        content: {
+          heading:    'Our Services',
+          subheading: 'Comprehensive technology solutions tailored to your business needs.',
+          serviceItems: [
+            { serviceTitle: 'IT Outsourcing',               serviceDesc: 'Reliable teams designed to scale your operations with flexibility and affordability.', serviceHref: '/services' },
+            { serviceTitle: 'IT & Management Consultancy',  serviceDesc: 'Strategic guidance to align your technology investments with business goals and drive growth.', serviceHref: '/services' },
+            { serviceTitle: 'HR Outsourcing',               serviceDesc: 'Staff augmentation and dedicated development teams for your projects.', serviceHref: '/services' },
+            { serviceTitle: 'Venture Building',             serviceDesc: 'End-to-end support to launch and scale new ventures from concept to market-ready product.', serviceHref: '/services' },
+          ],
+          mascotBubbleText: "Hi I'm TAC, the Ambassador of ATech!",
+          mascotImage: { url: '/assets/blocks/tac-mascot.png', alt: 'TAC mascot' },
+        },
+      }
+
     case 'testimonials':
       return {
         content: {

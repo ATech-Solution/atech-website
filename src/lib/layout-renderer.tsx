@@ -7,6 +7,7 @@ import {
   HeroSection,
   FeaturesSection,
   ServicesSection,
+  ServicesMascotSection,
   TestimonialsSection,
   TestimonialsSectionServerSection,
   ContactSection,
@@ -255,6 +256,10 @@ export function LayoutBlockRenderer({
     if (!hasStyle && !id && !clsName) return content
     return <div id={id} className={clsName} style={hasStyle ? sectionStyle : undefined}>{content}</div>
   }
+
+  // Style-tab "Background Image" → component data.backgroundImage (content-tab value wins).
+  const styleBgUrl = (blockStyle.heroBgImage ?? blockStyle.sectionBgImage) as string | undefined
+  const withBgImage = (d: any) => (d.backgroundImage || !styleBgUrl ? d : { ...d, backgroundImage: { url: styleBgUrl } })
 
   switch (node.blockType) {
     case 'container':
@@ -852,11 +857,13 @@ export function LayoutBlockRenderer({
 
     // ── Advance Sections ─────────────────────────────────────────────────────
     case 'hero':
-      return wrapAdvanced(<HeroSection data={data} />)
+      return wrapAdvanced(<HeroSection data={withBgImage(data)} />)
     case 'features':
-      return wrapAdvanced(<FeaturesSection data={data} />)
+      return wrapAdvanced(<FeaturesSection data={withBgImage(data)} />)
     case 'services':
-      return wrapAdvanced(<ServicesSection data={data} />)
+      return wrapAdvanced(<ServicesSection data={withBgImage(data)} />)
+    case 'services-mascot':
+      return wrapAdvanced(<ServicesMascotSection data={withBgImage(data)} />)
     case 'testimonials':
       return wrapAdvanced(
         (data as any).testimonialsContentSource === 'collection'

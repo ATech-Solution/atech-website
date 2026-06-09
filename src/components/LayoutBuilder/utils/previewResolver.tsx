@@ -10,6 +10,7 @@ import {
   HeroCenteredSection,
   FeaturesSection,
   ServicesSection,
+  ServicesMascotSection,
   TestimonialsSection,
   ContactSection,
   CardGridSection,
@@ -150,18 +151,24 @@ export function resolvePreviewComponent(
   data: Record<string, unknown>,
   blockStyle?: Record<string, unknown>,
 ): React.ReactNode {
+  // Style-tab "Background Image" (blockStyle) → component data.backgroundImage.
+  const styleBgUrl = (blockStyle?.heroBgImage ?? blockStyle?.sectionBgImage) as string | undefined
+  const withBgImage = (d: any) => (d.backgroundImage || !styleBgUrl ? d : { ...d, backgroundImage: { url: styleBgUrl } })
+
   switch (blockType) {
     // ── Advance sections ─────────────────────────────────────────────────────
     case 'hero':
-      return withStyle(<HeroSection data={data as any} />, blockStyle)
+      return withStyle(<HeroSection data={withBgImage(data) as any} />, blockStyle)
     case 'hero-split':
       return withStyle(<HeroSplitSection data={data as any} />, blockStyle)
     case 'hero-centered':
       return withStyle(<HeroCenteredSection data={data as any} />, blockStyle)
     case 'features':
-      return withStyle(<FeaturesSection data={data as any} />, blockStyle)
+      return withStyle(<FeaturesSection data={withBgImage(data) as any} />, blockStyle)
     case 'services':
-      return withStyle(<ServicesSection data={data as any} />, blockStyle)
+      return withStyle(<ServicesSection data={withBgImage(data) as any} />, blockStyle)
+    case 'services-mascot':
+      return withStyle(<ServicesMascotSection data={withBgImage(data) as any} />, blockStyle)
     case 'testimonials':
       return withStyle(<TestimonialsSection data={data as any} />, blockStyle)
     case 'contact':
