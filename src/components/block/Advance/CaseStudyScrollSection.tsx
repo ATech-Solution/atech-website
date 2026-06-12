@@ -15,22 +15,43 @@ export interface CaseStudyScrollSectionData {
   caseScrollItems?: CaseStudyScrollItem[]
 }
 
+// Each item needs this many pixels of scroll to transition to the next
+const SCROLL_PER_ITEM = 600
+// Section visual height: 80px padding-top + 400px image + 80px padding-bottom
+const SECTION_H = 560
+
 const CSS = `
-  /* ── Outer section ── */
-  .cssection {
-    background: #ffffff;
-    box-sizing: border-box;
+  /* ── Outer wrapper: tall to create scroll room ── */
+  .cssw {
+    position: relative;
   }
 
-  /* ── Each item is its own full-padded row ── */
-  .cssection__row {
+  /* ── Sticky panel: stays in viewport while wrapper scrolls ── */
+  .csss {
+    position: sticky;
+    top: 0;
+    height: ${SECTION_H}px;
+    overflow: hidden;
+    background: #ffffff;
+  }
+
+  /* ── All items: absolutely stacked, only one visible at a time ── */
+  .cssi {
+    position: absolute;
+    inset: 0;
     padding: 80px clamp(24px, calc((100% - 1024px) / 2), 208px);
     box-sizing: border-box;
     background: #ffffff;
+    opacity: 0;
+    will-change: opacity;
+  }
+  .cssi--active {
+    opacity: 1;
+    z-index: 1;
   }
 
-  /* ── Inner 1024px container ── */
-  .cssection__inner {
+  /* ── Inner 1024px flex row ── */
+  .cssin {
     max-width: 1024px;
     margin: 0 auto;
     display: flex;
@@ -39,10 +60,11 @@ const CSS = `
     justify-content: center;
     gap: 64px;
     width: 100%;
+    height: 100%;
   }
 
-  /* ── Left col: 478.97px, image pushed to right ── */
-  .cssection__imgcol {
+  /* ── Left col: 478.97px, card pushed to the right ── */
+  .cssic {
     flex-shrink: 0;
     width: 478.97px;
     display: flex;
@@ -50,8 +72,8 @@ const CSS = `
     justify-content: flex-end;
   }
 
-  /* ── Image card: 400×400, rounded-16, shadow ── */
-  .cssection__card {
+  /* ── Image card: 400×400px ── */
+  .csscard {
     width: 400px;
     height: 400px;
     border-radius: 16px;
@@ -60,15 +82,12 @@ const CSS = `
     background: #e5e7eb;
     flex-shrink: 0;
   }
-  .cssection__card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+  .csscard img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
   }
 
-  /* ── Right col: fixed 481.03px, relative for left border ── */
-  .cssection__contentcol {
+  /* ── Right col: fixed 481.03px ── */
+  .csscc {
     flex-shrink: 0;
     width: 481.03px;
     padding-left: 32px;
@@ -79,247 +98,288 @@ const CSS = `
   }
 
   /* ── 4px left border with animated yellow fill ── */
-  .cssection__border {
+  .cssborder {
     position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0.9px;
+    left: 0; top: 0; bottom: 0.9px;
     width: 4px;
     background: #e5e7eb;
     border-radius: 2px;
     overflow: hidden;
   }
-  .cssection__borderfill {
+  .cssborderfill {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    top: 0; left: 0; width: 100%;
     height: 0;
     background: #ffd25e;
     border-radius: 2px;
-    transition: height 0.5s ease-out 0.2s;
+    transition: height 0.5s ease-out 0.45s;
   }
-  .cssection__borderfill--visible {
-    height: 100%;
+  .cssborderfill--on { height: 100%; }
+
+  /* ── Logo, heading, body ── */
+  .csslogo {
+    height: 64px;
+    display: flex; flex-direction: column;
+    align-items: flex-start; justify-content: center;
+    overflow: hidden; flex-shrink: 0;
+  }
+  .csslogo img { max-height: 64px; width: auto; object-fit: contain; display: block; }
+  .csshwrap { padding-top: 8.6px; flex-shrink: 0; width: 100%; }
+  .cssh {
+    font-family: var(--font-work-sans, sans-serif);
+    font-size: 36px; font-weight: 700; line-height: 40px;
+    color: #111827; margin: 0; word-break: break-word;
+  }
+  .cssbwrap { max-width: 448px; width: 448px; flex-shrink: 0; }
+  .cssb {
+    font-family: var(--font-work-sans, sans-serif);
+    font-size: 14px; font-weight: 400; line-height: 22.75px;
+    color: #4b5563; margin: 0;
   }
 
-  /* ── Client logo area: 64px height, vertically centered ── */
-  .cssection__logo {
-    height: 64px;
+  /* ── Keyframe animations ── */
+
+  /* Scroll DOWN → new item: left from top, right from bottom */
+  @keyframes css-img-dn  { from { opacity:0; transform:translateY(-52px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes css-con-dn  { from { opacity:0; transform:translateY( 52px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Scroll UP → new item: left from bottom, right from top */
+  @keyframes css-img-up  { from { opacity:0; transform:translateY( 52px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes css-con-up  { from { opacity:0; transform:translateY(-52px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Exit: quick fade out */
+  @keyframes css-fadeout { from { opacity:1; } to { opacity:0; } }
+
+  .a-img-dn   { animation: css-img-dn   0.7s ease-out         forwards; }
+  .a-con-dn   { animation: css-con-dn   0.7s ease-out 0.10s   forwards; }
+  .a-img-up   { animation: css-img-up   0.7s ease-out         forwards; }
+  .a-con-up   { animation: css-con-up   0.7s ease-out 0.10s   forwards; }
+  .a-fadeout  { animation: css-fadeout  0.25s ease-out         forwards; }
+
+  /* ── Scroll indicator dots ── */
+  .cssdots {
+    position: absolute;
+    right: clamp(16px, calc((100% - 1024px) / 2 - 24px), 160px);
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    overflow: hidden;
-    flex-shrink: 0;
+    gap: 10px;
+    z-index: 10;
   }
-  .cssection__logo img {
-    max-height: 64px;
-    width: auto;
-    object-fit: contain;
-    display: block;
+  .cssdot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #d1d5db;
+    transition: background 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+    border: none;
+    padding: 0;
   }
-
-  /* ── Heading wrapper with Figma's pt-8.6px ── */
-  .cssection__headingwrap {
-    padding-top: 8.6px;
-    flex-shrink: 0;
-    width: 100%;
-  }
-  .cssection__heading {
-    font-family: var(--font-work-sans, sans-serif);
-    font-size: 36px;
-    font-weight: 700;
-    line-height: 40px;
-    color: #111827;
-    margin: 0;
-    word-break: break-word;
+  .cssdot--active {
+    background: #ffd25e;
+    transform: scale(1.35);
   }
 
-  /* ── Body: max-width 448px per Figma ── */
-  .cssection__bodywrap {
-    max-width: 448px;
-    width: 448px;
-    flex-shrink: 0;
-  }
-  .cssection__body {
-    font-family: var(--font-work-sans, sans-serif);
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 22.75px;
-    color: #4b5563;
-    margin: 0;
-  }
-
-  /* ── Animation: hidden states ── */
-  .cssection__imgcol--hidden {
-    opacity: 0;
-    transform: translateY(-50px);
-    transition: opacity 0.75s ease-out, transform 0.75s ease-out;
-  }
-  .cssection__contentcol--hidden {
-    opacity: 0;
-    transform: translateY(50px);
-    transition: opacity 0.75s ease-out 0.12s, transform 0.75s ease-out 0.12s;
-  }
-
-  /* ── Animation: visible states ── */
-  .cssection__imgcol--visible {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.75s ease-out, transform 0.75s ease-out;
-  }
-  .cssection__contentcol--visible {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.75s ease-out 0.12s, transform 0.75s ease-out 0.12s;
-  }
-
-  /* ── Mobile ≤767px: single column ── */
+  /* ── Mobile: disable sticky, show all stacked ── */
   @media (max-width: 767px) {
-    .cssection__row {
-      padding: 40px 24px;
-    }
-    .cssection__inner {
-      flex-direction: column;
-      gap: 24px;
-    }
-    .cssection__imgcol {
-      width: 100%;
-      justify-content: center;
-      align-items: center;
-    }
-    .cssection__card {
-      width: 100%;
-      height: 260px;
-    }
-    .cssection__contentcol {
-      width: 100%;
-    }
-    .cssection__bodywrap {
-      width: 100%;
-      max-width: 100%;
-    }
-    /* Mobile: both parts fade from bottom (no split direction) */
-    .cssection__imgcol--hidden {
-      transform: translateY(30px);
-    }
-    .cssection__imgcol--visible {
-      transform: translateY(0);
-    }
+    .cssw  { height: auto !important; }
+    .csss  { position: relative !important; height: auto !important; overflow: visible !important; }
+    .cssi  { position: relative !important; inset: auto !important; opacity: 1 !important; padding: 40px 24px !important; }
+    .cssdots { display: none; }
+    .cssin { flex-direction: column; gap: 24px; }
+    .cssic { width: 100%; justify-content: center; }
+    .csscard { width: 100%; height: 260px; }
+    .csscc { width: 100%; }
+    .cssbwrap { width: 100%; max-width: 100%; }
   }
 
-  /* ── Tablet 768px–1100px: proportional columns ── */
+  /* ── Tablet 768–1100px: proportional columns ── */
   @media (min-width: 768px) and (max-width: 1100px) {
-    .cssection__imgcol {
-      width: 46%;
-    }
-    .cssection__card {
-      width: 100%;
-      max-width: 400px;
-    }
-    .cssection__contentcol {
-      width: 46%;
-    }
-    .cssection__bodywrap {
-      width: 100%;
-      max-width: 100%;
-    }
+    .cssic   { width: 46%; }
+    .csscard { width: 100%; max-width: 400px; }
+    .csscc   { width: 46%; }
+    .cssbwrap { width: 100%; max-width: 100%; }
   }
 `
 
+const ALL_ANIM = ['a-img-dn','a-con-dn','a-img-up','a-con-up','a-fadeout']
+
+function clearAnims(el: HTMLElement) {
+  el.classList.remove(...ALL_ANIM)
+  // Force reflow so re-adding the same class re-triggers animation
+  void el.offsetWidth
+}
+
+function transition(
+  outRow: HTMLDivElement,
+  inRow:  HTMLDivElement,
+  dir:    'down' | 'up',
+) {
+  const outImg  = outRow.querySelector('.cssic')          as HTMLElement | null
+  const outCon  = outRow.querySelector('.csscc')          as HTMLElement | null
+  const inImg   = inRow.querySelector('.cssic')           as HTMLElement | null
+  const inCon   = inRow.querySelector('.csscc')           as HTMLElement | null
+  const inFill  = inRow.querySelector('.cssborderfill')   as HTMLElement | null
+  const outFill = outRow.querySelector('.cssborderfill')  as HTMLElement | null
+
+  // Exit current: fade out
+  if (outImg) { clearAnims(outImg); outImg.classList.add('a-fadeout') }
+  if (outCon) { clearAnims(outCon); outCon.classList.add('a-fadeout') }
+  if (outFill) outFill.classList.remove('cssborderfill--on')
+
+  // Reset next item's border fill
+  if (inFill) inFill.classList.remove('cssborderfill--on')
+
+  // Show next item behind current while exit plays
+  inRow.style.zIndex  = '0'
+  inRow.style.opacity = '1'
+
+  // Enter next item
+  const imgAnim = dir === 'down' ? 'a-img-dn' : 'a-img-up'
+  const conAnim = dir === 'down' ? 'a-con-dn' : 'a-con-up'
+  if (inImg) { clearAnims(inImg); inImg.classList.add(imgAnim) }
+  if (inCon) { clearAnims(inCon); inCon.classList.add(conAnim) }
+
+  // After exit fade, bring next row fully on top
+  setTimeout(() => {
+    outRow.style.opacity = '0'
+    outRow.style.zIndex  = '0'
+    inRow.style.zIndex   = '1'
+    if (inFill) inFill.classList.add('cssborderfill--on')
+  }, 260)
+}
+
 export default function CaseStudyScrollSection({ data }: { data: CaseStudyScrollSectionData }) {
-  const rowRefs = useRef<(HTMLDivElement | null)[]>([])
-  const items   = data.caseScrollItems ?? []
+  const wrapRef  = useRef<HTMLDivElement>(null)
+  const rowRefs  = useRef<(HTMLDivElement | null)[]>([])
+  const dotRefs  = useRef<(HTMLButtonElement | null)[]>([])
+  const idxRef   = useRef(0)
+  const items    = data.caseScrollItems ?? []
+  const n        = items.length
 
   useEffect(() => {
+    if (n < 1) return
     const rows = rowRefs.current.filter(Boolean) as HTMLDivElement[]
+    const dots = dotRefs.current.filter(Boolean)  as HTMLButtonElement[]
+    if (rows.length === 0) return
 
-    // SSR-safe: add hidden classes on mount before observer attaches
-    rows.forEach((row) => {
-      const img     = row.querySelector('.cssection__imgcol')     as HTMLElement | null
-      const content = row.querySelector('.cssection__contentcol') as HTMLElement | null
-      if (img)     img.classList.add('cssection__imgcol--hidden')
-      if (content) content.classList.add('cssection__contentcol--hidden')
+    // ── Initial state ──
+    rows.forEach((row, i) => {
+      row.style.opacity = i === 0 ? '1' : '0'
+      row.style.zIndex  = i === 0 ? '1' : '0'
     })
+    dots.forEach((d, i) => d.classList.toggle('cssdot--active', i === 0))
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return
-          const row     = entry.target as HTMLDivElement
-          const img     = row.querySelector('.cssection__imgcol')     as HTMLElement | null
-          const content = row.querySelector('.cssection__contentcol') as HTMLElement | null
-          const fill    = row.querySelector('.cssection__borderfill') as HTMLElement | null
-          if (img) {
-            img.classList.remove('cssection__imgcol--hidden')
-            img.classList.add('cssection__imgcol--visible')
-          }
-          if (content) {
-            content.classList.remove('cssection__contentcol--hidden')
-            content.classList.add('cssection__contentcol--visible')
-          }
-          if (fill) fill.classList.add('cssection__borderfill--visible')
-          observer.unobserve(row)
-        })
-      },
-      { threshold: 0.2 }
-    )
+    // Animate first item in on mount
+    const firstImg  = rows[0].querySelector('.cssic')         as HTMLElement | null
+    const firstCon  = rows[0].querySelector('.csscc')         as HTMLElement | null
+    const firstFill = rows[0].querySelector('.cssborderfill') as HTMLElement | null
+    if (firstImg) { clearAnims(firstImg); firstImg.classList.add('a-img-dn') }
+    if (firstCon) { clearAnims(firstCon); firstCon.classList.add('a-con-dn') }
+    if (firstFill) setTimeout(() => firstFill.classList.add('cssborderfill--on'), 100)
 
-    rows.forEach((row) => observer.observe(row))
-    return () => observer.disconnect()
-  }, [items.length])
+    // ── Scroll handler ──
+    const onScroll = () => {
+      const wrap = wrapRef.current
+      if (!wrap) return
 
-  if (items.length === 0) return null
+      const scrolledIn = Math.max(0, -wrap.getBoundingClientRect().top)
+      const newIdx     = Math.min(Math.max(0, Math.floor(scrolledIn / SCROLL_PER_ITEM)), n - 1)
+      const curIdx     = idxRef.current
+      if (newIdx === curIdx) return
+
+      const dir = newIdx > curIdx ? 'down' : 'up'
+      transition(rows[curIdx], rows[newIdx], dir)
+
+      // Update dots
+      dots.forEach((d, i) => d.classList.toggle('cssdot--active', i === newIdx))
+
+      idxRef.current = newIdx
+    }
+
+    // Fire once on mount in case page is already scrolled into section
+    onScroll()
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [n])
+
+  if (n === 0) return null
+
+  const wrapH = SECTION_H + (n - 1) * SCROLL_PER_ITEM
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
-      <section className="cssection">
-        {items.map((item, i) => (
-          <div
-            key={i}
-            className="cssection__row"
-            ref={(el) => { rowRefs.current[i] = el }}
-          >
-            <div className="cssection__inner">
-              {/* Left: image card */}
-              <div className="cssection__imgcol">
-                <div className="cssection__card">
-                  {item.cssImage?.url && (
-                    <img src={item.cssImage.url} alt={item.cssImage.alt ?? 'Case study'} />
+      <div className="cssw" ref={wrapRef} style={{ height: wrapH }}>
+        <div className="csss">
+
+          {/* Progress dots */}
+          {n > 1 && (
+            <div className="cssdots">
+              {items.map((_, i) => (
+                <button
+                  key={i}
+                  className="cssdot"
+                  ref={(el) => { dotRefs.current[i] = el }}
+                  aria-label={`Go to case study ${i + 1}`}
+                  onClick={() => {
+                    const wrap = wrapRef.current
+                    if (!wrap) return
+                    const wrapTop  = wrap.getBoundingClientRect().top + window.scrollY
+                    const targetY  = wrapTop + i * SCROLL_PER_ITEM
+                    window.scrollTo({ top: targetY, behavior: 'smooth' })
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Items */}
+          {items.map((item, i) => (
+            <div
+              key={i}
+              className="cssi"
+              ref={(el) => { rowRefs.current[i] = el }}
+            >
+              <div className="cssin">
+                {/* Left: image card */}
+                <div className="cssic">
+                  <div className="csscard">
+                    {item.cssImage?.url && (
+                      <img src={item.cssImage.url} alt={item.cssImage.alt ?? 'Case study'} />
+                    )}
+                  </div>
+                </div>
+
+                {/* Right: content */}
+                <div className="csscc">
+                  <div className="cssborder">
+                    <div className="cssborderfill" />
+                  </div>
+                  {item.cssClientLogo?.url && (
+                    <div className="csslogo">
+                      <img src={item.cssClientLogo.url} alt={item.cssClientLogo.alt ?? 'Client logo'} />
+                    </div>
+                  )}
+                  {item.cssHeading && (
+                    <div className="csshwrap">
+                      <h3 className="cssh">{item.cssHeading}</h3>
+                    </div>
+                  )}
+                  {item.cssBody && (
+                    <div className="cssbwrap">
+                      <p className="cssb">{item.cssBody}</p>
+                    </div>
                   )}
                 </div>
               </div>
-
-              {/* Right: content with left-border */}
-              <div className="cssection__contentcol">
-                <div className="cssection__border">
-                  <div className="cssection__borderfill" />
-                </div>
-
-                {item.cssClientLogo?.url && (
-                  <div className="cssection__logo">
-                    <img src={item.cssClientLogo.url} alt={item.cssClientLogo.alt ?? 'Client logo'} />
-                  </div>
-                )}
-
-                {item.cssHeading && (
-                  <div className="cssection__headingwrap">
-                    <h3 className="cssection__heading">{item.cssHeading}</h3>
-                  </div>
-                )}
-
-                {item.cssBody && (
-                  <div className="cssection__bodywrap">
-                    <p className="cssection__body">{item.cssBody}</p>
-                  </div>
-                )}
-              </div>
             </div>
-          </div>
-        ))}
-      </section>
+          ))}
+
+        </div>
+      </div>
     </>
   )
 }
