@@ -2798,6 +2798,57 @@ function CaseStudyFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =>
   )
 }
 
+// ── Case Study Scroll fields ──────────────────────────────────────────────────
+function CaseStudyScrollFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const items: any[] = ov.caseScrollItems ?? []
+  function setItems(next: any[]) { set('caseScrollItems', next) }
+  return (
+    <Field label="Case Study Items">
+      <div className="lb-items">
+        {items.map((item: any, i: number) => (
+          <div key={i} className="lb-item">
+            <div className="lb-item__header">
+              <span>Item {i + 1}</span>
+              <button className="lb-item__remove" onClick={() => { const a = [...items]; a.splice(i, 1); setItems(a) }}>✕</button>
+            </div>
+            <MediaField
+              label="Case Image (400×400)"
+              value={item?.cssImage?.url ?? ''}
+              onChange={(ref) => { const a = [...items]; a[i] = { ...a[i], cssImage: ref }; setItems(a) }}
+            />
+            <MediaField
+              label="Client Logo"
+              value={item?.cssClientLogo?.url ?? ''}
+              onChange={(ref) => { const a = [...items]; a[i] = { ...a[i], cssClientLogo: ref }; setItems(a) }}
+            />
+            <Field label="Heading">
+              <input
+                className="lb-input"
+                value={item?.cssHeading ?? ''}
+                onChange={(e) => { const a = [...items]; a[i] = { ...a[i], cssHeading: e.target.value }; setItems(a) }}
+                placeholder="Digital Transformation & System Integration"
+              />
+            </Field>
+            <Field label="Body">
+              <textarea
+                className="lb-input lb-input--textarea"
+                rows={3}
+                value={item?.cssBody ?? ''}
+                onChange={(e) => { const a = [...items]; a[i] = { ...a[i], cssBody: e.target.value }; setItems(a) }}
+                placeholder="Brief case study description..."
+              />
+            </Field>
+          </div>
+        ))}
+        <button
+          className="lb-items__add"
+          onClick={() => setItems([...items, { cssImage: null, cssClientLogo: null, cssHeading: '', cssBody: '' }])}
+        >+ Add Case Study</button>
+      </div>
+    </Field>
+  )
+}
+
 // ── Quote-Intro fields ────────────────────────────────────────────────────────
 function QuoteIntroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   return (
@@ -3181,6 +3232,7 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'clients'               && <ClientsFields             ov={ov} set={set} />}
         {blockType === 'quote-intro'           && <QuoteIntroFields          ov={ov} set={set} />}
         {blockType === 'case-study'            && <CaseStudyFields           ov={ov} set={set} />}
+        {blockType === 'case-study-scroll'     && <CaseStudyScrollFields     ov={ov} set={set} />}
         {blockType === 'partnership'            && <PartnershipFields         ov={ov} set={set} />}
         {blockType === 'faq-main'              && <FAQMainFields             ov={ov} set={set} />}
         {blockType === 'breadcrumb'             && <BreadcrumbFields          ov={ov} set={set} />}

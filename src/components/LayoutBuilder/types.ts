@@ -44,6 +44,7 @@ export const ADVANCE_BLOCK_TYPES = [
   'clients',
   'quote-intro',
   'case-study',
+  'case-study-scroll',
 ] as const
 
 export type BasicBlockType   = typeof BASIC_BLOCK_TYPES[number]
@@ -264,6 +265,14 @@ export interface BlockOverrides {
     headingAccent?:      string
     headingAccentFirst?: boolean
     headingPrimary?:     string
+
+    // ── Case Study Scroll ─────────────────────────────────────────────────────
+    caseScrollItems?: Array<{
+      cssImage?:      MediaRef | null
+      cssClientLogo?: MediaRef | null
+      cssHeading?:    string
+      cssBody?:       string
+    }>
 
     // ── Article Main Grid ─────────────────────────────────────────────────────
     mainGridSectionLabel?:  string

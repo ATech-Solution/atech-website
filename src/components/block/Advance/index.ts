@@ -68,3 +68,4 @@ export { default as DynamicFormSection                } from './DynamicFormSecti
 export { default as SurveySection                     } from './SurveySection'
 export { default as QuoteIntroSection                 } from './QuoteIntroSection'
 export { default as CaseStudySection                  } from './CaseStudySection'
+export { default as CaseStudyScrollSection            } from './CaseStudyScrollSection'

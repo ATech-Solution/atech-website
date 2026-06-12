@@ -604,6 +604,32 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
         },
       }
 
+    case 'case-study-scroll':
+      return {
+        content: {
+          caseScrollItems: [
+            {
+              cssImage:      null,
+              cssClientLogo: null,
+              cssHeading:    'Digital Transformation & System Integration',
+              cssBody:       'Built a cross-border dev team for a trading platform. Lower costs, faster shipping, tighter HK–Indonesia collaboration.',
+            },
+            {
+              cssImage:      null,
+              cssClientLogo: null,
+              cssHeading:    'Business Process Re-engineering',
+              cssBody:       'Digitised home-based health coaching operations for elderly care. Less admin, better patient outcomes.',
+            },
+            {
+              cssImage:      null,
+              cssClientLogo: null,
+              cssHeading:    'Data Analytics & Performance Optimization',
+              cssBody:       'Supported AI-driven clinic analytics for Medtrik. Real-time insights on patient flow, doctor performance, and financials.',
+            },
+          ],
+        },
+      }
+
     case 'case-study':
       return {
         content: {

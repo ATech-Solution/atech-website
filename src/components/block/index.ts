@@ -71,6 +71,7 @@ export {
   SurveySection,
   QuoteIntroSection,
   CaseStudySection,
+  CaseStudyScrollSection,
 } from './Advance'
 
 // ── Service Page Sections ────────────────────────────────────────────────────

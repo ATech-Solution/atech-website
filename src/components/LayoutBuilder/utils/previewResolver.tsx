@@ -55,6 +55,7 @@ import {
   ClientsSection,
   QuoteIntroSection,
   CaseStudySection,
+  CaseStudyScrollSection,
 } from '@/components/block'
 
 // ── CSS custom property injection ─────────────────────────────────────────────
@@ -268,6 +269,8 @@ export function resolvePreviewComponent(
       return withStyle(<QuoteIntroSection data={data as any} />, blockStyle)
     case 'case-study':
       return withStyle(<CaseStudySection data={data as any} />, blockStyle)
+    case 'case-study-scroll':
+      return withStyle(<CaseStudyScrollSection data={data as any} />, blockStyle)
 
     // ── Basic blocks — inline previews ────────────────────────────────────────
     case 'heading':
