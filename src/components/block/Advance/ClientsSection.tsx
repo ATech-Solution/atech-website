@@ -23,11 +23,12 @@ export default function ClientsSection({ data }: { data: ClientsData }) {
     clientsGrayscale: grayscale     = true,
   } = data
 
-  const pageSize   = Math.max(1, Number(clientsPageSize) || 6)
-  const totalPages = Math.max(1, Math.ceil(clientItems.length / pageSize))
+  const pageSize    = Math.max(1, Number(clientsPageSize) || 6)
+  const totalPages  = Math.max(1, Math.ceil(clientItems.length / pageSize))
   const [page, setPage] = useState(0)
+  const clampedPage = Math.min(page, totalPages - 1)
 
-  const visibleItems = clientItems.slice(page * pageSize, page * pageSize + pageSize)
+  const visibleItems = clientItems.slice(clampedPage * pageSize, clampedPage * pageSize + pageSize)
 
   return (
     <section className="clients-section" style={sectionStyle}>
@@ -65,7 +66,7 @@ export default function ClientsSection({ data }: { data: ClientsData }) {
                   src={item.clientLogo.url}
                   alt={item.clientLogo.alt || item.clientName || `Client ${i + 1}`}
                   style={{
-                    maxHeight:  '48px',
+                    maxHeight:  '89px',
                     maxWidth:   '140px',
                     objectFit:  'contain',
                     display:    'block',
@@ -118,8 +119,8 @@ export default function ClientsSection({ data }: { data: ClientsData }) {
               onClick={() => setPage(i)}
               style={{
                 ...dotStyle,
-                background: i === page ? '#111827' : '#d1d5db',
-                transform:  i === page ? 'scale(1.25)' : 'scale(1)',
+                background: i === clampedPage ? '#111827' : '#d1d5db',
+                transform:  i === clampedPage ? 'scale(1.25)' : 'scale(1)',
               }}
             />
           ))}
