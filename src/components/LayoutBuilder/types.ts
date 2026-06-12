@@ -41,6 +41,7 @@ export const ADVANCE_BLOCK_TYPES = [
   'article-feature',
   'article-main-grid',
   'subscribe',
+  'clients',
 ] as const
 
 export type BasicBlockType   = typeof BASIC_BLOCK_TYPES[number]
@@ -244,6 +245,12 @@ export interface BlockOverrides {
     subNote?:             string
     subSuccessMessage?:   string
     subApiEndpoint?:      string
+
+    // ── Clients ───────────────────────────────────────────────────────────────
+    clientsHeading?:   string
+    clientsGrayscale?: boolean
+    clientsPageSize?:  number
+    clientItems?: Array<{ clientName?: string; clientLogo?: MediaRef | null; clientUrl?: string }>
 
     // ── Article Main Grid ─────────────────────────────────────────────────────
     mainGridSectionLabel?:  string

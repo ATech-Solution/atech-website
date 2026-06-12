@@ -2723,6 +2723,98 @@ function FeaturedCaseStudyFields({ ov, set }: { ov: any; set: (k: string, v: unk
   )
 }
 
+// ── Clients fields ────────────────────────────────────────────────────────────
+function ClientsFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const items: any[] = ov.clientItems ?? []
+
+  function setItems(next: any[]) { set('clientItems', next) }
+
+  return (
+    <>
+      <Field label="Section Heading">
+        <input
+          className="lb-input"
+          value={ov.clientsHeading ?? ''}
+          onChange={(e) => set('clientsHeading', e.target.value)}
+          placeholder="Trusted by"
+        />
+      </Field>
+
+      <Row>
+        <Field label="Logos per page">
+          <input
+            className="lb-input"
+            type="number"
+            min={1}
+            max={20}
+            value={ov.clientsPageSize ?? 6}
+            onChange={(e) => set('clientsPageSize', Number(e.target.value))}
+          />
+        </Field>
+        <Field label="Grayscale logos">
+          <select
+            className="lb-input lb-input--select"
+            value={ov.clientsGrayscale === false ? 'color' : 'grayscale'}
+            onChange={(e) => set('clientsGrayscale', e.target.value === 'grayscale')}
+          >
+            <option value="grayscale">Grayscale (default)</option>
+            <option value="color">Full colour</option>
+          </select>
+        </Field>
+      </Row>
+
+      <Field label="Client Logos">
+        <div className="lb-items">
+          {items.map((item: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Client {i + 1}</span>
+                <button
+                  className="lb-item__remove"
+                  onClick={() => { const a = [...items]; a.splice(i, 1); setItems(a) }}
+                >
+                  ✕
+                </button>
+              </div>
+              <MediaField
+                label="Logo image"
+                value={item?.clientLogo?.url ?? ''}
+                onChange={(ref) => {
+                  const a = [...items]
+                  a[i] = { ...a[i], clientLogo: ref }
+                  setItems(a)
+                }}
+              />
+              <Field label="Client name (alt text)">
+                <input
+                  className="lb-input"
+                  value={item?.clientName ?? ''}
+                  onChange={(e) => { const a = [...items]; a[i] = { ...a[i], clientName: e.target.value }; setItems(a) }}
+                  placeholder="Quality HealthCare"
+                />
+              </Field>
+              <Field label="Link URL (optional)">
+                <input
+                  className="lb-input"
+                  value={item?.clientUrl ?? ''}
+                  onChange={(e) => { const a = [...items]; a[i] = { ...a[i], clientUrl: e.target.value }; setItems(a) }}
+                  placeholder="https://example.com"
+                />
+              </Field>
+            </div>
+          ))}
+          <button
+            className="lb-items__add"
+            onClick={() => setItems([...items, { clientName: '', clientLogo: null, clientUrl: '' }])}
+          >
+            + Add Client Logo
+          </button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
 // ── Partnership fields ────────────────────────────────────────────────────────
 function PartnershipFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   return (
@@ -2973,6 +3065,7 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'contact-stats'         && <ContactStatsFields        ov={ov} set={set} />}
         {blockType === 'locations'             && <LocationsFields           ov={ov} set={set} />}
         {blockType === 'featured-case-study'   && <FeaturedCaseStudyFields   ov={ov} set={set} />}
+        {blockType === 'clients'               && <ClientsFields             ov={ov} set={set} />}
         {blockType === 'partnership'            && <PartnershipFields         ov={ov} set={set} />}
         {blockType === 'faq-main'              && <FAQMainFields             ov={ov} set={set} />}
         {blockType === 'breadcrumb'             && <BreadcrumbFields          ov={ov} set={set} />}

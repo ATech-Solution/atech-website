@@ -41,6 +41,7 @@ export {
   ContactStatsSection,
   LocationsSection,
   FeaturedCaseStudySection,
+  ClientsSection,
   PartnershipSection,
   PortfolioDetailTopSection,
   PortfolioFeaturedImageSection,

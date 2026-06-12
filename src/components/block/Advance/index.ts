@@ -63,5 +63,6 @@ export { default as ArticleFeatureSection             } from './ArticleFeatureSe
 export { ArticleFeatureClientSection                  } from './ArticleFeatureClientSection'
 export { default as ArticleMainGridSection, ArticleMainGridServerSection } from './ArticleMainGridSection'
 export { default as SubscribeSection                  } from './SubscribeSection'
+export { default as ClientsSection                   } from './ClientsSection'
 export { default as DynamicFormSection                } from './DynamicFormSection'
 export { default as SurveySection                     } from './SurveySection'

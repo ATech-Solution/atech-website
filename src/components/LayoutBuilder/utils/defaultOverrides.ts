@@ -595,6 +595,22 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
         },
       }
 
+    case 'clients':
+      return {
+        content: {
+          clientsHeading:   'Trusted by',
+          clientsGrayscale: true,
+          clientsPageSize:  6,
+          clientItems: [
+            { clientName: 'Quality HealthCare', clientLogo: null, clientUrl: '' },
+            { clientName: 'BOCI',               clientLogo: null, clientUrl: '' },
+            { clientName: 'Bank of China',      clientLogo: null, clientUrl: '' },
+            { clientName: 'CCB',                clientLogo: null, clientUrl: '' },
+            { clientName: 'Emperor Group',      clientLogo: null, clientUrl: '' },
+          ],
+        },
+      }
+
     default:
       return {}
   }
