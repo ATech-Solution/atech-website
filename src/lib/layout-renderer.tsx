@@ -878,7 +878,7 @@ export function LayoutBlockRenderer({
     case 'cta-banner':
       return wrapAdvanced(<CTABannerSection data={data} />)
     case 'hero-split':
-      return wrapAdvanced(<HeroSplitSection data={data} />)
+      return wrapAdvanced(<HeroSplitSection data={withBgImage(data)} />)
     case 'process-steps':
       return wrapAdvanced(<ProcessStepsSection data={data} />)
     case 'expertise-tiles':

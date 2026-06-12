@@ -1,6 +1,7 @@
 // Hero Split Section — Layout Builder (Advance)
-// White bg, 2-col: badge+heading+body+CTAs | full-height image
-// heroImagePosition: 'left' | 'right' (default right)
+// Two modes:
+//   1. Full-bleed (backgroundImage set): full-width photo + dark gradient + white left-side content
+//   2. 2-col (default): content left/right column + image panel right/left
 
 import Link from 'next/link'
 import type { CSSProperties, ReactNode } from 'react'
@@ -38,6 +39,20 @@ const CSS = `
   @media (min-width: 768px) and (max-width: 1023px) {
     .herosplit__img { height: 380px; }
   }
+
+  .herosplit--fullbleed {
+    background: #000;
+    position: relative;
+    overflow: hidden;
+    min-height: 625px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (max-width: 767px) {
+    .herosplit--fullbleed { min-height: 480px; }
+    .herosplit-fb__content { padding: 60px 24px !important; }
+  }
 `
 
 function CtaWrap({ href, className, style, children }: { href?: string; className?: string; style?: CSSProperties; children: ReactNode }) {
@@ -56,15 +71,16 @@ export interface HeroSplitSectionData {
   breadcrumbs?:         BreadcrumbItem[]
   heading?:             string
   body?:                string
-  ctaPrimaryLabel?:        string
-  ctaPrimaryUrl?:          string
-  ctaPrimaryIcon?:         { url: string } | null
-  ctaPrimaryIconPos?:      'left' | 'right'
-  ctaPrimaryIconFill?:     boolean
-  ctaSecondaryLabel?:      string
-  ctaSecondaryUrl?:        string
-  ctaSecondaryIcon?:       { url: string } | null
-  ctaSecondaryIconPos?:    'left' | 'right'
+  ctaPrimaryLabel?:     string
+  ctaPrimaryUrl?:       string
+  ctaPrimaryIcon?:      { url: string } | null
+  ctaPrimaryIconPos?:   'left' | 'right'
+  ctaPrimaryIconFill?:  boolean
+  ctaSecondaryLabel?:   string
+  ctaSecondaryUrl?:     string
+  ctaSecondaryIcon?:    { url: string } | null
+  ctaSecondaryIconPos?: 'left' | 'right'
+  backgroundImage?:     { url: string; alt?: string } | null
   heroImage?:           { url: string; alt?: string } | null
   heroImagePosition?:   'left' | 'right'
   heroImagePadding?:    boolean
@@ -74,16 +90,141 @@ export interface HeroSplitSectionData {
 
 export default function HeroSplitSection({ data }: { data: HeroSplitSectionData }) {
   const breadcrumbs = data.breadcrumbs ?? []
-  const imageOnLeft = data.heroImagePosition === 'left'
   const badgeIcon   = data.badgeIcon?.url ?? data.badgeIconSrc ?? null
 
-  const H_PAD = 104  // section horizontal padding (px)
-  const V_PAD = 80   // section vertical padding (px)
+  // ── Full-bleed background mode ────────────────────────────────────────────────
+  if (data.backgroundImage?.url) {
+    return (
+      <>
+        <style dangerouslySetInnerHTML={{ __html: CSS }} />
+        <section className="herosplit--fullbleed">
+          {/* Background photo */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={data.backgroundImage.url}
+            alt={data.backgroundImage.alt ?? ''}
+            aria-hidden
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+          />
 
-  // ── Image panel ──────────────────────────────────────────────────────────────
-  // position: relative + inset-0 absolute child fills 100% of the grid cell height.
-  // The section is a flex column with minHeight 720px; the grid takes flex:1 so
-  // both columns stretch to fill the full section height.
+          {/* Left-to-right gradient overlay */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0) 100%)',
+            }}
+          />
+
+          {/* Content */}
+          <div
+            className="herosplit-fb__content"
+            style={{
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              flex: 1,
+              paddingTop: '80px',
+              paddingBottom: '80px',
+              paddingLeft: '96px',
+              paddingRight: '96px',
+              gap: '32px',
+            }}
+          >
+            {breadcrumbs.length > 0 && (
+              <nav style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }} aria-label="Breadcrumb">
+                {breadcrumbs.map((item, idx) => (
+                  <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {idx > 0 && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src="/images/breadcrumb-chevron.png" alt="" style={{ width: '5px', height: '8px', objectFit: 'contain', opacity: 0.6, filter: 'invert(1)' }} />
+                    )}
+                    {item.bcHref ? (
+                      <Link href={item.bcHref} style={{ color: '#d1d5db', fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '12px', fontWeight: 500, lineHeight: '16px', textDecoration: 'none' }}>
+                        {item.bcLabel}
+                      </Link>
+                    ) : (
+                      <span style={{ color: '#ffffff', fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '12px', fontWeight: 500, lineHeight: '16px' }}>
+                        {item.bcLabel}
+                      </span>
+                    )}
+                  </span>
+                ))}
+              </nav>
+            )}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '576px' }}>
+              {data.badge && (
+                <div style={{ alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#ffffff', borderRadius: '9999px', padding: '6px 16px' }}>
+                  {badgeIcon && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={badgeIcon} alt="" style={{ width: '15px', height: '12px', objectFit: 'contain', flexShrink: 0 }} />
+                  )}
+                  <span style={{ color: '#1f2937', fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '12px', fontWeight: 400, letterSpacing: '0.6px', textTransform: 'uppercase', lineHeight: '16px' }}>
+                    {data.badge}
+                  </span>
+                </div>
+              )}
+
+              {data.heading && (
+                <h1 style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '48px', fontWeight: 600, color: '#ffffff', lineHeight: '48px', margin: 0 }}>
+                  {data.heading.split('\n').map((line, i) => (
+                    <span key={i} style={{ display: 'block' }}>{line}</span>
+                  ))}
+                </h1>
+              )}
+
+              {data.body && (
+                <p style={{ fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '16px', fontWeight: 300, color: '#e5e7eb', lineHeight: '26px', margin: 0 }}>
+                  {data.body}
+                </p>
+              )}
+
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px' }}>
+                {data.ctaPrimaryLabel && (
+                  <CtaWrap
+                    href={data.ctaPrimaryUrl}
+                    className="inline-flex items-center gap-2 hover:opacity-90 transition-opacity duration-200"
+                    style={{ background: '#ffffff', color: '#111827', fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '14px', fontWeight: 500, padding: '14px 24px', borderRadius: '4px', lineHeight: '20px', display: 'inline-flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}
+                  >
+                    {data.ctaPrimaryIcon?.url && data.ctaPrimaryIconPos === 'left' && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={data.ctaPrimaryIcon.url} alt="" style={{ width: '10.5px', height: '12px', objectFit: data.ctaPrimaryIconFill ? 'fill' : 'contain' }} />
+                    )}
+                    {data.ctaPrimaryLabel}
+                    {data.ctaPrimaryIcon?.url && data.ctaPrimaryIconPos !== 'left' ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={data.ctaPrimaryIcon.url} alt="" style={{ width: '10.5px', height: '12px', objectFit: data.ctaPrimaryIconFill ? 'fill' : 'contain' }} />
+                    ) : !data.ctaPrimaryIcon ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={CTA_ARROW} alt="" style={{ width: '10.5px', height: '12px', objectFit: 'contain' }} />
+                    ) : null}
+                  </CtaWrap>
+                )}
+
+                {data.ctaSecondaryLabel && (
+                  <CtaWrap
+                    href={data.ctaSecondaryUrl}
+                    className="inline-flex items-center hover:opacity-70 transition-opacity duration-200"
+                    style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.4)', borderRadius: '9999px', color: '#ffffff', fontFamily: 'var(--font-work-sans, sans-serif)', fontSize: '16px', fontWeight: 400, padding: '16px 32px', textDecoration: 'none' }}
+                  >
+                    {data.ctaSecondaryLabel}
+                  </CtaWrap>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      </>
+    )
+  }
+
+  // ── 2-column mode (existing behavior — unchanged) ─────────────────────────────
+  const imageOnLeft = data.heroImagePosition === 'left'
+  const V_PAD = 80
+
   const ImagePanel = (
     <div
       className="herosplit__img"

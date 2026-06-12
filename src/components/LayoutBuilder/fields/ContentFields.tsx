@@ -1618,6 +1618,9 @@ function ServiceHeroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) 
 
       <MediaField label="Hero Image" value={ov.heroImage?.url ?? ''} onChange={(ref) => set('heroImage', ref)} />
 
+      <MediaField label="Background Image" value={ov.backgroundImage?.url ?? ''} onChange={(ref) => set('backgroundImage', ref)} />
+      <p style={{ fontSize: 12, color: '#9ca3af', margin: '-4px 0 12px' }}>When set, switches to full-bleed background mode — hides the side image panel and flips text to white. Leave empty to use the 2-column layout.</p>
+
       <Field label="Image Position">
         <select className="lb-input lb-input--select" value={ov.heroImagePosition ?? 'right'} onChange={(e) => set('heroImagePosition', e.target.value)}>
           <option value="right">Right (default)</option>
