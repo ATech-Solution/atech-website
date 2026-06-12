@@ -53,7 +53,7 @@ import {
   ArticleMainGridSection,
   SubscribeSection,
   ClientsSection,
-  QuoteSection,
+  QuoteIntroSection,
 } from '@/components/block'
 
 // ── CSS custom property injection ─────────────────────────────────────────────
@@ -263,8 +263,8 @@ export function resolvePreviewComponent(
       return withStyle(<SubscribeSection data={data as any} />, blockStyle)
     case 'clients':
       return withStyle(<ClientsSection data={data as any} />, blockStyle)
-    case 'quote':
-      return withStyle(<QuoteSection data={data as any} />, blockStyle)
+    case 'quote-intro':
+      return withStyle(<QuoteIntroSection data={data as any} />, blockStyle)
 
     // ── Basic blocks — inline previews ────────────────────────────────────────
     case 'heading':

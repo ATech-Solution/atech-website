@@ -42,7 +42,7 @@ export const ADVANCE_BLOCK_TYPES = [
   'article-main-grid',
   'subscribe',
   'clients',
-  'quote',
+  'quote-intro',
 ] as const
 
 export type BasicBlockType   = typeof BASIC_BLOCK_TYPES[number]
@@ -253,9 +253,10 @@ export interface BlockOverrides {
     clientsPageSize?:  number
     clientItems?: Array<{ clientName?: string; clientLogo?: MediaRef | null; clientUrl?: string }>
 
-    // ── Quote ─────────────────────────────────────────────────────────────────
-    quoteText?: string
-    quoteBody?: string
+    // ── Quote-Intro ───────────────────────────────────────────────────────────
+    quoteStyle?: 'quote' | 'intro'
+    quoteText?:  string
+    quoteBody?:  string
 
     // ── Article Main Grid ─────────────────────────────────────────────────────
     mainGridSectionLabel?:  string

@@ -72,7 +72,7 @@ import {
   ArticleMainGridServerSection,
   SubscribeSection,
   ClientsSection,
-  QuoteSection,
+  QuoteIntroSection,
   DynamicFormSection,
   SurveySection,
 } from '@/components/block'
@@ -954,8 +954,8 @@ export function LayoutBlockRenderer({
       return wrapAdvanced(<PartnershipSection data={data} />)
     case 'clients':
       return wrapAdvanced(<ClientsSection data={data} />)
-    case 'quote':
-      return wrapAdvanced(<QuoteSection data={data} />)
+    case 'quote-intro':
+      return wrapAdvanced(<QuoteIntroSection data={data} />)
 
     // ── Portfolio Sections ───────────────────────────────────────────────────
     case 'portfolio-hero':

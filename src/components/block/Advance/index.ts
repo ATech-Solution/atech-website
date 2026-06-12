@@ -66,4 +66,4 @@ export { default as SubscribeSection                  } from './SubscribeSection
 export { default as ClientsSection                   } from './ClientsSection'
 export { default as DynamicFormSection                } from './DynamicFormSection'
 export { default as SurveySection                     } from './SurveySection'
-export { default as QuoteSection                      } from './QuoteSection'
+export { default as QuoteIntroSection                 } from './QuoteIntroSection'

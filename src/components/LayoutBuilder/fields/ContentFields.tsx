@@ -2726,17 +2726,28 @@ function FeaturedCaseStudyFields({ ov, set }: { ov: any; set: (k: string, v: unk
   )
 }
 
-// ── Quote fields ──────────────────────────────────────────────────────────────
-function QuoteFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+// ── Quote-Intro fields ────────────────────────────────────────────────────────
+function QuoteIntroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   return (
     <>
-      <Field label="Quote Text">
+      <Field label="Style">
+        <select
+          className="lb-input lb-input--select"
+          value={ov.quoteStyle ?? 'quote'}
+          onChange={(e) => set('quoteStyle', e.target.value)}
+        >
+          <option value="quote">Quote — 24px medium with curly quotes</option>
+          <option value="intro">Intro Section — 30px bold heading, no quotes</option>
+        </select>
+      </Field>
+
+      <Field label="Main Text">
         <textarea
           className="lb-input lb-input--textarea"
           rows={3}
           value={ov.quoteText ?? ''}
           onChange={(e) => set('quoteText', e.target.value)}
-          placeholder='"I want to scale my IT team without high hiring costs."'
+          placeholder="Enter quote or heading text..."
         />
       </Field>
 
@@ -3096,7 +3107,7 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'locations'             && <LocationsFields           ov={ov} set={set} />}
         {blockType === 'featured-case-study'   && <FeaturedCaseStudyFields   ov={ov} set={set} />}
         {blockType === 'clients'               && <ClientsFields             ov={ov} set={set} />}
-        {blockType === 'quote'                 && <QuoteFields               ov={ov} set={set} />}
+        {blockType === 'quote-intro'           && <QuoteIntroFields          ov={ov} set={set} />}
         {blockType === 'partnership'            && <PartnershipFields         ov={ov} set={set} />}
         {blockType === 'faq-main'              && <FAQMainFields             ov={ov} set={set} />}
         {blockType === 'breadcrumb'             && <BreadcrumbFields          ov={ov} set={set} />}

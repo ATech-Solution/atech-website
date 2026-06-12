@@ -69,7 +69,7 @@ export {
   SubscribeSection,
   DynamicFormSection,
   SurveySection,
-  QuoteSection,
+  QuoteIntroSection,
 } from './Advance'
 
 // ── Service Page Sections ────────────────────────────────────────────────────
