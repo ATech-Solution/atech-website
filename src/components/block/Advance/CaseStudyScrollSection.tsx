@@ -24,6 +24,7 @@ const CSS = `
   /* ── Outer wrapper: tall to create scroll room ── */
   .cssw {
     position: relative;
+    background: #ffffff;
   }
 
   /* ── Sticky panel: stays in viewport while wrapper scrolls ── */
@@ -156,29 +157,33 @@ const CSS = `
   .a-con-up   { animation: css-con-up   0.7s ease-out 0.10s   forwards; }
   .a-fadeout  { animation: css-fadeout  0.25s ease-out         forwards; }
 
-  /* ── Scroll indicator dots ── */
+  /* ── Scroll indicator: vertical lines ── */
   .cssdots {
     position: absolute;
-    right: clamp(16px, calc((100% - 1024px) / 2 - 24px), 160px);
+    right: clamp(16px, calc((100% - 1024px) / 2 - 32px), 148px);
     top: 50%;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: center;
+    gap: 8px;
     z-index: 10;
   }
   .cssdot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
+    display: block;
+    width: 2px;
+    height: 18px;
+    border-radius: 2px;
     background: #d1d5db;
-    transition: background 0.3s ease, transform 0.3s ease;
+    transition: height 0.35s cubic-bezier(0.4,0,0.2,1), background 0.35s ease;
     cursor: pointer;
     border: none;
     padding: 0;
+    flex-shrink: 0;
   }
   .cssdot--active {
+    height: 44px;
     background: #ffd25e;
-    transform: scale(1.35);
   }
 
   /* ── Mobile: disable sticky, show all stacked ── */
