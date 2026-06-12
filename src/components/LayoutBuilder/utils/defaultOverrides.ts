@@ -595,6 +595,14 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
         },
       }
 
+    case 'quote':
+      return {
+        content: {
+          quoteText: 'I want to scale my IT team without high hiring costs.',
+          quoteBody: 'We source and manage IT talent from Malaysia, Indonesia, and China, trained professionals who slot into your team and hit the ground running. You get the capacity. We handle the rest.',
+        },
+      }
+
     case 'clients':
       return {
         content: {

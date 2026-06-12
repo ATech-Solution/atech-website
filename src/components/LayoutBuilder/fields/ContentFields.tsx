@@ -2726,6 +2726,33 @@ function FeaturedCaseStudyFields({ ov, set }: { ov: any; set: (k: string, v: unk
   )
 }
 
+// ── Quote fields ──────────────────────────────────────────────────────────────
+function QuoteFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  return (
+    <>
+      <Field label="Quote Text">
+        <textarea
+          className="lb-input lb-input--textarea"
+          rows={3}
+          value={ov.quoteText ?? ''}
+          onChange={(e) => set('quoteText', e.target.value)}
+          placeholder='"I want to scale my IT team without high hiring costs."'
+        />
+      </Field>
+
+      <Field label="Body Text">
+        <textarea
+          className="lb-input lb-input--textarea"
+          rows={4}
+          value={ov.quoteBody ?? ''}
+          onChange={(e) => set('quoteBody', e.target.value)}
+          placeholder="Supporting description text..."
+        />
+      </Field>
+    </>
+  )
+}
+
 // ── Clients fields ────────────────────────────────────────────────────────────
 function ClientsFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   const items: any[] = ov.clientItems ?? []
@@ -3069,6 +3096,7 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'locations'             && <LocationsFields           ov={ov} set={set} />}
         {blockType === 'featured-case-study'   && <FeaturedCaseStudyFields   ov={ov} set={set} />}
         {blockType === 'clients'               && <ClientsFields             ov={ov} set={set} />}
+        {blockType === 'quote'                 && <QuoteFields               ov={ov} set={set} />}
         {blockType === 'partnership'            && <PartnershipFields         ov={ov} set={set} />}
         {blockType === 'faq-main'              && <FAQMainFields             ov={ov} set={set} />}
         {blockType === 'breadcrumb'             && <BreadcrumbFields          ov={ov} set={set} />}
