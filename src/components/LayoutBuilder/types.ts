@@ -43,6 +43,7 @@ export const ADVANCE_BLOCK_TYPES = [
   'subscribe',
   'clients',
   'quote-intro',
+  'case-study',
 ] as const
 
 export type BasicBlockType   = typeof BASIC_BLOCK_TYPES[number]
@@ -257,6 +258,12 @@ export interface BlockOverrides {
     quoteStyle?: 'quote' | 'intro'
     quoteText?:  string
     quoteBody?:  string
+
+    // ── Case Study ────────────────────────────────────────────────────────────
+    csVariant?:          'light' | 'dark1' | 'dark2'
+    headingAccent?:      string
+    headingAccentFirst?: boolean
+    headingPrimary?:     string
 
     // ── Article Main Grid ─────────────────────────────────────────────────────
     mainGridSectionLabel?:  string

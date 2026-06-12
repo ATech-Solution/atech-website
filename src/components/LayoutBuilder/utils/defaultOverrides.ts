@@ -604,6 +604,20 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
         },
       }
 
+    case 'case-study':
+      return {
+        content: {
+          csVariant:          'dark1',
+          imagePosition:      'right',
+          headingAccentFirst: false,
+          headingPrimary:     'Scaling IT talent for',
+          headingAccent:      'Quality HealthCare',
+          body:               'We embedded a remote engineering team within 3 weeks — no overhead, no delays. The client focused on product; we handled the rest.',
+          clientLogo:         null,
+          caseImage:          null,
+        },
+      }
+
     case 'clients':
       return {
         content: {

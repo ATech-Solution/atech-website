@@ -2726,6 +2726,78 @@ function FeaturedCaseStudyFields({ ov, set }: { ov: any; set: (k: string, v: unk
   )
 }
 
+// ── Case Study fields ─────────────────────────────────────────────────────────
+function CaseStudyFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  return (
+    <>
+      <Field label="Background Variant">
+        <select
+          className="lb-input lb-input--select"
+          value={ov.csVariant ?? 'light'}
+          onChange={(e) => set('csVariant', e.target.value)}
+        >
+          <option value="light">Light — white background</option>
+          <option value="dark1">Dark 1 — charcoal #464646</option>
+          <option value="dark2">Dark 2 — darker #2c2c2c</option>
+        </select>
+      </Field>
+
+      <Field label="Image Position">
+        <select
+          className="lb-input lb-input--select"
+          value={ov.imagePosition ?? 'right'}
+          onChange={(e) => set('imagePosition', e.target.value)}
+        >
+          <option value="right">Right — content left, image right</option>
+          <option value="left">Left — image left, content right</option>
+        </select>
+      </Field>
+
+      <Field label="Accent Heading">
+        <input
+          className="lb-input"
+          value={ov.headingAccent ?? ''}
+          onChange={(e) => set('headingAccent', e.target.value)}
+          placeholder="e.g. Quality HealthCare"
+        />
+      </Field>
+
+      <Field label="Main Heading">
+        <input
+          className="lb-input"
+          value={ov.headingPrimary ?? ''}
+          onChange={(e) => set('headingPrimary', e.target.value)}
+          placeholder="e.g. Scaling IT talent for"
+        />
+      </Field>
+
+      <Field label="Accent Position">
+        <select
+          className="lb-input lb-input--select"
+          value={ov.headingAccentFirst ? 'first' : 'last'}
+          onChange={(e) => set('headingAccentFirst', e.target.value === 'first')}
+        >
+          <option value="last">After main heading</option>
+          <option value="first">Before main heading</option>
+        </select>
+      </Field>
+
+      <Field label="Body Text">
+        <textarea
+          className="lb-input lb-input--textarea"
+          rows={4}
+          value={ov.body ?? ''}
+          onChange={(e) => set('body', e.target.value)}
+          placeholder="Supporting description..."
+        />
+      </Field>
+
+      <MediaField label="Client Logo" value={ov.clientLogo?.url ?? ''} onChange={(ref) => set('clientLogo', ref)} />
+      <MediaField label="Case Image"  value={ov.caseImage?.url  ?? ''} onChange={(ref) => set('caseImage',  ref)} />
+    </>
+  )
+}
+
 // ── Quote-Intro fields ────────────────────────────────────────────────────────
 function QuoteIntroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   return (
@@ -3108,6 +3180,7 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'featured-case-study'   && <FeaturedCaseStudyFields   ov={ov} set={set} />}
         {blockType === 'clients'               && <ClientsFields             ov={ov} set={set} />}
         {blockType === 'quote-intro'           && <QuoteIntroFields          ov={ov} set={set} />}
+        {blockType === 'case-study'            && <CaseStudyFields           ov={ov} set={set} />}
         {blockType === 'partnership'            && <PartnershipFields         ov={ov} set={set} />}
         {blockType === 'faq-main'              && <FAQMainFields             ov={ov} set={set} />}
         {blockType === 'breadcrumb'             && <BreadcrumbFields          ov={ov} set={set} />}

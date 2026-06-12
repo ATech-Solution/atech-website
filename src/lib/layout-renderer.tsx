@@ -73,6 +73,7 @@ import {
   SubscribeSection,
   ClientsSection,
   QuoteIntroSection,
+  CaseStudySection,
   DynamicFormSection,
   SurveySection,
 } from '@/components/block'
@@ -956,6 +957,8 @@ export function LayoutBlockRenderer({
       return wrapAdvanced(<ClientsSection data={data} />)
     case 'quote-intro':
       return wrapAdvanced(<QuoteIntroSection data={data} />)
+    case 'case-study':
+      return wrapAdvanced(<CaseStudySection data={data} />)
 
     // ── Portfolio Sections ───────────────────────────────────────────────────
     case 'portfolio-hero':

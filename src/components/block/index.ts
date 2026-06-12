@@ -70,6 +70,7 @@ export {
   DynamicFormSection,
   SurveySection,
   QuoteIntroSection,
+  CaseStudySection,
 } from './Advance'
 
 // ── Service Page Sections ────────────────────────────────────────────────────

@@ -50,6 +50,7 @@ const BLOCK_ICONS: Record<string, string> = {
   'article-submit': '✍️',
   'clients': '🏢',
   'quote-intro': '💬',
+  'case-study': '📋',
 }
 
 const BLOCK_LABELS: Record<string, string> = {
@@ -83,6 +84,7 @@ const BLOCK_LABELS: Record<string, string> = {
   'subscribe': 'Subscribe',
   'clients': 'Clients',
   'quote-intro': 'Quote / Intro',
+  'case-study': 'Case Study',
   'partnership': 'Partnership',
   'portfolio-hero': 'Portfolio — Hero',
   'portfolio-statistics': 'Portfolio — Statistics',
