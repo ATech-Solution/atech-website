@@ -2957,6 +2957,54 @@ function StepScrollFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =
   )
 }
 
+// ── About Gallery fields ──────────────────────────────────────────────────────
+function AboutGalleryFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const imgs: (MediaRef | null)[] = ov.agGalleryImages ?? Array.from({ length: 10 }, () => null)
+
+  const setImg = (i: number, ref: MediaRef | null) => {
+    const next = [...imgs]
+    next[i] = ref
+    set('agGalleryImages', next)
+  }
+
+  const WIDE_SLOTS  = new Set([3, 4, 9, 10])
+  const TALL_SLOTS  = new Set([9])
+
+  return (
+    <>
+      <MediaField label="Hero Image (left, 400px)" value={ov.agHeroImage?.url ?? ''} onChange={(ref) => set('agHeroImage', ref)} />
+      <Field label="Heading">
+        <input className="lb-input" value={ov.agHeading ?? ''} onChange={(e) => set('agHeading', e.target.value)} placeholder="People is our greatest asset." />
+      </Field>
+      <Field label="Body 1 (intro)">
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.agBody1 ?? ''} onChange={(e) => set('agBody1', e.target.value)} placeholder="Short intro sentence..." />
+      </Field>
+      <Field label="Body 2">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.agBody2 ?? ''} onChange={(e) => set('agBody2', e.target.value)} placeholder="Paragraph 2..." />
+      </Field>
+      <Field label="Body 3">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.agBody3 ?? ''} onChange={(e) => set('agBody3', e.target.value)} placeholder="Paragraph 3..." />
+      </Field>
+      <Field label="Body 4 (closing)">
+        <textarea className="lb-input lb-input--textarea" rows={2} value={ov.agBody4 ?? ''} onChange={(e) => set('agBody4', e.target.value)} placeholder="Closing line..." />
+      </Field>
+      <Field label="— Gallery Photos (10 slots) —"><span /></Field>
+      {Array.from({ length: 10 }).map((_, i) => {
+        const slot = i + 1
+        const suffix = TALL_SLOTS.has(slot) ? ' — wide+tall' : WIDE_SLOTS.has(slot) ? ' — wide' : ''
+        return (
+          <MediaField
+            key={i}
+            label={`Photo ${slot}${suffix}`}
+            value={imgs[i]?.url ?? ''}
+            onChange={(ref) => setImg(i, ref)}
+          />
+        )
+      })}
+    </>
+  )
+}
+
 // ── About Content 2 fields ────────────────────────────────────────────────────
 function AboutContent2Fields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   const values: Array<{ valueIcon?: { url: string } | null; valueTitle?: string; valueDesc?: string }> = ov.ac2Values ?? []
@@ -3492,6 +3540,7 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'portfolio-content'      && <PortfolioContentFields    ov={ov} set={set} />}
         {blockType === 'about-content-1'        && <AboutContent1Fields       ov={ov} set={set} />}
         {blockType === 'about-content-2'        && <AboutContent2Fields       ov={ov} set={set} />}
+        {blockType === 'about-gallery'           && <AboutGalleryFields        ov={ov} set={set} />}
       </div>
     )
   }

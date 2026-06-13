@@ -692,6 +692,18 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
         },
       }
 
+    case 'about-gallery':
+      return {
+        content: {
+          agHeading: 'People is our greatest asset.',
+          agBody1:   'Behind every successful project is a team that cares.',
+          agBody2:   'At ATech, we believe technology is built by people, for people. While we deliver software, AI, QA, and digital solutions, our greatest strength is the people behind them.',
+          agBody3:   'Beyond work, our culture is shaped through shared experiences, from industry events and client meetings to company gatherings and team celebrations. These moments reflect the collaboration, passion, and connections that drive us forward.',
+          agBody4:   'The photos below offer a glimpse into the people behind ATech, because great technology starts with great people.',
+          agGalleryImages: Array.from({ length: 10 }, () => null),
+        },
+      }
+
     case 'about-content-2':
       return {
         content: {

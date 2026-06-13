@@ -75,3 +75,4 @@ export { default as ProductContentSection             } from './ProductContentSe
 export { default as PortfolioContentSection           } from './PortfolioContentSection'
 export { default as AboutContent1Section              } from './AboutContent1Section'
 export { default as AboutContent2Section              } from './AboutContent2Section'
+export { default as AboutGallerySection               } from './AboutGallerySection'
