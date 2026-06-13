@@ -75,6 +75,9 @@ import {
   QuoteIntroSection,
   CaseStudySection,
   CaseStudyScrollSection,
+  ImageInfoSection,
+  StepScrollSection,
+  ProductContentSection,
   DynamicFormSection,
   SurveySection,
 } from '@/components/block'
@@ -962,6 +965,12 @@ export function LayoutBlockRenderer({
       return wrapAdvanced(<CaseStudySection data={data} />)
     case 'case-study-scroll':
       return wrapAdvanced(<CaseStudyScrollSection data={data} />)
+    case 'image-info':
+      return wrapAdvanced(<ImageInfoSection data={data} />)
+    case 'step-scroll':
+      return wrapAdvanced(<StepScrollSection data={data} />)
+    case 'product-content':
+      return wrapAdvanced(<ProductContentSection data={data} />)
 
     // ── Portfolio Sections ───────────────────────────────────────────────────
     case 'portfolio-hero':

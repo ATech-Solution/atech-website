@@ -660,6 +660,49 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
         },
       }
 
+    case 'step-scroll':
+      return {
+        content: {
+          sbTitle:    'Hire Across Asia. Without Hiring Headache.',
+          sbSubtitle: 'Finding the right tech talent in Hong Kong is slow and expensive. We give you access to trained professionals across Indonesia and Malaysia onboarded, managed, and supported by us. You get the output. We handle the rest.',
+          sbSteps: [
+            { stepTitle: 'Early-stage Discovery',           stepBody: 'Defining goals, identifying user needs, and establishing a solid foundation for the project.',            stepIcon: { url: '/media/step-icon-discovery.png',   alt: 'Discovery'   }, stepFeatured: false },
+            { stepTitle: 'Ideation & Validation',           stepBody: 'Generating creative solutions and testing assumptions to ensure market viability.',                       stepIcon: { url: '/media/step-icon-ideation.png',    alt: 'Ideation'    }, stepFeatured: false },
+            { stepTitle: 'Development & Technical Roadmap', stepBody: 'Building out the core infrastructure and planning the technical milestones for scale.',                   stepIcon: { url: '/media/step-icon-development.png', alt: 'Development' }, stepFeatured: false },
+            { stepTitle: 'Go-to-Market Strategy',           stepBody: 'Executing the launch plan and establishing a competitive presence in the industry.',                     stepIcon: { url: '/media/step-icon-gtm.png',         alt: 'GTM'         }, stepFeatured: true  },
+          ],
+        },
+      }
+
+    case 'image-info':
+      return {
+        content: {
+          iibTitle:        'Hire Across Asia. Without Hiring Headache.',
+          iibSubtitle:     'Finding the right tech talent in Hong Kong is slow and expensive. We give you access to trained professionals across Indonesia and Malaysia — onboarded, managed, and supported by us.',
+          iibBgImage:      null,
+          iibMode:         'scroll',
+          iibTooltipText:  'We find you the matching talent and sometimes we can match you with our trained from day one consultant, no ramp-up time, no hand-holding',
+          iibTooltipMascot: null,
+          iibPins: [
+            { label: 'Chinese hires',                                        icon: '🇨🇳', iconBg: '#dc2626', posX: 44, posY: 22, lineLength: 112 },
+            { label: 'Managed with Teamtrics — remote performance, tracked', icon: '',    iconBg: '',        posX: 30, posY: 43, lineLength: 0   },
+            { label: 'Malaysian hires cover Cantonese-speaking roles',       icon: '🇲🇾', iconBg: '#1e40af', posX: 34, posY: 60, lineLength: 80  },
+            { label: 'Indonesian talent reduces overhead',                   icon: '🇮🇩', iconBg: '#ef4444', posX: 50, posY: 74, lineLength: 112 },
+          ],
+        },
+      }
+
+    case 'product-content':
+      return {
+        content: {
+          pcTheme:    'dark',
+          pcTitle:    'Product Name: Your Tagline Here',
+          pcBody:     'Describe what makes this product unique. Focus on the problem it solves and the value it delivers to your users.',
+          pcCtaLabel: 'Learn more',
+          pcCtaUrl:   '#',
+        },
+      }
+
     default:
       return {}
   }

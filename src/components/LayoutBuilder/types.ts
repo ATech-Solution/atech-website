@@ -45,6 +45,9 @@ export const ADVANCE_BLOCK_TYPES = [
   'quote-intro',
   'case-study',
   'case-study-scroll',
+  'image-info',
+  'step-scroll',
+  'product-content',
 ] as const
 
 export type BasicBlockType   = typeof BASIC_BLOCK_TYPES[number]
@@ -273,6 +276,41 @@ export interface BlockOverrides {
       cssHeading?:    string
       cssBody?:       string
     }>
+
+    // ── Step Scroll ───────────────────────────────────────────────────────────
+    sbTitle?:    string
+    sbSubtitle?: string
+    sbSteps?: Array<{
+      stepTitle:    string
+      stepBody:     string
+      stepIcon?:    MediaRef | null
+      stepFeatured?: boolean
+    }>
+
+    // ── Image Info ────────────────────────────────────────────────────────────
+    iibTitle?:        string
+    iibSubtitle?:     string
+    iibBgImage?:      MediaRef | null
+    iibMode?:         'scroll' | 'hover'
+    iibTooltipText?:  string
+    iibTooltipMascot?: MediaRef | null
+    iibPins?: Array<{
+      label:       string
+      icon?:       string
+      iconBg?:     string
+      posX:        number
+      posY:        number
+      lineLength?: number
+      showDot?:    boolean
+    }>
+
+    // ── Product Content ───────────────────────────────────────────────────────
+    pcTheme?:    'dark' | 'light'
+    pcTitle?:    string
+    pcImage?:    MediaRef | null
+    pcBody?:     string
+    pcCtaLabel?: string
+    pcCtaUrl?:   string
 
     // ── Article Main Grid ─────────────────────────────────────────────────────
     mainGridSectionLabel?:  string

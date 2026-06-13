@@ -2849,6 +2849,141 @@ function CaseStudyScrollFields({ ov, set }: { ov: any; set: (k: string, v: unkno
   )
 }
 
+// ── Image Info fields ─────────────────────────────────────────────────────────
+function ImageInfoFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const pins: any[] = ov.iibPins ?? []
+  function setPins(next: any[]) { set('iibPins', next) }
+  const newPin = () => ({ label: 'New pin', icon: '', iconBg: '#4a4a4a', posX: 50, posY: 50, lineLength: 80 })
+  return (
+    <>
+      <Field label="Section Title">
+        <input className="lb-input" value={ov.iibTitle ?? ''} onChange={(e) => set('iibTitle', e.target.value)} placeholder="Hire Across Asia. Without Hiring Headache." />
+      </Field>
+      <Field label="Subtitle">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.iibSubtitle ?? ''} onChange={(e) => set('iibSubtitle', e.target.value)} placeholder="Section subtitle..." />
+      </Field>
+      <MediaField label="Background Image" value={ov.iibBgImage?.url ?? ''} onChange={(ref) => set('iibBgImage', ref)} />
+      <Field label="Interaction Mode">
+        <select className="lb-input lb-input--select" value={ov.iibMode ?? 'scroll'} onChange={(e) => set('iibMode', e.target.value)}>
+          <option value="scroll">Scroll — reveal pins as you scroll</option>
+          <option value="hover">Hover — mouseover dot to reveal pin</option>
+        </select>
+      </Field>
+      <Field label="Tooltip Text">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.iibTooltipText ?? ''} onChange={(e) => set('iibTooltipText', e.target.value)} placeholder="Tooltip bubble message..." />
+      </Field>
+      <MediaField label="Tooltip Mascot Image" value={ov.iibTooltipMascot?.url ?? ''} onChange={(ref) => set('iibTooltipMascot', ref)} />
+      <Field label="Info Pins">
+        <div className="lb-items">
+          {pins.map((pin: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Pin {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...pins]; a.splice(i, 1); setPins(a) }}>✕</button>
+              </div>
+              <Field label="Label">
+                <input className="lb-input" value={pin.label ?? ''} onChange={(e) => { const a = [...pins]; a[i] = { ...a[i], label: e.target.value }; setPins(a) }} placeholder="Pin label text" />
+              </Field>
+              <Field label="Icon (emoji)">
+                <input className="lb-input" value={pin.icon ?? ''} onChange={(e) => { const a = [...pins]; a[i] = { ...a[i], icon: e.target.value }; setPins(a) }} placeholder="🇨🇳" />
+              </Field>
+              <Field label="Icon Background Color">
+                <input className="lb-input" value={pin.iconBg ?? '#4a4a4a'} onChange={(e) => { const a = [...pins]; a[i] = { ...a[i], iconBg: e.target.value }; setPins(a) }} placeholder="#dc2626" />
+              </Field>
+              <Field label="Position X (0–100%)">
+                <input className="lb-input" type="number" min={0} max={100} value={pin.posX ?? 50} onChange={(e) => { const a = [...pins]; a[i] = { ...a[i], posX: Number(e.target.value) }; setPins(a) }} />
+              </Field>
+              <Field label="Position Y (0–100%)">
+                <input className="lb-input" type="number" min={0} max={100} value={pin.posY ?? 50} onChange={(e) => { const a = [...pins]; a[i] = { ...a[i], posY: Number(e.target.value) }; setPins(a) }} />
+              </Field>
+              <Field label="Connector Line Length (px, 0 = none)">
+                <input className="lb-input" type="number" min={0} value={pin.lineLength ?? 0} onChange={(e) => { const a = [...pins]; a[i] = { ...a[i], lineLength: Number(e.target.value) }; setPins(a) }} />
+              </Field>
+              <Field label="Show Dot Marker">
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                  <input type="checkbox" checked={pin.showDot ?? true} onChange={(e) => { const a = [...pins]; a[i] = { ...a[i], showDot: e.target.checked }; setPins(a) }} />
+                  <span>Show dot at this position</span>
+                </label>
+              </Field>
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => setPins([...pins, newPin()])}>+ Add Pin</button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
+// ── Step Scroll fields ────────────────────────────────────────────────────────
+function StepScrollFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const steps: any[] = ov.sbSteps ?? []
+  function setSteps(next: any[]) { set('sbSteps', next) }
+  const newStep = () => ({ stepTitle: 'New Step', stepBody: '', stepIcon: null, stepFeatured: false })
+  return (
+    <>
+      <Field label="Section Title">
+        <input className="lb-input" value={ov.sbTitle ?? ''} onChange={(e) => set('sbTitle', e.target.value)} placeholder="Section heading..." />
+      </Field>
+      <Field label="Subtitle">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.sbSubtitle ?? ''} onChange={(e) => set('sbSubtitle', e.target.value)} placeholder="Section subtitle..." />
+      </Field>
+      <Field label="Steps">
+        <div className="lb-items">
+          {steps.map((step: any, i: number) => (
+            <div key={i} className="lb-item">
+              <div className="lb-item__header">
+                <span>Step {i + 1}</span>
+                <button className="lb-item__remove" onClick={() => { const a = [...steps]; a.splice(i, 1); setSteps(a) }}>✕</button>
+              </div>
+              <Field label="Title">
+                <input className="lb-input" value={step.stepTitle ?? ''} onChange={(e) => { const a = [...steps]; a[i] = { ...a[i], stepTitle: e.target.value }; setSteps(a) }} placeholder="Step title" />
+              </Field>
+              <Field label="Description">
+                <textarea className="lb-input lb-input--textarea" rows={3} value={step.stepBody ?? ''} onChange={(e) => { const a = [...steps]; a[i] = { ...a[i], stepBody: e.target.value }; setSteps(a) }} placeholder="Step description..." />
+              </Field>
+              <MediaField label="Icon (PNG)" value={step.stepIcon?.url ?? ''} onChange={(ref) => { const a = [...steps]; a[i] = { ...a[i], stepIcon: ref }; setSteps(a) }} />
+              <Field label="Featured Step (yellow title)">
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                  <input type="checkbox" checked={step.stepFeatured ?? false} onChange={(e) => { const a = [...steps]; a[i] = { ...a[i], stepFeatured: e.target.checked }; setSteps(a) }} />
+                  <span>Highlight title in yellow</span>
+                </label>
+              </Field>
+            </div>
+          ))}
+          <button className="lb-items__add" onClick={() => setSteps([...steps, newStep()])}>+ Add Step</button>
+        </div>
+      </Field>
+    </>
+  )
+}
+
+// ── Product Content fields ────────────────────────────────────────────────────
+function ProductContentFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  return (
+    <>
+      <Field label="Theme">
+        <select className="lb-input lb-input--select" value={ov.pcTheme ?? 'dark'} onChange={(e) => set('pcTheme', e.target.value)}>
+          <option value="dark">Dark (#2b2b2b background)</option>
+          <option value="light">Light (white background)</option>
+        </select>
+      </Field>
+      <Field label="Title">
+        <input className="lb-input" value={ov.pcTitle ?? ''} onChange={(e) => set('pcTitle', e.target.value)} placeholder="Product Name: Tagline" />
+      </Field>
+      <MediaField label="Product Image" value={ov.pcImage?.url ?? ''} onChange={(ref) => set('pcImage', ref)} />
+      <Field label="Body Text">
+        <textarea className="lb-input lb-input--textarea" rows={4} value={ov.pcBody ?? ''} onChange={(e) => set('pcBody', e.target.value)} placeholder="Product description..." />
+      </Field>
+      <Field label="CTA Label">
+        <input className="lb-input" value={ov.pcCtaLabel ?? ''} onChange={(e) => set('pcCtaLabel', e.target.value)} placeholder="Learn more" />
+      </Field>
+      <Field label="CTA URL">
+        <input className="lb-input" value={ov.pcCtaUrl ?? ''} onChange={(e) => set('pcCtaUrl', e.target.value)} placeholder="/product-page" />
+      </Field>
+    </>
+  )
+}
+
 // ── Quote-Intro fields ────────────────────────────────────────────────────────
 function QuoteIntroFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   return (
@@ -3248,6 +3383,9 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'article-feature'        && <ArticleFeatureFields      ov={ov} set={set} />}
         {blockType === 'article-main-grid'      && <ArticleMainGridFields     ov={ov} set={set} />}
         {blockType === 'subscribe'              && <SubscribeFields           ov={ov} set={set} />}
+        {blockType === 'image-info'             && <ImageInfoFields           ov={ov} set={set} />}
+        {blockType === 'step-scroll'            && <StepScrollFields          ov={ov} set={set} />}
+        {blockType === 'product-content'        && <ProductContentFields      ov={ov} set={set} />}
       </div>
     )
   }

@@ -52,6 +52,9 @@ const BLOCK_ICONS: Record<string, string> = {
   'quote-intro': '💬',
   'case-study': '📋',
   'case-study-scroll': '📜',
+  'image-info': '🗺',
+  'step-scroll': '🪜',
+  'product-content': '📦',
 }
 
 const BLOCK_LABELS: Record<string, string> = {
@@ -87,6 +90,9 @@ const BLOCK_LABELS: Record<string, string> = {
   'quote-intro': 'Quote / Intro',
   'case-study': 'Case Study',
   'case-study-scroll': 'Case Study — Scroll',
+  'image-info': 'Image Info',
+  'step-scroll': 'Step Scroll',
+  'product-content': 'Product Content',
   'partnership': 'Partnership',
   'portfolio-hero': 'Portfolio — Hero',
   'portfolio-statistics': 'Portfolio — Statistics',
