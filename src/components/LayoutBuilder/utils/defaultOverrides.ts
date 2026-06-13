@@ -692,6 +692,16 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
         },
       }
 
+    case 'portfolio-content':
+      return {
+        content: {
+          pfTheme:         'light',
+          pfImagePosition: 'right',
+          pfHeading:       'Project Name: Tagline Here',
+          pfBody:          'Describe the project and the business problem it solves for the client.',
+        },
+      }
+
     case 'product-content':
       return {
         content: {

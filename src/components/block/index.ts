@@ -75,6 +75,7 @@ export {
   ImageInfoSection,
   StepScrollSection,
   ProductContentSection,
+  PortfolioContentSection,
 } from './Advance'
 
 // ── Service Page Sections ────────────────────────────────────────────────────

@@ -55,6 +55,7 @@ const BLOCK_ICONS: Record<string, string> = {
   'image-info': '🗺',
   'step-scroll': '🪜',
   'product-content': '📦',
+  'portfolio-content': '🗂',
 }
 
 const BLOCK_LABELS: Record<string, string> = {
@@ -93,6 +94,7 @@ const BLOCK_LABELS: Record<string, string> = {
   'image-info': 'Image Info',
   'step-scroll': 'Step Scroll',
   'product-content': 'Product Content',
+  'portfolio-content': 'Portfolio Content',
   'partnership': 'Partnership',
   'portfolio-hero': 'Portfolio — Hero',
   'portfolio-statistics': 'Portfolio — Statistics',

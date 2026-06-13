@@ -2957,6 +2957,34 @@ function StepScrollFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =
   )
 }
 
+// ── Portfolio Content fields ──────────────────────────────────────────────────
+function PortfolioContentFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  return (
+    <>
+      <Field label="Theme">
+        <select className="lb-input lb-input--select" value={ov.pfTheme ?? 'light'} onChange={(e) => set('pfTheme', e.target.value)}>
+          <option value="light">Light (yellow background)</option>
+          <option value="dark">Dark (#4a4a4a background)</option>
+        </select>
+      </Field>
+      <Field label="Image Position">
+        <select className="lb-input lb-input--select" value={ov.pfImagePosition ?? 'right'} onChange={(e) => set('pfImagePosition', e.target.value)}>
+          <option value="right">Right (text left, image right)</option>
+          <option value="left">Left (image left, text right)</option>
+        </select>
+      </Field>
+      <MediaField label="Brand Logo" value={ov.pfLogo?.url ?? ''} onChange={(ref) => set('pfLogo', ref)} />
+      <Field label="Heading">
+        <input className="lb-input" value={ov.pfHeading ?? ''} onChange={(e) => set('pfHeading', e.target.value)} placeholder="Project Name: Tagline" />
+      </Field>
+      <Field label="Body Text">
+        <textarea className="lb-input lb-input--textarea" rows={4} value={ov.pfBody ?? ''} onChange={(e) => set('pfBody', e.target.value)} placeholder="Project description..." />
+      </Field>
+      <MediaField label="Mockup Image" value={ov.pfMockup?.url ?? ''} onChange={(ref) => set('pfMockup', ref)} />
+    </>
+  )
+}
+
 // ── Product Content fields ────────────────────────────────────────────────────
 function ProductContentFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   return (
@@ -3386,6 +3414,7 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'image-info'             && <ImageInfoFields           ov={ov} set={set} />}
         {blockType === 'step-scroll'            && <StepScrollFields          ov={ov} set={set} />}
         {blockType === 'product-content'        && <ProductContentFields      ov={ov} set={set} />}
+        {blockType === 'portfolio-content'      && <PortfolioContentFields    ov={ov} set={set} />}
       </div>
     )
   }

@@ -59,6 +59,7 @@ import {
   ImageInfoSection,
   StepScrollSection,
   ProductContentSection,
+  PortfolioContentSection,
 } from '@/components/block'
 
 // ── CSS custom property injection ─────────────────────────────────────────────
@@ -280,6 +281,8 @@ export function resolvePreviewComponent(
       return withStyle(<StepScrollSection data={data as any} />, blockStyle)
     case 'product-content':
       return withStyle(<ProductContentSection data={data as any} />, blockStyle)
+    case 'portfolio-content':
+      return withStyle(<PortfolioContentSection data={data as any} />, blockStyle)
 
     // ── Basic blocks — inline previews ────────────────────────────────────────
     case 'heading':

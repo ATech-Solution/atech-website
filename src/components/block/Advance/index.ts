@@ -72,3 +72,4 @@ export { default as CaseStudyScrollSection            } from './CaseStudyScrollS
 export { default as ImageInfoSection                  } from './ImageInfoSection'
 export { default as StepScrollSection                 } from './StepScrollSection'
 export { default as ProductContentSection             } from './ProductContentSection'
+export { default as PortfolioContentSection           } from './PortfolioContentSection'

@@ -48,6 +48,7 @@ export const ADVANCE_BLOCK_TYPES = [
   'image-info',
   'step-scroll',
   'product-content',
+  'portfolio-content',
 ] as const
 
 export type BasicBlockType   = typeof BASIC_BLOCK_TYPES[number]
@@ -303,6 +304,14 @@ export interface BlockOverrides {
       lineLength?: number
       showDot?:    boolean
     }>
+
+    // ── Portfolio Content ─────────────────────────────────────────────────────
+    pfTheme?:         'light' | 'dark'
+    pfImagePosition?: 'left' | 'right'
+    pfLogo?:          MediaRef | null
+    pfHeading?:       string
+    pfBody?:          string
+    pfMockup?:        MediaRef | null
 
     // ── Product Content ───────────────────────────────────────────────────────
     pcTheme?:    'dark' | 'light'
