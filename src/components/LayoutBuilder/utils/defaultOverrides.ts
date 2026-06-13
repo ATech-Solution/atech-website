@@ -692,6 +692,14 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
         },
       }
 
+    case 'about-content-1':
+      return {
+        content: {
+          ac1Heading: 'Most tech projects fail. Not because of bad ideas, but the wrong team.',
+          ac1Body:    'We started ATech because we saw too many good businesses stuck, waiting on slow agencies, burning money on the wrong hires, shipping products that didn\'t fit the market. We do it differently. One team. Software, AI, talent, and strategy, working together from Hong Kong, with roots across Malaysia and Indonesia. Built for Asian businesses. Trusted by global brands.',
+        },
+      }
+
     case 'portfolio-content':
       return {
         content: {

@@ -79,6 +79,7 @@ import {
   StepScrollSection,
   ProductContentSection,
   PortfolioContentSection,
+  AboutContent1Section,
   DynamicFormSection,
   SurveySection,
 } from '@/components/block'
@@ -974,6 +975,8 @@ export function LayoutBlockRenderer({
       return wrapAdvanced(<ProductContentSection data={data} />)
     case 'portfolio-content':
       return wrapAdvanced(<PortfolioContentSection data={data} />)
+    case 'about-content-1':
+      return wrapAdvanced(<AboutContent1Section data={data} />)
 
     // ── Portfolio Sections ───────────────────────────────────────────────────
     case 'portfolio-hero':

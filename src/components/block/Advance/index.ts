@@ -73,3 +73,4 @@ export { default as ImageInfoSection                  } from './ImageInfoSection
 export { default as StepScrollSection                 } from './StepScrollSection'
 export { default as ProductContentSection             } from './ProductContentSection'
 export { default as PortfolioContentSection           } from './PortfolioContentSection'
+export { default as AboutContent1Section              } from './AboutContent1Section'

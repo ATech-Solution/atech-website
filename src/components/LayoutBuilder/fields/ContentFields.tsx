@@ -2957,6 +2957,21 @@ function StepScrollFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =
   )
 }
 
+// ── About Content 1 fields ────────────────────────────────────────────────────
+function AboutContent1Fields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  return (
+    <>
+      <Field label="Heading">
+        <textarea className="lb-input lb-input--textarea" rows={3} value={ov.ac1Heading ?? ''} onChange={(e) => set('ac1Heading', e.target.value)} placeholder="Bold statement heading..." />
+      </Field>
+      <Field label="Body Text">
+        <textarea className="lb-input lb-input--textarea" rows={5} value={ov.ac1Body ?? ''} onChange={(e) => set('ac1Body', e.target.value)} placeholder="About body paragraph..." />
+      </Field>
+      <MediaField label="Team Photo" value={ov.ac1Image?.url ?? ''} onChange={(ref) => set('ac1Image', ref)} />
+    </>
+  )
+}
+
 // ── Portfolio Content fields ──────────────────────────────────────────────────
 function PortfolioContentFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   return (
@@ -3415,6 +3430,7 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'step-scroll'            && <StepScrollFields          ov={ov} set={set} />}
         {blockType === 'product-content'        && <ProductContentFields      ov={ov} set={set} />}
         {blockType === 'portfolio-content'      && <PortfolioContentFields    ov={ov} set={set} />}
+        {blockType === 'about-content-1'        && <AboutContent1Fields       ov={ov} set={set} />}
       </div>
     )
   }
