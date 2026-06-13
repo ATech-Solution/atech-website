@@ -692,6 +692,24 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
         },
       }
 
+    case 'about-content-2':
+      return {
+        content: {
+          ac2Heading:       'Our Mission & Vision',
+          ac2MissionTitle:  'Our Mission',
+          ac2MissionBody:   'As the premier partner for operational excellence, we empower businesses to thrive in the hybrid era. We provide the essential tools and platforms, strategic consultancy, and operational services to build resilient, agile, and scalable, human-centric organizations.',
+          ac2VisionTitle:   'Our Vision',
+          ac2VisionBody:    'To create a world where work is defined by outcomes, not locations, unlocking human potential and enabling any organization to achieve seamless, integrated growth. We turn bold ideas into market-ready products and operational challenges into sustainable competitive advantages.',
+          ac2ValuesHeading: 'Our Values',
+          ac2Values: [
+            { valueTitle: 'Innovation',    valueDesc: 'Constantly pushing boundaries' },
+            { valueTitle: 'Integrity',     valueDesc: 'Honest and transparent partnerships' },
+            { valueTitle: 'Excellence',    valueDesc: 'Delivering quality in everything' },
+            { valueTitle: 'Collaboration', valueDesc: 'Working together for success' },
+          ],
+        },
+      }
+
     case 'about-content-1':
       return {
         content: {

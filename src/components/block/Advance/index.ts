@@ -74,3 +74,4 @@ export { default as StepScrollSection                 } from './StepScrollSectio
 export { default as ProductContentSection             } from './ProductContentSection'
 export { default as PortfolioContentSection           } from './PortfolioContentSection'
 export { default as AboutContent1Section              } from './AboutContent1Section'
+export { default as AboutContent2Section              } from './AboutContent2Section'

@@ -2957,6 +2957,66 @@ function StepScrollFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =
   )
 }
 
+// ── About Content 2 fields ────────────────────────────────────────────────────
+function AboutContent2Fields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
+  const values: Array<{ valueIcon?: { url: string } | null; valueTitle?: string; valueDesc?: string }> = ov.ac2Values ?? []
+
+  const setValueField = (i: number, key: string, val: unknown) => {
+    const next = values.map((v, idx) => idx === i ? { ...v, [key]: val } : v)
+    set('ac2Values', next)
+  }
+
+  const addValue    = () => set('ac2Values', [...values, { valueTitle: '', valueDesc: '' }])
+  const removeValue = (i: number) => set('ac2Values', values.filter((_, idx) => idx !== i))
+
+  return (
+    <>
+      <Field label="Section Heading">
+        <input className="lb-input" value={ov.ac2Heading ?? ''} onChange={(e) => set('ac2Heading', e.target.value)} placeholder="Our Mission & Vision" />
+      </Field>
+
+      <Field label="— Mission —"><span /></Field>
+      <MediaField label="Mission Icon" value={ov.ac2MissionIcon?.url ?? ''} onChange={(ref) => set('ac2MissionIcon', ref)} />
+      <Field label="Mission Title">
+        <input className="lb-input" value={ov.ac2MissionTitle ?? ''} onChange={(e) => set('ac2MissionTitle', e.target.value)} placeholder="Our Mission" />
+      </Field>
+      <Field label="Mission Body">
+        <textarea className="lb-input lb-input--textarea" rows={4} value={ov.ac2MissionBody ?? ''} onChange={(e) => set('ac2MissionBody', e.target.value)} placeholder="Mission statement..." />
+      </Field>
+
+      <Field label="— Vision —"><span /></Field>
+      <MediaField label="Vision Icon" value={ov.ac2VisionIcon?.url ?? ''} onChange={(ref) => set('ac2VisionIcon', ref)} />
+      <Field label="Vision Title">
+        <input className="lb-input" value={ov.ac2VisionTitle ?? ''} onChange={(e) => set('ac2VisionTitle', e.target.value)} placeholder="Our Vision" />
+      </Field>
+      <Field label="Vision Body">
+        <textarea className="lb-input lb-input--textarea" rows={4} value={ov.ac2VisionBody ?? ''} onChange={(e) => set('ac2VisionBody', e.target.value)} placeholder="Vision statement..." />
+      </Field>
+
+      <Field label="Values Heading">
+        <input className="lb-input" value={ov.ac2ValuesHeading ?? ''} onChange={(e) => set('ac2ValuesHeading', e.target.value)} placeholder="Our Values" />
+      </Field>
+
+      {values.map((v, i) => (
+        <div key={i} style={{ borderTop: '1px solid #e5e7eb', paddingTop: 8, marginTop: 4 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+            <span style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Value {i + 1}</span>
+            <button style={{ fontSize: 11, color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => removeValue(i)}>Remove</button>
+          </div>
+          <MediaField label="Icon" value={v.valueIcon?.url ?? ''} onChange={(ref) => setValueField(i, 'valueIcon', ref)} />
+          <Field label="Title">
+            <input className="lb-input" value={v.valueTitle ?? ''} onChange={(e) => setValueField(i, 'valueTitle', e.target.value)} placeholder="Value name" />
+          </Field>
+          <Field label="Description">
+            <input className="lb-input" value={v.valueDesc ?? ''} onChange={(e) => setValueField(i, 'valueDesc', e.target.value)} placeholder="Short description" />
+          </Field>
+        </div>
+      ))}
+      <button className="lb-btn lb-btn--secondary" style={{ marginTop: 8, width: '100%' }} onClick={addValue}>+ Add Value</button>
+    </>
+  )
+}
+
 // ── About Content 1 fields ────────────────────────────────────────────────────
 function AboutContent1Fields({ ov, set }: { ov: any; set: (k: string, v: unknown) => void }) {
   return (
@@ -3431,6 +3491,7 @@ export function ContentFields({ blockType, overrides = {}, onChange }: ContentFi
         {blockType === 'product-content'        && <ProductContentFields      ov={ov} set={set} />}
         {blockType === 'portfolio-content'      && <PortfolioContentFields    ov={ov} set={set} />}
         {blockType === 'about-content-1'        && <AboutContent1Fields       ov={ov} set={set} />}
+        {blockType === 'about-content-2'        && <AboutContent2Fields       ov={ov} set={set} />}
       </div>
     )
   }

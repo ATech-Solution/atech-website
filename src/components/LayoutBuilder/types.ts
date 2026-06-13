@@ -50,6 +50,7 @@ export const ADVANCE_BLOCK_TYPES = [
   'product-content',
   'portfolio-content',
   'about-content-1',
+  'about-content-2',
 ] as const
 
 export type BasicBlockType   = typeof BASIC_BLOCK_TYPES[number]
@@ -305,6 +306,17 @@ export interface BlockOverrides {
       lineLength?: number
       showDot?:    boolean
     }>
+
+    // ── About Content 2 ──────────────────────────────────────────────────────
+    ac2Heading?:       string
+    ac2MissionIcon?:   MediaRef | null
+    ac2MissionTitle?:  string
+    ac2MissionBody?:   string
+    ac2VisionIcon?:    MediaRef | null
+    ac2VisionTitle?:   string
+    ac2VisionBody?:    string
+    ac2ValuesHeading?: string
+    ac2Values?:        Array<{ valueIcon?: MediaRef | null; valueTitle?: string; valueDesc?: string }>
 
     // ── About Content 1 ──────────────────────────────────────────────────────
     ac1Heading?: string

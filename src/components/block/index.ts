@@ -77,6 +77,7 @@ export {
   ProductContentSection,
   PortfolioContentSection,
   AboutContent1Section,
+  AboutContent2Section,
 } from './Advance'
 
 // ── Service Page Sections ────────────────────────────────────────────────────
