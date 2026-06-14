@@ -446,6 +446,7 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
     case 'locations':
       return {
         content: {
+          locStyle: 'style1',
           heading: cnt.locations.heading ?? 'Our Locations',
           locationCards: [
             {

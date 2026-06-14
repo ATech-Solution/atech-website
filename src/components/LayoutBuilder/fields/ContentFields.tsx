@@ -3298,6 +3298,12 @@ function LocationsFields({ ov, set }: { ov: any; set: (k: string, v: unknown) =>
 
   return (
     <>
+      <Field label="Style">
+        <select className="lb-input lb-input--select" value={ov.locStyle ?? 'style1'} onChange={(e) => set('locStyle', e.target.value)}>
+          <option value="style1">Style 1 — Classic (no icons)</option>
+          <option value="style2">Style 2 — Cards with icon boxes (Figma 1418:11257)</option>
+        </select>
+      </Field>
       <Field label="Heading">
         <input className="lb-input" value={ov.heading ?? ''} onChange={(e) => set('heading', e.target.value)} placeholder="Our Locations" />
       </Field>

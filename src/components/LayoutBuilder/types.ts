@@ -505,6 +505,7 @@ export interface BlockOverrides {
     contactStatItems?: Array<{ contactStatValue?: string; contactStatLabel?: string }>
 
     // ── Locations ─────────────────────────────────────────────────────────
+    locStyle?: 'style1' | 'style2'
     officeItems?: Array<{ officeName?: string; officeAddress?: string }>
     locationCards?: Array<{ cardOffices?: Array<{ officeName?: string; officeAddress?: string }> }>
 
