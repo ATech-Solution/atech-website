@@ -1,5 +1,6 @@
 // FAQ Section — Layout Builder (Advance)
-// White bg, centered heading + accordion-style FAQ items
+// Style 1: white bg, centered heading + divider-line accordion
+// Style 2: white bg, badge pill + centered heading + bordered-card accordion (Figma 1418:11304)
 
 interface FAQItem {
   faqQuestion?: string
@@ -7,6 +8,7 @@ interface FAQItem {
 }
 
 interface FAQSectionData {
+  faqStyle?: 'style1' | 'style2'
   faqHeading?: string
   faqSubheading?: string
   faqContentSource?: 'collection' | 'manual'
@@ -65,6 +67,81 @@ function FAQShell({ data, items }: { data: FAQSectionData; items: FAQItem[] }) {
   )
 }
 
+// ─── Style 2 — bordered-card accordion (Figma 1418:11304) ─────────────────────
+
+const FAQ2_CSS = `
+  .faq2{box-sizing:border-box;background:#ffffff;padding:96px;display:flex;flex-direction:column;gap:48px;align-items:center;width:100%}
+  .faq2__header{display:flex;flex-direction:column;gap:16px;align-items:center;width:100%}
+  .faq2__badge{display:inline-flex;align-items:center;gap:8px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:9999px;padding:7px 13px}
+  .faq2__badge-icon{font-size:11px;color:#4b5563;font-style:normal;line-height:1;font-family:var(--font-work-sans,'Work Sans',sans-serif);font-weight:600}
+  .faq2__badge-text{font-family:var(--font-work-sans,'Work Sans',sans-serif);font-weight:600;font-size:12px;line-height:16px;color:#4b5563;letter-spacing:0.6px;text-transform:uppercase}
+  .faq2__heading-wrap{padding-top:8px;width:100%;text-align:center}
+  .faq2__heading{font-family:var(--font-work-sans,'Work Sans',sans-serif);font-weight:500;font-size:30px;line-height:36px;color:#111827;text-align:center;margin:0}
+  .faq2__subheading{font-family:var(--font-work-sans,'Work Sans',sans-serif);font-weight:400;font-size:14px;line-height:20px;color:#6b7280;text-align:center;margin:0}
+  .faq2__list{display:flex;flex-direction:column;gap:16px;width:100%;max-width:768px}
+  .faq2__item{border:1px solid #e5e7eb;border-radius:8px;overflow:hidden}
+  .faq2__question-row{display:flex;align-items:center;justify-content:space-between;padding:24px;background:#ffffff;cursor:pointer;list-style:none;width:100%;gap:16px}
+  .faq2__question-row::-webkit-details-marker{display:none}
+  .faq2__item[open] .faq2__question-row{background:#f9fafb}
+  .faq2__question{font-family:var(--font-work-sans,'Work Sans',sans-serif);font-weight:500;font-size:14px;line-height:20px;color:#111827;margin:0}
+  .faq2__icon-wrap{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:20px;height:20px}
+  .faq2__icon-plus{display:block}.faq2__icon-minus{display:none}
+  .faq2__item[open] .faq2__icon-plus{display:none}
+  .faq2__item[open] .faq2__icon-minus{display:block}
+  .faq2__answer{background:#f9fafb;padding:0 24px 24px}
+  .faq2__answer-text{font-family:var(--font-work-sans,'Work Sans',sans-serif);font-weight:400;font-size:12px;line-height:19.5px;color:#4b5563;margin:0}
+  @media(max-width:767px){.faq2{padding:64px 24px}}
+`
+
+function FAQShellStyle2({ data, items }: { data: FAQSectionData; items: FAQItem[] }) {
+  return (
+    <>
+      {/* eslint-disable-next-line react/no-danger */}
+      <style dangerouslySetInnerHTML={{ __html: FAQ2_CSS }} />
+      <section className="faq2">
+        <div className="faq2__header">
+          <div className="faq2__badge">
+            <span className="faq2__badge-icon">?</span>
+            <span className="faq2__badge-text">FAQ</span>
+          </div>
+          {data.faqHeading && (
+            <div className="faq2__heading-wrap">
+              <h2 className="faq2__heading">{data.faqHeading}</h2>
+            </div>
+          )}
+          {data.faqSubheading && (
+            <p className="faq2__subheading">{data.faqSubheading}</p>
+          )}
+        </div>
+        {items.length > 0 && (
+          <div className="faq2__list">
+            {items.map((item, i) => (
+              <details key={i} className="faq2__item">
+                <summary className="faq2__question-row">
+                  <span className="faq2__question">{item.faqQuestion}</span>
+                  <span className="faq2__icon-wrap">
+                    <svg className="faq2__icon-plus" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M7 1.5v11M1.5 7h11" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                    <svg className="faq2__icon-minus" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1.5 7h11" stroke="#374151" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                  </span>
+                </summary>
+                {item.faqAnswer && (
+                  <div className="faq2__answer">
+                    <p className="faq2__answer-text">{item.faqAnswer}</p>
+                  </div>
+                )}
+              </details>
+            ))}
+          </div>
+        )}
+      </section>
+    </>
+  )
+}
+
 // ─── Sync default export (admin preview / manual mode) ────────────────────────
 
 export default function FAQSection({ data }: { data: FAQSectionData }) {
@@ -72,6 +149,7 @@ export default function FAQSection({ data }: { data: FAQSectionData }) {
     faqQuestion: it.faqQuestion,
     faqAnswer: it.faqAnswer,
   }))
+  if ((data.faqStyle ?? 'style1') === 'style2') return <FAQShellStyle2 data={data} items={items} />
   return <FAQShell data={data} items={items} />
 }
 
@@ -79,9 +157,11 @@ export default function FAQSection({ data }: { data: FAQSectionData }) {
 
 export async function FAQSectionServerSection({ data }: { data: FAQSectionData }) {
   const isCollection = (data.faqContentSource ?? 'manual') === 'collection'
+  const style = data.faqStyle ?? 'style1'
 
   if (!isCollection) {
     const items = (data.faqItems ?? []).map((it) => ({ faqQuestion: it.faqQuestion, faqAnswer: it.faqAnswer }))
+    if (style === 'style2') return <FAQShellStyle2 data={data} items={items} />
     return <FAQShell data={data} items={items} />
   }
 
@@ -104,8 +184,10 @@ export async function FAQSectionServerSection({ data }: { data: FAQSectionData }
       faqAnswer: f.answer ?? '',
     }))
 
+    if (style === 'style2') return <FAQShellStyle2 data={data} items={items} />
     return <FAQShell data={data} items={items} />
   } catch {
+    if (style === 'style2') return <FAQShellStyle2 data={data} items={[]} />
     return <FAQShell data={data} items={[]} />
   }
 }

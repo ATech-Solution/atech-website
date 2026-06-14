@@ -422,6 +422,7 @@ export interface BlockOverrides {
     faqBackLabel?: string
 
     // ── About FAQ ─────────────────────────────────────────────────────────
+    faqStyle?: 'style1' | 'style2'
     faqHeading?: string
     faqSubheading?: string
     faqItems?: Array<{ faqQuestion?: string; faqAnswer?: string }>

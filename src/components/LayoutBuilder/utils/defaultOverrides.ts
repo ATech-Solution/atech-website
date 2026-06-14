@@ -235,6 +235,7 @@ export function getDefaultOverrides(blockType: BlockType): BlockOverrides {
     case 'faq-section':
       return {
         content: {
+          faqStyle:      'style1',
           faqHeading:    au.faq.heading,
           faqSubheading: au.faq.subheading,
           faqItems:      au.faq.items.map((f) => ({ faqQuestion: f.question, faqAnswer: f.answer })),

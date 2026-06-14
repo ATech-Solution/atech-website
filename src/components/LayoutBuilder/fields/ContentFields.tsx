@@ -973,6 +973,12 @@ function AboutFAQFields({ ov, set }: { ov: any; set: (k: string, v: unknown) => 
   const items: any[] = ov.faqItems ?? []
   return (
     <>
+      <Field label="Style">
+        <select className="lb-input lb-input--select" value={ov.faqStyle ?? 'style1'} onChange={(e) => set('faqStyle', e.target.value)}>
+          <option value="style1">Style 1 — Classic (divider lines)</option>
+          <option value="style2">Style 2 — Cards (badge + bordered accordion)</option>
+        </select>
+      </Field>
       <Field label="Heading">
         <input className="lb-input" value={ov.faqHeading ?? ''} onChange={(e) => set('faqHeading', e.target.value)} placeholder="Frequently Asked Questions" />
       </Field>
