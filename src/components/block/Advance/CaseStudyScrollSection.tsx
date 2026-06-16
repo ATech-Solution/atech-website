@@ -15,8 +15,8 @@ export interface CaseStudyScrollSectionData {
   caseScrollItems?: CaseStudyScrollItem[]
 }
 
-// Each item needs this many pixels of scroll to transition to the next
-const SCROLL_PER_ITEM = 600
+// Pixels of scroll needed to advance one item — short so the section doesn't feel like a trap
+const SCROLL_PER_ITEM = 200
 // Section visual height: 80px padding-top + 400px image + 80px padding-bottom
 const SECTION_H = 560
 
@@ -27,10 +27,10 @@ const CSS = `
     background: #ffffff;
   }
 
-  /* ── Sticky panel: stays in viewport while wrapper scrolls ── */
+  /* ── Sticky panel: centered in viewport while wrapper scrolls ── */
   .csss {
     position: sticky;
-    top: 0;
+    top: calc(50vh - ${SECTION_H / 2}px);
     height: ${SECTION_H}px;
     overflow: hidden;
     background: #ffffff;
@@ -44,7 +44,8 @@ const CSS = `
     box-sizing: border-box;
     background: #ffffff;
     opacity: 0;
-    will-change: opacity;
+    will-change: opacity, transform;
+    transition: opacity 0.18s ease;
   }
   .cssi--active {
     opacity: 1;
@@ -289,8 +290,10 @@ export default function CaseStudyScrollSection({ data }: { data: CaseStudyScroll
       const wrap = wrapRef.current
       if (!wrap) return
 
-      const scrolledIn = Math.max(0, -wrap.getBoundingClientRect().top)
-      const newIdx     = Math.min(Math.max(0, Math.floor(scrolledIn / SCROLL_PER_ITEM)), n - 1)
+      // Scroll starts counting once the block is centered in the viewport
+      const centerOffset = (window.innerHeight - SECTION_H) / 2
+      const scrolledIn   = Math.max(0, -(wrap.getBoundingClientRect().top - centerOffset))
+      const newIdx       = Math.min(Math.max(0, Math.floor(scrolledIn / SCROLL_PER_ITEM)), n - 1)
       const curIdx     = idxRef.current
       if (newIdx === curIdx) return
 
