@@ -141,12 +141,14 @@ export default function FeaturesSection({ data }: { data: FeaturesSectionData })
   return (
     <section className="py-24 px-5 md:px-20" 
     style={{ 
-      background: bgWithOverlay(bgImage, '#41403f', 'rgba(41,41,41,0.7)'),
+      // background: bgWithOverlay(bgImage, '#41403f', 'rgba(41,41,41,0.7)'),
+      background: bgWithOverlay(bgImage, 'transparent', 'transparent'),
       backgroundSize: 'contain',
-      backgroundPosition: 'left'
+      backgroundPosition: 'left',
+      backgroundColor: '#41403F'
       }}
     >
-      <div className="p-10 md:p-20" style={{ background: 'transparent' }}>
+      <div className="p-10 md:p-20" style={{ background: '#292929' }}>
         <div className="mx-auto flex flex-col gap-16 px-6" style={{ maxWidth: '1280px' }}>
           {(data.heading || data.description) && (
             <div className="flex flex-col gap-6 items-center w-full">
